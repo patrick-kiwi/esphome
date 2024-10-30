@@ -200,6 +200,10 @@ climate:
     fan_only_cooling: true
     fan_with_cooling: true
     fan_with_heating: true
+    visual:
+      temperature_step:
+        target_temperature: 0.1
+        current_temperature: 0.1
 
 cover:
   - platform: template
