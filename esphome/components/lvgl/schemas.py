@@ -216,7 +216,7 @@ def automation_schema(typ: LvType):
         events = df.LV_EVENT_TRIGGERS + (CONF_ON_VALUE,)
     else:
         events = df.LV_EVENT_TRIGGERS
-    args = [typ.get_arg_type()] if isinstance(typ, LvType) else []
+    args = typ.get_arg_type() if isinstance(typ, LvType) else []
     args.append(lv_event_t_ptr)
     return {
         cv.Optional(event): validate_automation(
@@ -391,7 +391,9 @@ def container_validator(schema, widget_type: WidgetType):
             add_lv_use(ltype)
         if value == SCHEMA_EXTRACT:
             return result
-        result = result.extend(LAYOUT_SCHEMAS[ltype.lower()])
+        result = result.extend(
+            LAYOUT_SCHEMAS.get(ltype.lower(), LAYOUT_SCHEMAS[df.TYPE_NONE])
+        )
         return result(value)
 
     return validator
