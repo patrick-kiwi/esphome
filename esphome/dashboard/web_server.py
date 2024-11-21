@@ -544,7 +544,7 @@ class ImportRequestHandler(BaseHandler):
 
 class IgnoreDeviceRequestHandler(BaseHandler):
     @authenticated
-    def post(self) -> None:
+    async def post(self) -> None:
         dashboard = DASHBOARD
         try:
             args = json.loads(self.request.body.decode())
@@ -576,7 +576,8 @@ class IgnoreDeviceRequestHandler(BaseHandler):
         else:
             dashboard.ignored_devices.discard(ignored_device.device_name)
 
-        dashboard.save_ignored_devices()
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, dashboard.save_ignored_devices)
 
         self.set_status(204)
         self.finish()
