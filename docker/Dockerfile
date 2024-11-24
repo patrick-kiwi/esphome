@@ -99,15 +99,17 @@ BUILD_DEPS="
     libfreetype-dev=2.12.1+dfsg-5+deb12u3
     libssl-dev=3.0.15-1~deb12u1
     libffi-dev=3.4.4-1
-    libopenjp2-7=2.5.0-2
-    libtiff6=4.5.0-6+deb12u1
     cargo=0.66.0+ds1-1
     pkg-config=1.8.1-1
+"
+LIB_DEPS="
+    libtiff6=4.5.0-6+deb12u1
+    libopenjp2-7=2.5.0-2
 "
 if [ "$TARGETARCH$TARGETVARIANT" = "arm64" ] || [ "$TARGETARCH$TARGETVARIANT" = "armv7" ]
 then
     apt-get update
-    apt-get install -y --no-install-recommends $BUILD_DEPS
+    apt-get install -y --no-install-recommends $BUILD_DEPS $LIB_DEPS
 fi
 
 CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse CARGO_HOME=/root/.cargo
