@@ -2399,6 +2399,113 @@ void WaveshareEPaper7P5InBV3::dump_config() {
   LOG_UPDATE_INTERVAL(this);
 }
 
+void WaveshareEPaper7P5InBV3BWR::initialize() { this->init_display_(); }
+bool WaveshareEPaper7P5InBV3BWR::wait_until_idle_() {
+  if (this->busy_pin_ == nullptr) {
+    return true;
+  }
+
+  const uint32_t start = millis();
+  while (this->busy_pin_->digital_read()) {
+    this->command(0x71);
+    if (millis() - start > this->idle_timeout_()) {
+      ESP_LOGI(TAG, "Timeout while displaying image!");
+      return false;
+    }
+    App.feed_wdt();
+    delay(10);
+  }
+  delay(200);  // NOLINT
+  return true;
+};
+void WaveshareEPaper7P5InBV3BWR::init_display_() {
+  this->reset_();
+
+  // COMMAND POWER SETTING
+  this->command(0x01);
+
+  // 1-0=11: internal power
+  this->data(0x07);
+  this->data(0x17);  // VGH&VGL
+  this->data(0x3F);  // VSH
+  this->data(0x26);  // VSL
+  this->data(0x11);  // VSHR
+
+  // VCOM DC Setting
+  this->command(0x82);
+  this->data(0x24);  // VCOM
+
+  // Booster Setting
+  this->command(0x06);
+  this->data(0x27);
+  this->data(0x27);
+  this->data(0x2F);
+  this->data(0x17);
+
+  // POWER ON
+  this->command(0x04);
+
+  delay(100);  // NOLINT
+  this->wait_until_idle_();
+  // COMMAND PANEL SETTING
+  this->command(0x00);
+  this->data(0x0F);  // KW-3f   KWR-2F BWROTP 0f BWOTP 1f
+
+  // COMMAND RESOLUTION SETTING
+  this->command(0x61);
+  this->data(0x03);  // source 800
+  this->data(0x20);
+  this->data(0x01);  // gate 480
+  this->data(0xE0);
+  // COMMAND ...?
+  this->command(0x15);
+  this->data(0x00);
+  // COMMAND VCOM AND DATA INTERVAL SETTING
+  this->command(0x50);
+  this->data(0x20);
+  this->data(0x00);
+  // COMMAND TCON SETTING
+  this->command(0x60);
+  this->data(0x22);
+  // Resolution setting
+  this->command(0x65);
+  this->data(0x00);
+  this->data(0x00);  // 800*480
+  this->data(0x00);
+  this->data(0x00);
+};
+void HOT WaveshareEPaper7P5InBV3BWR::display() {
+  this->init_display_();
+  const uint32_t buf_len = this->get_buffer_length_() / 2u;
+
+  this->command(0x10);  // Send BW data Transmission
+  delay(2);
+  for (uint32_t i = 0; i < buf_len; i++) {
+    this->data(this->buffer_[i]);
+  }
+
+  this->command(0x13);  // Send red data Transmission
+  delay(2);
+  for (uint32_t i = 0; i < buf_len; i++) {
+    this->data(this->buffer_[i + buf_len]);
+  }
+
+  this->command(0x12);  // Display Refresh
+  delay(100);           // NOLINT
+  this->wait_until_idle_();
+  this->deep_sleep();
+}
+int WaveshareEPaper7P5InBV3BWR::get_width_internal() { return 800; }
+int WaveshareEPaper7P5InBV3BWR::get_height_internal() { return 480; }
+void WaveshareEPaper7P5InBV3BWR::dump_config() {
+  LOG_DISPLAY("", "Waveshare E-Paper", this);
+  ESP_LOGCONFIG(TAG, "  Model: 7.5in-bv3 BWR-Mode");
+  LOG_PIN("  Reset Pin: ", this->reset_pin_);
+  LOG_PIN("  DC Pin: ", this->dc_pin_);
+  LOG_PIN("  Busy Pin: ", this->busy_pin_);
+  LOG_UPDATE_INTERVAL(this);
+}
+
 void WaveshareEPaper7P5In::initialize() {
   // COMMAND POWER SETTING
   this->command(0x01);
