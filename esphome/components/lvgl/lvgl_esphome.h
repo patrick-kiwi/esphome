@@ -56,6 +56,9 @@ static const display::ColorBitness LV_BITNESS = display::ColorBitness::COLOR_BIT
 inline void lv_img_set_src(lv_obj_t *obj, esphome::image::Image *image) {
   lv_img_set_src(obj, image->get_lv_img_dsc());
 }
+inline void lv_disp_set_bg_image(lv_disp_t *disp, esphome::image::Image *image) {
+  lv_disp_set_bg_image(disp, image->get_lv_img_dsc());
+}
 #endif  // USE_LVGL_IMAGE
 
 // Parent class for things that wrap an LVGL object
