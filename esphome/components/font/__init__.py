@@ -373,7 +373,9 @@ def font_file_schema(value):
 # Default if no glyphs or glyphsets are provided
 DEFAULT_GLYPHSET = "GF_Latin_Kernel"
 # default for bitmap fonts
-DEFAULT_GLYPHS = ' !"%()+=,-.:/?0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz<C2><B0>'
+DEFAULT_GLYPHS = (
+    ' !"%()+=,-.:/?0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz°'
+)
 
 CONF_RAW_GLYPH_ID = "raw_glyph_id"
 
