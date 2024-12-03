@@ -337,7 +337,7 @@ lvgl:
             id: button_button
             width: 20%
             height: 10%
-            transform_angle: !lambda return 180*100;
+            transform_angle: !lambda return(180*100);
             arc_width: !lambda return 4;
             border_width: !lambda return 6;
             shadow_ofs_x: !lambda return 6;
@@ -581,7 +581,7 @@ lvgl:
               - 180, 60
               - 240, 10
             on_click:
-              - lvgl.widget.update:
+              - lvgl.line.update:
                   id: lv_line_id
                   line_color: 0xFFFF
               - lvgl.page.next:
