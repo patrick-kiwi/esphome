@@ -196,8 +196,16 @@ LABEL \
     io.hass.name="ESPHome" \
     io.hass.description="Manage and program ESP8266/ESP32 microcontrollers through YAML configuration files" \
     io.hass.type="addon" \
-    io.hass.version="${BUILD_VERSION}"
+    io.hass.version="${BUILD_VERSION}" \
     # io.hass.arch is inherited from addon-debian-base
+    org.opencontainers.image.authors="The ESPHome Authors" \
+    org.opencontainers.image.title="ESPHome" \
+    org.opencontainers.image.description="Manage and program ESP8266/ESP32 microcontrollers through YAML configuration files" \
+    org.opencontainers.image.url="https://esphome.io/" \
+    org.opencontainers.image.documentation="https://esphome.io/" \
+    org.opencontainers.image.source="https://github.com/esphome/esphome" \
+    org.opencontainers.image.licenses="ESPHome" \
+    org.opencontainers.image.version=${BUILD_VERSION}
 
 
 
