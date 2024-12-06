@@ -152,9 +152,9 @@ void ModbusController::on_modbus_read_registers(uint8_t function_code, uint16_t 
 }
 
 SensorSet ModbusController::find_sensors_(ModbusRegisterType register_type, uint16_t start_address) const {
-  auto reg_it = find_if(begin(this->register_ranges_), end(this->register_ranges_), [=](RegisterRange const &r) {
-    return (r.start_address == start_address && r.register_type == register_type);
-  });
+  auto reg_it = std::find_if(
+      std::begin(this->register_ranges_), std::end(this->register_ranges_),
+      [=](RegisterRange const &r) { return (r.start_address == start_address && r.register_type == register_type); });
 
   if (reg_it == this->register_ranges_.end()) {
     ESP_LOGE(TAG, "No matching range for sensor found - start_address : 0x%X", start_address);
@@ -375,12 +375,12 @@ void ModbusController::loop() {
   if (!this->incoming_queue_.empty()) {
     auto &message = this->incoming_queue_.front();
     if (message != nullptr)
-      process_modbus_data_(message.get());
+      this->process_modbus_data_(message.get());
     this->incoming_queue_.pop();
 
   } else {
     // all messages processed send pending commands
-    send_next_command_();
+    this->send_next_command_();
   }
 }
 

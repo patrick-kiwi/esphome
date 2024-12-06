@@ -97,7 +97,7 @@ void ModbusSwitch::write_state(bool state) {
     }
   }
   this->parent_->queue_command(cmd);
-  publish_state(state);
+  this->publish_state(state);
 }
 // ModbusSwitch end
 }  // namespace modbus_controller
