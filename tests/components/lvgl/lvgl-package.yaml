@@ -451,6 +451,7 @@ lvgl:
             src: cat_image
             align: top_left
             y: "50"
+            mode: real
         - tileview:
             id: tileview_id
             scrollbar_mode: active
@@ -647,6 +648,7 @@ lvgl:
                       grid_cell_row_pos: 0
                       grid_cell_column_pos: 0
                       src: !lambda return dog_image;
+                      mode: virtual
                       on_click:
                         then:
                           - lvgl.tabview.select:
