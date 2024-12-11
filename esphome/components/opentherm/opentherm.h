@@ -370,7 +370,7 @@ class OpenTherm {
 
 #ifdef ESP8266
   // ESP8266 timer can accept callback with no parameters, so we have this hack to save a static instance of OpenTherm
-  static OpenTherm *instance_;
+  static OpenTherm *instance;  // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 #endif
 };
 

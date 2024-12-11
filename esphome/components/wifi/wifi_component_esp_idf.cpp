@@ -989,7 +989,7 @@ int8_t WiFiComponent::wifi_rssi() {
   }
   return info.rssi;
 }
-int32_t WiFiComponent::wifi_channel_() {
+int32_t WiFiComponent::get_wifi_channel() {
   uint8_t primary;
   wifi_second_chan_t second;
   esp_err_t err = esp_wifi_get_channel(&primary, &second);

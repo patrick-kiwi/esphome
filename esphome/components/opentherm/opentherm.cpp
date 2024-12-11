@@ -25,7 +25,7 @@ using std::to_string;
 static const char *const TAG = "opentherm";
 
 #ifdef ESP8266
-OpenTherm *OpenTherm::instance_ = nullptr;
+OpenTherm *OpenTherm::instance = nullptr;
 #endif
 
 OpenTherm::OpenTherm(InternalGPIOPin *in_pin, InternalGPIOPin *out_pin, int32_t device_timeout)
@@ -49,7 +49,7 @@ OpenTherm::OpenTherm(InternalGPIOPin *in_pin, InternalGPIOPin *out_pin, int32_t 
 
 bool OpenTherm::initialize() {
 #ifdef ESP8266
-  OpenTherm::instance_ = this;
+  OpenTherm::instance = this;
 #endif
   this->in_pin_->pin_mode(gpio::FLAG_INPUT);
   this->out_pin_->pin_mode(gpio::FLAG_OUTPUT);
@@ -212,7 +212,7 @@ bool IRAM_ATTR OpenTherm::timer_isr(OpenTherm *arg) {
 }
 
 #ifdef ESP8266
-void IRAM_ATTR OpenTherm::esp8266_timer_isr() { OpenTherm::timer_isr(OpenTherm::instance_); }
+void IRAM_ATTR OpenTherm::esp8266_timer_isr() { OpenTherm::timer_isr(OpenTherm::instance); }
 #endif
 
 void IRAM_ATTR OpenTherm::bit_read_(uint8_t value) {
