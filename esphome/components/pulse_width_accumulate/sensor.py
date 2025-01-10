@@ -2,12 +2,7 @@ from esphome import pins
 import esphome.codegen as cg
 from esphome.components import sensor
 import esphome.config_validation as cv
-from esphome.const import (
-    CONF_PIN,
-    ICON_TIMER,
-    STATE_CLASS_TOTAL_INCREASING,
-    UNIT_SECOND,
-)
+from esphome.const import CONF_PIN, ICON_TIMER, STATE_CLASS_TOTAL, UNIT_SECOND
 
 pulse_width_ns = cg.esphome_ns.namespace("pulse_width_accumulate")
 
@@ -21,7 +16,7 @@ CONFIG_SCHEMA = (
         unit_of_measurement=UNIT_SECOND,
         icon=ICON_TIMER,
         accuracy_decimals=2,
-        state_class=STATE_CLASS_TOTAL_INCREASING,
+        state_class=STATE_CLASS_TOTAL,
     )
     .extend(
         {
