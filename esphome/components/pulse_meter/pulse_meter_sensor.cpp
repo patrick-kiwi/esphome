@@ -17,7 +17,8 @@ void PulseMeterSensor::set_total_pulses(uint32_t pulses) {
 void PulseMeterSensor::set_total_pulse_width(uint32_t pulse_width_seconds) {
   this->total_pulse_width_ = pulse_width_seconds;
   if (this->cumulative_sensor_ != nullptr) {
-    this->cumulative_sensor_->publish_state(static_cast<float>(this->total_pulse_width_) / 1e6f);  // Convert µs to seconds
+    this->cumulative_sensor_->publish_state(static_cast<float>(this->total_pulse_width_) /
+                                            1e6f);  // Convert µs to seconds
   }
 }
 
@@ -77,8 +78,7 @@ void PulseMeterSensor::dump_config() {
   } else {
     ESP_LOGCONFIG(TAG, "  Filtering pulses shorter than %" PRIu32 " µs", this->filter_us_);
   }
-  ESP_LOGCONFIG(TAG, "  Assuming 0 pulses/min after not receiving a pulse for %" PRIu32 "s",
-                this->timeout_us_ / 1e6);
+  ESP_LOGCONFIG(TAG, "  Assuming 0 pulses/min after not receiving a pulse for %" PRIu32 "s", this->timeout_us_ / 1e6);
   if (this->cumulative_sensor_ != nullptr) {
     ESP_LOGCONFIG(TAG, "  Cumulative pulse width sensor configured.");
   }
