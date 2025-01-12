@@ -88,7 +88,7 @@ void PulseWidthAccumulateSensor::update() {
 
   ESP_LOGCONFIG(TAG, "'%s' - Cumulative pulse width: %.2f s", this->name_.c_str(), cumulative_width);
 
-  this->publish_state(0.0f);
+  this->publish_state(cumulative_width);
 }
 
 }  // namespace pulse_width_accumulate
