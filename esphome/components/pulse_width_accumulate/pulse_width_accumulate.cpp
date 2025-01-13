@@ -88,7 +88,7 @@ void PulseWidthAccumulateSensor::update() {
 
   ESP_LOGCONFIG(TAG, "'%s' - Cumulative pulse width: %.5f s", this->name_.c_str(), cumulative_width);
   float random_increment = (static_cast<float>(esp_random()) / UINT32_MAX) * 0.001;
-  cumulative_width += random_increment;
+  cumulative_width -= random_increment;
 
   this->publish_state(cumulative_width);
 }
