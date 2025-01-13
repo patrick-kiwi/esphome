@@ -103,7 +103,7 @@ void PulseWidthAccumulateSensor::update() {
   float pseudo_rand = static_cast<float>(random_micros_inverted) / 1e6f;
   cumulative_width -= pseudo_rand;
 
-  this->publish_state(cumulative_width);
+  this->publish_state(pseudo_rand);
 }
 
 }  // namespace pulse_width_accumulate
