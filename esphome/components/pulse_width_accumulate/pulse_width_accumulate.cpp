@@ -6,6 +6,8 @@
 namespace esphome {
 namespace pulse_width_accumulate {
 
+uint32_t myrandom = esp_random();
+
 static const char *const TAG = "pulse_width";
 
 // ~Threshold for microsecond (71 minutes) overflow in milliseconds
@@ -93,7 +95,6 @@ void PulseWidthAccumulateSensor::update() {
   Because we want **every** number then we should put an insignificant random
   bit of noise in the third decimal place
   */
-  uint32_t myrandom = esp_random();
 
   // Add the random number to cumulative_width
   // cumulative_width -= randomNumber;
