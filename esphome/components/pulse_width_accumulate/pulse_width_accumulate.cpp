@@ -93,9 +93,9 @@ void PulseWidthAccumulateSensor::update() {
   bit of noise in the third decimal place to make each result unique, Random seems to be hard to use
   so we'll hack together a random number.
   */
-  uint32_t random_micros = get_last_rise_ms();
+  uint32_t random_micros = micros();
   uint32_t random_micros_inverted = 0;
-  for (uint8_t i = 1; i <= n; ++i) {
+  for (uint8_t i = 1; i <= 4; ++i) {
     uint32_t digit = (random_micros % 10);
     random_micros_inverted = random_micros_inverted * 10 + digit;
     random_micros /= 10;
