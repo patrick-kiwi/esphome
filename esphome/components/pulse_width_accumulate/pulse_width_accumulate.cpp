@@ -1,7 +1,6 @@
 #include "pulse_width_accumulate.h"
 #include "esphome/core/log.h"
 #include <algorithm>
-#include <esp_system.h>  // For esp_random()
 
 namespace esphome {
 namespace pulse_width_accumulate {
@@ -93,13 +92,15 @@ void PulseWidthAccumulateSensor::update() {
   Because we want **every** number then we should put an insignificant random
   bit of noise in the third decimal place
   */
-  // Set up the random number generator
-  // Generate a random number using ESP-IDF's hardware RNG
-  uint32_t raw_random = esp_random();                                    // Generates a 32-bit random number
-  float scaled_random = (raw_random & 0xFFFFFF) / 16777216.0f * 0.001f;  // Scale to 0 - 0.001
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<float> dis(0.0f, 1e-3f);
+
+  // Generate and print the random number
+  float randomNumber = dis(gen);
 
   // Add the random number to cumulative_width
-  cumulative_width -= scaled_random;
+  cumulative_width -= randomNumber;
 
   this->publish_state(cumulative_width);
 }
