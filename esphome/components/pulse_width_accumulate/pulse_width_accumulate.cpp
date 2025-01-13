@@ -86,23 +86,23 @@ void PulseWidthAccumulateSensor::update() {
     cumulative_width = std::clamp(cumulative_width, 0.0f, polling_interval_s);
   }
 
-  ESP_LOGCONFIG(TAG, "'%s' - Cumulative pulse width: %.5f s", this->name_.c_str(), cumulative_width);
-
-  /*Homeassistant will only update the sensor if there's a **NEW** number
-  Because we want to publish **every** minute then we should put an insignificant random
-  bit of noise in the third decimal place to make each result unique, Random seems to be hard to use
-  so we'll hack together a random number.
-  */
-  uint32_t random_micros = micros();
-  uint32_t random_micros_inverted = 0;
-  for (uint8_t i = 1; i <= 4; ++i) {
-    uint32_t digit = (random_micros % 10);
-    random_micros_inverted = random_micros_inverted * 10 + digit;
-    random_micros /= 10;
+  /*Because Home Assistant will only update the sensor if there's a **NEW** number, then repeated 60s ontimes are a big
+    problem We should put some random noise in ontimes greater than insignificant random bit of noise in the third
+    decimal place of numbers close to 60 seconds. so we'll hack together a random number.
+    */
+  if (cumulative_width > 58.0f) {
+    uint32_t random_micros = micros();
+    uint32_t random_micros_inverted = 0;
+    for (uint8_t i = 1; i <= 4; ++i) {
+      uint32_t digit = (random_micros % 10);
+      random_micros_inverted = random_micros_inverted * 10 + digit;
+      random_micros /= 10;
+    }
+    float pseudo_rand = static_cast<float>(random_micros_inverted) / 1e6f;
+    cumulative_width -= pseudo_rand;
   }
-  float pseudo_rand = static_cast<float>(random_micros_inverted) / 1e6f;
-  cumulative_width -= pseudo_rand;
 
+  ESP_LOGCONFIG(TAG, "'%s' - Cumulative pulse width: %.5f s", this->name_.c_str(), cumulative_width);
   this->publish_state(cumulative_width);
 }
 
