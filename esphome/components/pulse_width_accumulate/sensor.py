@@ -20,7 +20,7 @@ CONFIG_SCHEMA = (
         PulseWidthAccumulateSensor,
         unit_of_measurement=UNIT_SECOND,
         icon=ICON_TIMER,
-        accuracy_decimals=2,
+        accuracy_decimals=5,
         state_class=STATE_CLASS_TOTAL_INCREASING,
     )
     .extend(

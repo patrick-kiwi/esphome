@@ -81,12 +81,14 @@ void PulseWidthAccumulateSensor::update() {
   (The last pulse may have initiated just after the previous polling interval)
   */
   if (cumulative_width < 0 || cumulative_width > polling_interval_s) {
-    ESP_LOGW(TAG, "Cumulative pulse width %.2f s exceeds polling interval %.2f s. Clamping to range.", cumulative_width,
+    ESP_LOGW(TAG, "Cumulative pulse width %.1f s exceeds polling interval %.1f s. Clamping to range.", cumulative_width,
              polling_interval_s);
     cumulative_width = std::clamp(cumulative_width, 0.0f, polling_interval_s);
   }
 
-  ESP_LOGCONFIG(TAG, "'%s' - Cumulative pulse width: %.2f s", this->name_.c_str(), cumulative_width);
+  ESP_LOGCONFIG(TAG, "'%s' - Cumulative pulse width: %.5f s", this->name_.c_str(), cumulative_width);
+  float random_increment = (static_cast<float>(esp_random()) / UINT32_MAX) * 0.001;
+  cumulative_width += random_increment;
 
   this->publish_state(cumulative_width);
 }
