@@ -93,14 +93,12 @@ void PulseWidthAccumulateSensor::update() {
   Because we want **every** number then we should put an insignificant random
   bit of noise in the third decimal place
   */
-  static bool seeded = false;
-  if (!seeded) {
-    srandom((unsigned int) xTaskGetTickCount());  // Use FreeRTOS tick count as seed
-    seeded = true;
-  }
-
-  float random_increment = (static_cast<float>(esp_random()) / UINT32_MAX) * 0.001;
-  cumulative_width -= random_increment;
+  // Set up the random number generator
+  std::random_device rd;                                   // Seed generator
+  std::mt19937 generator(rd());                            // Mersenne Twister engine
+  std::uniform_real_distribution<float> dist(0.0, 0.001);  // Uniform distribution
+  float random_number = dist(generator);
+  cumulative_width -= random_number;
 
   this->publish_state(cumulative_width);
 }
