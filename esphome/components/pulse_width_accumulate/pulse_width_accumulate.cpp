@@ -58,7 +58,7 @@ void PulseWidthAccumulateSensor::dump_config() {
 void PulseWidthAccumulateSensor::update() {
   float cumulative_width = this->store_.get_cumulative_pulse_width_s();  // Retrieve cumulative pulse width
 
-  // Handle long pulses
+  // Handle long in-progress pulses
   if (this->store_.is_pulse_in_progress()) {
     uint32_t elapsed_ms = millis() - this->store_.get_last_rise_ms();
 
@@ -77,8 +77,9 @@ void PulseWidthAccumulateSensor::update() {
 
   /*
   Sanity check: Ensure cumulative width is within valid range
-  Clamping between 0 and 2x polling interval
-  (The last pulse may have initiated just after the previous polling interval)
+  A bouncing signal can generate microsecond pulses which somehow break the code and cause massive cumulative widths
+  However, the last pulse may have initiated just after the previous polling interval so we have to use a 2x the polling
+  window)
   */
   if (cumulative_width < 0 || cumulative_width > polling_interval_s) {
     ESP_LOGW(TAG, "Cumulative pulse width %.1f s exceeds polling interval %.1f s. Clamping to range.", cumulative_width,
@@ -87,10 +88,10 @@ void PulseWidthAccumulateSensor::update() {
   }
 
   /*Because Home Assistant will only update the sensor if there's a **NEW** number, then repeated 60s ontimes are a big
-    problem We should put some random noise in ontimes greater than insignificant random bit of noise in the third
-    decimal place of numbers close to 60 seconds. so we'll hack together a random number.
-    */
-  if (cumulative_width > 58.0f) {
+  problem because we'll miss them. We should put some 3rd decimal place random noise in ontimes greater than 57 seconds
+  I couldn't figure out how to use the random library here, so I've hacked together a random number out of micros().
+  */
+  if (cumulative_width > (polling_interval_s - 3.0f)) {
     uint32_t random_micros = micros();
     uint32_t random_micros_inverted = 0;
     for (uint8_t i = 1; i <= 4; ++i) {
