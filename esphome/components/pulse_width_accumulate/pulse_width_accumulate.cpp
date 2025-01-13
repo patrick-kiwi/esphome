@@ -5,8 +5,6 @@
 namespace esphome {
 namespace pulse_width_accumulate {
 
-uint32_t myrandom = esp_random();
-
 static const char *const TAG = "pulse_width";
 
 // ~Threshold for microsecond (71 minutes) overflow in milliseconds
