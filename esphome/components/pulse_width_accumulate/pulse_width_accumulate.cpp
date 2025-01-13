@@ -88,6 +88,17 @@ void PulseWidthAccumulateSensor::update() {
   }
 
   ESP_LOGCONFIG(TAG, "'%s' - Cumulative pulse width: %.5f s", this->name_.c_str(), cumulative_width);
+
+  /*Homeassistant will only update the sensor if there's a **NEW** number
+  Because we want **every** number then we should put an insignificant random
+  bit of noise in the third decimal place
+  */
+  static bool seeded = false;
+  if (!seeded) {
+    srandom((unsigned int) xTaskGetTickCount());  // Use FreeRTOS tick count as seed
+    seeded = true;
+  }
+
   float random_increment = (static_cast<float>(esp_random()) / UINT32_MAX) * 0.001;
   cumulative_width -= random_increment;
 
