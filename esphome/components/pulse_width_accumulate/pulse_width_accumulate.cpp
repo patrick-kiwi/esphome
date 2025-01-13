@@ -1,7 +1,7 @@
 #include "pulse_width_accumulate.h"
 #include "esphome/core/log.h"
 #include <algorithm>
-#include "esp_system.h"  // For esp_random()
+#include <cstdlib>  // For srandom() and random()
 
 namespace esphome {
 namespace pulse_width_accumulate {
