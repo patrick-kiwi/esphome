@@ -96,9 +96,9 @@ void PulseWidthAccumulateSensor::update() {
   uint32_t random_micros = get_last_rise_ms();
   uint32_t random_micros_inverted = 0;
   for (uint8_t i = 1; i <= n; ++i) {
-    uint32_t digit = (num % 10);
+    uint32_t digit = (random_micros % 10);
     random_micros_inverted = random_micros_inverted * 10 + digit;
-    num /= 10;
+    random_micros /= 10;
   }
   float pseudo_rand = static_cast<float>(random_micros_inverted) / 1e6f;
   cumulative_width -= pseudo_rand;
