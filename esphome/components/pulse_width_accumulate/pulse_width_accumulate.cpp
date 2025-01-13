@@ -1,7 +1,6 @@
 #include "pulse_width_accumulate.h"
 #include "esphome/core/log.h"
 #include <algorithm>
-#include <sys/random.h>
 
 namespace esphome {
 namespace pulse_width_accumulate {
@@ -92,12 +91,19 @@ void PulseWidthAccumulateSensor::update() {
   ESP_LOGCONFIG(TAG, "'%s' - Cumulative pulse width: %.5f s", this->name_.c_str(), cumulative_width);
 
   /*Homeassistant will only update the sensor if there's a **NEW** number
-  Because we want **every** number then we should put an insignificant random
-  bit of noise in the third decimal place
+  Because we want to publish **every** minute then we should put an insignificant random
+  bit of noise in the third decimal place to make each result unique, Random seems to be hard to use
+  so we'll hack together a random number.
   */
-
-  // Add the random number to cumulative_width
-  // cumulative_width -= randomNumber;
+  uint32_t random_micros = get_last_rise_ms();
+  uint32_t random_micros_inverted = 0;
+  for (uint8_t i = 1; i <= n; ++i) {
+    uint32_t digit = (num % 10);
+    random_micros_inverted = random_micros_inverted * 10 + digit;
+    num /= 10;
+  }
+  float pseudo_rand = static_cast<float>(random_micros_inverted) / 1e6f;
+  cumulative_width -= pseudo_rand;
 
   this->publish_state(cumulative_width);
 }
