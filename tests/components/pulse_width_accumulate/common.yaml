@@ -1,0 +1,6 @@
+sensor:
+  - platform: pulse_width_accumulate
+    pin: GPIO32
+    name: Cumulative GPIO on-time Sensor
+    frequency:
+      name: Averaged Frequency Sensor
