@@ -30,9 +30,8 @@ uint32_t pulse_count = 0;
 // Zero the microsecond counter every polling cycle so we never overflow at 2^32 (ie. ~71.58 min)
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
-  //handle long pulses that span beyond the polling window
 portENTER_CRITICAL(&this->mux_);
-  if ( this->pin_.digital_read() ) {
+  if ( this->pin_.digital_read() ) {//handle long pulses that span beyond the polling window
     uint32_t now = micros();
     cumulative_local = static_cast<float>( now - this->last_rise_us_ ) / 1e6f;
     this->last_rise_us_ = now;
@@ -49,14 +48,11 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
   uint32_t now = micros();
   portENTER_CRITICAL_ISR(&arg->mux_);
   bool pin_state = arg->pin_.digital_read();
-  if (pin_state) { 
-    // Rising edge detected
+  if (pin_state) {// Rising edge detected
     arg->last_rise_us_ = now;
-  } else { 
-    // Falling edge detected
+  } else {// Falling edge detected
     uint32_t pulse_width_us = now - arg->last_rise_us_;
-    // Filter noise and accumulate
-    if (pulse_width_us > MICROSECOND_PER_PULSE_LOWER_THRESHOLD) {
+    if (pulse_width_us > MICROSECOND_PER_PULSE_LOWER_THRESHOLD) {// Filter noise and accumulate
       arg->cumulative_width_us_+= pulse_width_us;
       arg->pulse_count_+= 1;
     }
@@ -64,7 +60,6 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
 portEXIT_CRITICAL_ISR(&arg->mux_);
 }
   
-// ESPHome Component Methods
 void PulseWidthAccumulateSensor::dump_config() {
   LOG_SENSOR("", "Pulse Width", this)
   LOG_UPDATE_INTERVAL(this)
@@ -75,12 +70,10 @@ void PulseWidthAccumulateSensor::update() {
   //Retrieve cumulative pulse width, and zero the counter
   float cumulative_width = this->store_.get_cumulative_pulse_width_s();
   float polling_interval_s = static_cast<float>(this->get_update_interval()) / 1000.0f;
-  //Check and fix errors, and issue warnings if necessary.
-  if (polling_interval_s > 4294.9f) {
+  if (polling_interval_s > 4294.9f) {//Check and fix errors, and issue warnings if necessary.
     ESP_LOGW(TAG, "Error! Polling interval: %.1f s exceeds 71.58 min. Microseconds will overflow if pw > 71.58 min", polling_interval_s);
-  }
-  //Clamp cumulative width to valid range, 
-  if (cumulative_width < 0) {
+  } 
+  if (cumulative_width < 0) {//Clamp cumulative width to valid range, 
     ESP_LOGW(TAG, "Warning, cumulative pulse width %.1f s doesn't make sense! Setting to zero.", cumulative_width);
     cumulative_width = 0.0f;
   } 
@@ -95,8 +88,7 @@ void PulseWidthAccumulateSensor::update() {
       cumulative_width = polling_interval_s;
     }
   }
-  //get frequency if needed
-  if (this->frequency_sensor_ != nullptr) {
+  if (this->frequency_sensor_ != nullptr) {//get frequency if needed
     float pulse_count = this->store_.get_pulses_this_cycle();
     float frequency = pulse_count / polling_interval_s;
     this->frequency_sensor_->publish_state(frequency);
