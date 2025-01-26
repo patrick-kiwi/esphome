@@ -1,0 +1,145 @@
+Script started on 2025-01-27 00:08:58+13:00 [TERM="xterm-256color" TTY="/dev/cons0" COLUMNS="191" LINES="14"]
+[?2004hsh-5.2$ v[Ktest_build_components [K - c[K[Kc pulse_width_accumulate
+[?2004lsh: test_build_components: command not found
+[?2004hsh-5.2$ cd sx[Kcript/
+[?2004l[?2004hsh-5.2$ ls
+[?2004lapi_protobuf		  bump-version.py     clang-format    devcontainer-post-create	helpers.py   list-components.py		 run-in-env.sh	sync-device_class.py   unit_test
+build_codeowners.py	  ci-custom.py	      clang-tidy      extract_automations.py	lint-cpp     platformio_install_deps.py  setup		test
+build_language_schema.py  ci-suggest-changes  component_test  fulltest			lint-python  quicklint			 setup.bat	test_build_components
+[?2004hsh-5.2$ test buu[Kild_codeowners.py [K[K[K[K[K[K[K[K[K[K[K[Kmpo[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Ktest_build+components
+[?2004lsh: test_build+components: command not found
+[?2004hsh-5.2$ test_build+components[C[1Pcomponents_components
+[?2004lsh: test_build_components: command not found
+[?2004hsh-5.2$ cd test_build_components 
+[?2004lsh: cd: test_build_components: Not a directory
+[?2004hsh-5.2$ ls
+[?2004lapi_protobuf		  bump-version.py     clang-format    devcontainer-post-create	helpers.py   list-components.py		 run-in-env.sh	sync-device_class.py   unit_test
+build_codeowners.py	  ci-custom.py	      clang-tidy      extract_automations.py	lint-cpp     platformio_install_deps.py  setup		test
+build_language_schema.py  ci-suggest-changes  component_test  fulltest			lint-python  quicklint			 setup.bat	test_build_components
+[?2004hsh-5.2$ cd test_build_components 
+[?2004lsh: cd: test_build_components: Not a directory
+[?2004hsh-5.2$ ls -l
+[?2004ltotal 141
+drwx------+ 1 Patrick None     0 Jan 16 15:19 api_protobuf
+-rwx------+ 1 Patrick None  3211 Jan 16 15:19 build_codeowners.py
+-rwx------+ 1 Patrick None 35812 Jan 16 15:19 build_language_schema.py
+-rwx------+ 1 Patrick None  1740 Jan 16 15:19 bump-version.py
+-rwx------+ 1 Patrick None 21372 Jan 16 15:19 ci-custom.py
+-rwx------+ 1 Patrick None   606 Jan 16 15:19 ci-suggest-changes
+-rwx------+ 1 Patrick None  3085 Jan 16 15:19 clang-format
+-rwx------+ 1 Patrick None  9152 Jan 16 15:19 clang-tidy
+-rwx------+ 1 Patrick None    91 Jan 16 15:19 component_test
+-rwx------+ 1 Patrick None   457 Jan 16 15:19 devcontainer-post-create
+-rwx------+ 1 Patrick None   662 Jan 16 15:19 extract_automations.py
+-rwx------+ 1 Patrick None   197 Jan 16 15:19 fulltest
+-rwx------+ 1 Patrick None  6099 Jan 16 15:19 helpers.py
+-rwx------+ 1 Patrick None   129 Jan 16 15:19 lint-cpp
+-rwx------+ 1 Patrick None  3322 Jan 16 15:19 lint-python
+-rwx------+ 1 Patrick None  5644 Jan 16 15:19 list-components.py
+-rwx------+ 1 Patrick None  2017 Jan 16 15:19 platformio_install_deps.py
+-rwx------+ 1 Patrick None   126 Jan 16 15:19 quicklint
+-rwx------+ 1 Patrick None   221 Jan 16 15:19 run-in-env.sh
+-rwx------+ 1 Patrick None   734 Jan 16 15:19 setup
+-rwx------+ 1 Patrick None   756 Jan 16 15:19 setup.bat
+-rwx------+ 1 Patrick None  2220 Jan 16 15:19 sync-device_class.py
+-rwx------+ 1 Patrick None   120 Jan 16 15:19 test
+-rwx------+ 1 Patrick None  4330 Jan 16 15:19 test_build_components
+-rwx------+ 1 Patrick None    86 Jan 16 15:19 unit_test
+[?2004hsh-5.2$ unit_test
+[?2004lsh: unit_test: command not found
+[?2004hsh-5.2$ unit_test -h
+[?2004lsh: unit_test: command not found
+[?2004hsh-5.2$ cd ..
+[?2004l[?2004hsh-5.2$ ls
+[?2004lCODE_OF_CONDUCT.md  CONTRIBUTING.md  esphome  MANIFEST.in     pulse-width-accumulate  README.md		requirements_dev.txt	   requirements_test.txt  sdkconfig.defaults  typescript
+CODEOWNERS	    docker	     LICENSE  platformio.ini  pyproject.toml	      requirements.txt	requirements_optional.txt  script		  tests
+[?2004hsh-5.2$ unit_test
+[?2004lsh: unit_test: command not found
+[?2004hsh-5.2$ ls
+[?2004lCODE_OF_CONDUCT.md  CONTRIBUTING.md  esphome  MANIFEST.in     pulse-width-accumulate  README.md		requirements_dev.txt	   requirements_test.txt  sdkconfig.defaults  typescript
+CODEOWNERS	    docker	     LICENSE  platformio.ini  pyproject.toml	      requirements.txt	requirements_optional.txt  script		  tests
+[?2004hsh-5.2$ cd tests/
+[?2004l[?2004hsh-5.2$ ls
+[?2004lcomponent_tests  components  custom.h  dashboard  dummy_main.cpp  pnglogo.png  README.md  test_build_components  test_packages	unit_tests
+[?2004hsh-5.2$ less README.md 
+[?2004l[?1049h[22;0;0t[?1h=# Tests for ESPHome
+
+This directory contains some tests for ESPHome.
+At the moment, all the tests only work by simply executing
+`esphome` over some YAML files that are made to test
+whether the yaml gets converted to the proper C++ code.
+
+Of course this is all just very high-level and things like
+unit tests would be much better. So if you have time and know
+how to set up a unit testing framework for python, please do
+give it a try.
+
+When adding entries in test_.yaml files we usually need only
+[7mREADME.md[27m[K[K [KESCESC[KOO[KBB[Kone file updated, unless conflicting code is generated for
+:[K[K [KESCESC[KOO[KBB[Kdifferent configurations, e.g. `wifi` and `ethernet` cannot
+:[K[K [KESCESC[KOO[KBB[Kbe tested on the same device.
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[KCurrent test_.yaml file contents.
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K| Test name | Platform | Network | BLE |
+:[K[K [KESCESC[KOO[KBB[K|-|-|-|-|
+:[K[K [KESCESC[KOO[KBB[K| test1.yaml | ESP32 | wifi | None
+:[K[K [KESCESC[KOO[KBB[K| test2.yaml | ESP32 | ethernet | esp32_ble_tracker
+:[K[K [KESCESC[KOO[KBB[K| test3.yaml | ESP8266 | wifi | N/A
+:[K[K [KESCESC[KOO[KBB[K| test4.yaml | ESP32 | ethernet | None
+:[K[K [KESCESC[KOO[KBB[K| test5.yaml | ESP32 | wifi | ble_server
+:[K[K [KESCESC[KOO[KBB[K| test6.yaml | RP2040 | wifi | N/A
+:[K[K [KESCESC[KOO[KBB[K| test7.yaml | ESP32-C3 | wifi | N/A
+:[K[K [KESCESC[KOO[KBB[K| test8.yaml | ESP32-S3 | wifi | None
+:[K[K [KESCESC[KOO[KBB[K| test10.yaml | ESP32 | wifi | None
+[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KAA[K[HM
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMbe tested on the same device.
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMdifferent configurations, e.g. `wifi` and `ethernet` cannot
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMone file updated, unless conflicting code is generated for
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMWhen adding entries in test_.yaml files we usually need only
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HM
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMgive it a try.
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMhow to set up a unit testing framework for python, please do
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMunit tests would be much better. So if you have time and know
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMOf course this is all just very high-level and things like
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HM
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMwhether the yaml gets converted to the proper C++ code.
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HM`esphome` over some YAML files that are made to test
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMAt the moment, all the tests only work by simply executing
+[14;1H[K:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[KCurrent test_.yaml file contents.
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K| Test name | Platform | Network | BLE |
+:[K[K [KESCESC[KOO[KBB[K|-|-|-|-|
+:[K[K [KESCESC[KOO[KBB[K| test1.yaml | ESP32 | wifi | None
+:[K[K [KESCESC[KOO[KBB[K| test2.yaml | ESP32 | ethernet | esp32_ble_tracker
+:[K[K [KESCESC[KOO[KBB[K| test3.yaml | ESP8266 | wifi | N/A
+:[K[K [KESCESC[KOO[KBB[K| test4.yaml | ESP32 | ethernet | None
+:[K[K [KESCESC[KOO[KBB[K| test5.yaml | ESP32 | wifi | ble_server
+:[K[K [KESCESC[KOO[KBB[K| test6.yaml | RP2040 | wifi | N/A
+:[K[K [KESCESC[KOO[KBB[K| test7.yaml | ESP32-C3 | wifi | N/A
+:[K[K [KESCESC[KOO[KBB[K| test8.yaml | ESP32-S3 | wifi | None
+:[K[K [KESCESC[KOO[KBB[K| test10.yaml | ESP32 | wifi | None
+[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KAA[K[HM
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMbe tested on the same device.
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMdifferent configurations, e.g. `wifi` and `ethernet` cannot
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMone file updated, unless conflicting code is generated for
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMWhen adding entries in test_.yaml files we usually need only
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HM
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMgive it a try.
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMhow to set up a unit testing framework for python, please do
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMunit tests would be much better. So if you have time and know
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMOf course this is all just very high-level and things like
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HM
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMwhether the yaml gets converted to the proper C++ code.
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HM`esphome` over some YAML files that are made to test
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMAt the moment, all the tests only work by simply executing
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HMThis directory contains some tests for ESPHome.
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HM
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[HM# Tests for ESPHome
+[14;1H[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K[?1l>[?1049l[23;0;0t[?2004hsh-5.2$ ls
+[?2004lcomponent_tests  components  custom.h  dashboard  dummy_main.cpp  pnglogo.png  README.md  test_build_components  test_packages	unit_tests
+[?2004hsh-5.2$ exit
+[?2004lexit
+
+Script done on 2025-01-27 00:32:23+13:00 [COMMAND_EXIT_CODE="0"]
