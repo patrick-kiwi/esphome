@@ -735,4 +735,359 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 [?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ git commit -m "applied dos2unix"[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
 [C[C[C[C[C[C[K[K[K[K[K[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K
-[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kgit a[K[K[K[K[Kls
+[?2004l__init__.py  pulse_width_accumulate.cpp  pulse_width_accumulate.h  sensor.py
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ cd ..
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components[00m$ ls
+[?2004l[0m[01;34ma01nyub[0m              [01;34mesp32_ble_client[0m         [01;34mmedia_player[0m            [01;34msn74hc165[0m
+[01;34ma02yyuw[0m              [01;34mesp32_ble_server[0m         [01;34mmhz19[0m                   [01;34msn74hc595[0m
+[01;34ma4988[0m                [01;34mesp32_ble_tracker[0m        [01;34mmicronova[0m               [01;34msntp[0m
+[01;34mabsolute_humidity[0m    [01;34mesp32_camera[0m             [01;34mmicrophone[0m              [01;34msocket[0m
+[01;34mac_dimmer[0m            [01;34mesp32_camera_web_server[0m  [01;34mmicro_wake_word[0m         [01;34msonoff_d1[0m
+[01;34madalight[0m             [01;34mesp32_can[0m                [01;34mmics_4514[0m               [01;34mspeaker[0m
+[01;34madc[0m                  [01;34mesp32_dac[0m                [01;34mmidea[0m                   [01;34mspeed[0m
+[01;34madc128s102[0m           [01;34mesp32_hall[0m               [01;34mmidea_ac[0m                [01;34mspi[0m
+[01;34maddressable_light[0m    [01;34mesp32_improv[0m             [01;34mmidea_ir[0m                [01;34mspi_device[0m
+[01;34made7880[0m              [01;34mesp32_rmt[0m                [01;34mmitsubishi[0m              [01;34mspi_led_strip[0m
+[01;34made7953[0m              [01;34mesp32_rmt_led_strip[0m      [01;34mmlx90393[0m                [01;34msprinkler[0m
+[01;34made7953_base[0m         [01;34mesp32_touch[0m              [01;34mmlx90614[0m                [01;34msps30[0m
+[01;34made7953_i2c[0m          [01;34mesp8266[0m                  [01;34mmmc5603[0m                 [01;34mssd1306_base[0m
+[01;34made7953_spi[0m          [01;34mesp8266_pwm[0m              [01;34mmmc5983[0m                 [01;34mssd1306_i2c[0m
+[01;34mads1115[0m              [01;34mesphome[0m                  [01;34mmodbus[0m                  [01;34mssd1306_spi[0m
+[01;34mads1118[0m              [01;34methernet[0m                 [01;34mmodbus_controller[0m       [01;34mssd1322_base[0m
+[01;34mags10[0m                [01;34methernet_info[0m            [01;34mmonochromatic[0m           [01;34mssd1322_spi[0m
+[01;34maht10[0m                [01;34mevent[0m                    [01;34mmopeka_ble[0m              [01;34mssd1325_base[0m
+[01;34maic3204[0m              [01;34mexposure_notifications[0m   [01;34mmopeka_pro_check[0m        [01;34mssd1325_spi[0m
+[01;34mairthings_ble[0m        [01;34mexternal_components[0m      [01;34mmopeka_std_check[0m        [01;34mssd1327_base[0m
+[01;34mairthings_wave_base[0m  [01;34mezo[0m                      [01;34mmpl3115a2[0m               [01;34mssd1327_i2c[0m
+[01;34mairthings_wave_mini[0m  [01;34mezo_pmp[0m                  [01;34mmpr121[0m                  [01;34mssd1327_spi[0m
+[01;34mairthings_wave_plus[0m  [01;34mfactory_reset[0m            [01;34mmpu6050[0m                 [01;34mssd1331_base[0m
+[01;34malarm_control_panel[0m  [01;34mfan[0m                      [01;34mmpu6886[0m                 [01;34mssd1331_spi[0m
+[01;34malpha3[0m               [01;34mfastled_base[0m             [01;34mmqtt[0m                    [01;34mssd1351_base[0m
+[01;34mam2315c[0m              [01;34mfastled_clockless[0m        [01;34mmqtt_subscribe[0m          [01;34mssd1351_spi[0m
+[01;34mam2320[0m               [01;34mfastled_spi[0m              [01;34mms5611[0m                  [01;34mst7567_base[0m
+[01;34mam43[0m                 [01;34mfeedback[0m                 [01;34mms8607[0m                  [01;34mst7567_i2c[0m
+[01;34manalog_threshold[0m     [01;34mfingerprint_grow[0m         [01;34mmy9231[0m                  [01;34mst7567_spi[0m
+[01;34manimation[0m            [01;34mfont[0m                     [01;34mnau7802[0m                 [01;34mst7701s[0m
+[01;34manova[0m                [01;34mfs3000[0m                   [01;34mneopixelbus[0m             [01;34mst7735[0m
+[01;34mapds9306[0m             [01;34mft5x06[0m                   [01;34mnetwork[0m                 [01;34mst7789v[0m
+[01;34mapds9960[0m             [01;34mft63x6[0m                   [01;34mnextion[0m                 [01;34mst7920[0m
+[01;34mapi[0m                  [01;34mfujitsu_general[0m          [01;34mnfc[0m                     [01;34mstatsd[0m
+[01;34mas3935[0m               [01;34mgcja5[0m                    [01;34mnoblex[0m                  [01;34mstatus[0m
+[01;34mas3935_i2c[0m           [01;34mgdk101[0m                   [01;34mnpi19[0m                   [01;34mstatus_led[0m
+[01;34mas3935_spi[0m           [01;34mglobals[0m                  [01;34mntc[0m                     [01;34mstepper[0m
+[01;34mas5600[0m               [01;34mgp2y1010au0f[0m             [01;34mnumber[0m                  [01;34msts3x[0m
+[01;34mas7341[0m               [01;34mgp8403[0m                   [01;34mone_wire[0m                [01;34msubstitutions[0m
+[01;34masync_tcp[0m            [01;34mgpio[0m                     [01;34monline_image[0m            [01;34msun[0m
+[01;34mat581x[0m               [01;34mgpio_expander[0m            [01;34mopentherm[0m               [01;34msun_gtil2[0m
+[01;34matc_mithermometer[0m    [01;34mgps[0m                      [01;34mota[0m                     [01;34mswitch[0m
+[01;34matm90e26[0m             [01;34mgraph[0m                    [01;34moutput[0m                  [01;34msx1509[0m
+[01;34matm90e32[0m             [01;34mgraphical_display_menu[0m   [01;34mpackages[0m                [01;34mt6615[0m
+[01;34maudio[0m                [01;34mgree[0m                     [01;34mpartition[0m               [01;34mtc74[0m
+[01;34maudio_dac[0m            [01;34mgrove_gas_mc_v2[0m          [01;34mpca6416a[0m                [01;34mtca9548a[0m
+[01;34maxs15231[0m             [01;34mgrove_tb6612fng[0m          [01;34mpca9554[0m                 [01;34mtca9555[0m
+[01;34mballu[0m                [01;34mgrowatt_solar[0m            [01;34mpca9685[0m                 [01;34mtcl112[0m
+[01;34mbang_bang[0m            [01;34mgt911[0m                    [01;34mpcd8544[0m                 [01;34mtcs34725[0m
+[01;34mbedjet[0m               [01;34mhaier[0m                    [01;34mpcf85063[0m                [01;34mtee501[0m
+[01;34mbeken_spi_led_strip[0m  [01;34mhavells_solar[0m            [01;34mpcf8563[0m                 [01;34mteleinfo[0m
+[01;34mbh1750[0m               [01;34mhbridge[0m                  [01;34mpcf8574[0m                 [01;34mtem3200[0m
+[01;34mbinary[0m               [01;34mhdc1080[0m                  [01;34mpid[0m                     [01;34mtemplate[0m
+[01;34mbinary_sensor[0m        [01;34mhe60r[0m                    [01;34mpipsolar[0m                [01;34mtext[0m
+[01;34mbinary_sensor_map[0m    [01;34mheatpumpir[0m               [01;34mpm1006[0m                  [01;34mtext_sensor[0m
+[01;34mbk72xx[0m               [01;34mhitachi_ac344[0m            [01;34mpmsa003i[0m                [01;34mthermostat[0m
+[01;34mbl0906[0m               [01;34mhitachi_ac424[0m            [01;34mpmsx003[0m                 [01;34mtime[0m
+[01;34mbl0939[0m               [01;34mhlw8012[0m                  [01;34mpmwcs3[0m                  [01;34mtime_based[0m
+[01;34mbl0940[0m               [01;34mhm3301[0m                   [01;34mpn532[0m                   [01;34mtlc59208f[0m
+[01;34mbl0942[0m               [01;34mhmac_md5[0m                 [01;34mpn532_i2c[0m               [01;34mtlc5947[0m
+[01;34mble_client[0m           [01;34mhmc5883l[0m                 [01;34mpn532_spi[0m               [01;34mtlc5971[0m
+[01;34mble_presence[0m         [01;34mhomeassistant[0m            [01;34mpn7150[0m                  [01;34mtm1621[0m
+[01;34mble_rssi[0m             [01;34mhoneywellabp[0m             [01;34mpn7150_i2c[0m              [01;34mtm1637[0m
+[01;34mble_scanner[0m          [01;34mhoneywellabp2_i2c[0m        [01;34mpn7160[0m                  [01;34mtm1638[0m
+[01;34mbluetooth_proxy[0m      [01;34mhoneywell_hih_i2c[0m        [01;34mpn7160_i2c[0m              [01;34mtm1651[0m
+[01;34mbme280_base[0m          [01;34mhost[0m                     [01;34mpn7160_spi[0m              [01;34mtmp102[0m
+[01;34mbme280_i2c[0m           [01;34mhrxl_maxsonar_wr[0m         [01;34mpower_supply[0m            [01;34mtmp1075[0m
+[01;34mbme280_spi[0m           [01;34mhte501[0m                   [01;34mpreferences[0m             [01;34mtmp117[0m
+[01;34mbme680[0m               [01;34mhttp_request[0m             [01;34mprometheus[0m              [01;34mtof10120[0m
+[01;34mbme680_bsec[0m          [01;34mhtu21d[0m                   [01;34mpsram[0m                   [01;34mtoshiba[0m
+[01;34mbme68x_bsec2[0m         [01;34mhtu31d[0m                   [01;34mpulse_counter[0m           [01;34mtotal_daily_energy[0m
+[01;34mbme68x_bsec2_i2c[0m     [01;34mhx711[0m                    [01;34mpulse_meter[0m             [01;34mtouchscreen[0m
+[01;34mbmi160[0m               [01;34mhydreon_rgxx[0m             [01;34mpulse_width[0m             [01;34mtsl2561[0m
+[01;34mbmp085[0m               [01;34mhyt271[0m                   [01;34mpulse_width_accumulate[0m  [01;34mtsl2591[0m
+[01;34mbmp280[0m               [01;34mi2c[0m                      [01;34mpvvx_mithermometer[0m      [01;34mtt21100[0m
+[01;34mbmp280_base[0m          [01;34mi2c_device[0m               [01;34mpylontech[0m               [01;34mttp229_bsf[0m
+[01;34mbmp280_i2c[0m           [01;34mi2s_audio[0m                [01;34mpzem004t[0m                [01;34mttp229_lsf[0m
+[01;34mbmp280_spi[0m           [01;34miaqcore[0m                  [01;34mpzemac[0m                  [01;34mtuya[0m
+[01;34mbmp3xx[0m               [01;34mili9341[0m                  [01;34mpzemdc[0m                  [01;34mtx20[0m
+[01;34mbmp3xx_base[0m          [01;34mili9xxx[0m                  [01;34mqmc5883l[0m                [01;34muart[0m
+[01;34mbmp3xx_i2c[0m           [01;34mimage[0m                    [01;34mqmp6988[0m                 [01;34mudp[0m
+[01;34mbmp3xx_spi[0m           [01;34mimprov_base[0m              [01;34mqr_code[0m                 [01;34mufire_ec[0m
+[01;34mbmp581[0m               [01;34mimprov_serial[0m            [01;34mqspi_amoled[0m             [01;34mufire_ise[0m
+[01;34mbp1658cj[0m             [01;34mina219[0m                   [01;34mqspi_dbi[0m                [01;34muln2003[0m
+[01;34mbp5758d[0m              [01;34mina226[0m                   [01;34mqwiic_pir[0m               [01;34multrasonic[0m
+[01;34mb_parasite[0m           [01;34mina260[0m                   [01;34mradon_eye_ble[0m           [01;34mupdate[0m
+[01;34mbutton[0m               [01;34mina2xx_base[0m              [01;34mradon_eye_rd200[0m         [01;34muponor_smatrix[0m
+[01;34mbytebuffer[0m           [01;34mina2xx_i2c[0m               [01;34mrc522[0m                   [01;34muptime[0m
+[01;34mcanbus[0m               [01;34mina2xx_spi[0m               [01;34mrc522_i2c[0m               [01;34mvalve[0m
+[01;34mcap1188[0m              [01;34mina3221[0m                  [01;34mrc522_spi[0m               [01;34mvbus[0m
+[01;34mcaptive_portal[0m       __init__.py              [01;34mrdm6300[0m                 [01;34mveml3235[0m
+[01;34mccs811[0m               [01;34minkbird_ibsth1_mini[0m      [01;34mremote_base[0m             [01;34mveml7700[0m
+[01;34mcd74hc4067[0m           [01;34minkplate6[0m                [01;34mremote_receiver[0m         [01;34mversion[0m
+[01;34mch422g[0m               [01;34mintegration[0m              [01;34mremote_transmitter[0m      [01;34mvl53l0x[0m
+[01;34mclimate[0m              [01;34minternal_temperature[0m     [01;34mresistance[0m              [01;34mvoice_assistant[0m
+[01;34mclimate_ir[0m           [01;34minterval[0m                 [01;34mresistance_sampler[0m      [01;34mvoltage_sampler[0m
+[01;34mclimate_ir_lg[0m        [01;34mjsn_sr04t[0m                [01;34mrestart[0m                 [01;34mwake_on_lan[0m
+[01;34mcolor[0m                [01;34mjson[0m                     [01;34mrf_bridge[0m               [01;34mwatchdog[0m
+[01;34mcolor_temperature[0m    [01;34mkalman_combinator[0m        [01;34mrgb[0m                     [01;34mwaveshare_epaper[0m
+[01;34mcombination[0m          [01;34mkamstrup_kmp[0m             [01;34mrgbct[0m                   [01;34mweb_server[0m
+[01;34mcoolix[0m               [01;34mkey_collector[0m            [01;34mrgbw[0m                    [01;34mweb_server_base[0m
+[01;34mcopy[0m                 [01;34mkey_provider[0m             [01;34mrgbww[0m                   [01;34mweb_server_idf[0m
+[01;34mcover[0m                [01;34mkmeteriso[0m                [01;34mrotary_encoder[0m          [01;34mweikai[0m
+[01;34mcs5460a[0m              [01;34mkuntze[0m                   [01;34mrp2040[0m                  [01;34mweikai_i2c[0m
+[01;34mcse7761[0m              [01;34mlcd_base[0m                 [01;34mrp2040_pio[0m              [01;34mweikai_spi[0m
+[01;34mcse7766[0m              [01;34mlcd_gpio[0m                 [01;34mrp2040_pio_led_strip[0m    [01;34mwhirlpool[0m
+[01;34mcst226[0m               [01;34mlcd_menu[0m                 [01;34mrp2040_pwm[0m              [01;34mwhynter[0m
+[01;34mcst816[0m               [01;34mlcd_pcf8574[0m              [01;34mrpi_dpi_rgb[0m             [01;34mwiegand[0m
+[01;34mct_clamp[0m             [01;34mld2410[0m                   [01;34mrtl87xx[0m                 [01;34mwifi[0m
+[01;34mcurrent_based[0m        [01;34mld2420[0m                   [01;34mrtttl[0m                   [01;34mwifi_info[0m
+[01;34mcustom[0m               [01;34mledc[0m                     [01;34mruuvi_ble[0m               [01;34mwifi_signal[0m
+[01;34mcustom_component[0m     [01;34mlibretiny[0m                [01;34mruuvitag[0m                [01;34mwireguard[0m
+[01;34mcwww[0m                 [01;34mlibretiny_pwm[0m            [01;34msafe_mode[0m               [01;34mwk2132_i2c[0m
+[01;34mdac7678[0m              [01;34mlight[0m                    [01;34mscd30[0m                   [01;34mwk2132_spi[0m
+[01;34mdaikin[0m               [01;34mlightwaverf[0m              [01;34mscd4x[0m                   [01;34mwk2168_i2c[0m
+[01;34mdaikin_arc[0m           [01;34mlilygo_t5_47[0m             [01;34mscript[0m                  [01;34mwk2168_spi[0m
+[01;34mdaikin_brc[0m           [01;34mlock[0m                     [01;34msdl[0m                     [01;34mwk2204_i2c[0m
+[01;34mdallas[0m               [01;34mlogger[0m                   [01;34msdm_meter[0m               [01;34mwk2204_spi[0m
+[01;34mdallas_temp[0m          [01;34mltr390[0m                   [01;34msdp3x[0m                   [01;34mwk2212_i2c[0m
+[01;34mdaly_bms[0m             [01;34mltr501[0m                   [01;34msds011[0m                  [01;34mwk2212_spi[0m
+[01;34mdashboard_import[0m     [01;34mltr_als_ps[0m               [01;34mseeed_mr24hpc1[0m          [01;34mwl_134[0m
+[01;34mdatetime[0m             [01;34mlvgl[0m                     [01;34mseeed_mr60bha2[0m          [01;34mwled[0m
+[01;34mdebug[0m                [01;34mm5stack_8angle[0m           [01;34mseeed_mr60fda2[0m          [01;34mx9c[0m
+[01;34mdeep_sleep[0m           [01;34mmatrix_keypad[0m            [01;34mselec_meter[0m             [01;34mxgzp68xx[0m
+[01;34mdelonghi[0m             [01;34mmax17043[0m                 [01;34mselect[0m                  [01;34mxiaomi_ble[0m
+[01;34mdemo[0m                 [01;34mmax31855[0m                 [01;34msen0321[0m                 [01;34mxiaomi_cgd1[0m
+[01;34mdfplayer[0m             [01;34mmax31856[0m                 [01;34msen21231[0m                [01;34mxiaomi_cgdk2[0m
+[01;34mdfrobot_sen0395[0m      [01;34mmax31865[0m                 [01;34msen5x[0m                   [01;34mxiaomi_cgg1[0m
+[01;34mdht[0m                  [01;34mmax44009[0m                 [01;34msenseair[0m                [01;34mxiaomi_cgpr1[0m
+[01;34mdht12[0m                [01;34mmax6675[0m                  [01;34msensirion_common[0m        [01;34mxiaomi_gcls002[0m
+[01;34mdisplay[0m              [01;34mmax6956[0m                  [01;34msensor[0m                  [01;34mxiaomi_hhccjcy01[0m
+[01;34mdisplay_menu_base[0m    [01;34mmax7219[0m                  [01;34mservo[0m                   [01;34mxiaomi_hhccjcy10[0m
+[01;34mdps310[0m               [01;34mmax7219digit[0m             [01;34msfa30[0m                   [01;34mxiaomi_hhccpot002[0m
+[01;34mds1307[0m               [01;34mmax9611[0m                  [01;34msgp30[0m                   [01;34mxiaomi_jqjcy01ym[0m
+[01;34mdsmr[0m                 [01;34mmcp23008[0m                 [01;34msgp40[0m                   [01;34mxiaomi_lywsd02[0m
+[01;34mduty_cycle[0m           [01;34mmcp23016[0m                 [01;34msgp4x[0m                   [01;34mxiaomi_lywsd02mmc[0m
+[01;34mduty_time[0m            [01;34mmcp23017[0m                 [01;34mshelly_dimmer[0m           [01;34mxiaomi_lywsd03mmc[0m
+[01;34me131[0m                 [01;34mmcp23s08[0m                 [01;34msht3xd[0m                  [01;34mxiaomi_lywsdcgq[0m
+[01;34mee895[0m                [01;34mmcp23s17[0m                 [01;34msht4x[0m                   [01;34mxiaomi_mhoc303[0m
+[01;34mektf2232[0m             [01;34mmcp23x08_base[0m            [01;34mshtcx[0m                   [01;34mxiaomi_mhoc401[0m
+[01;34memc2101[0m              [01;34mmcp23x17_base[0m            [01;34mshutdown[0m                [01;34mxiaomi_miscale[0m
+[01;34memmeti[0m               [01;34mmcp23xxx_base[0m            [01;34msigma_delta_output[0m      [01;34mxiaomi_miscale2[0m
+[01;34mendstop[0m              [01;34mmcp2515[0m                  [01;34msim800l[0m                 [01;34mxiaomi_mjyd02yla[0m
+[01;34mens160[0m               [01;34mmcp3008[0m                  [01;34mslow_pwm[0m                [01;34mxiaomi_mue4094rt[0m
+[01;34mens160_base[0m          [01;34mmcp3204[0m                  [01;34msm10bit_base[0m            [01;34mxiaomi_rtcgq02lm[0m
+[01;34mens160_i2c[0m           [01;34mmcp4725[0m                  [01;34msm16716[0m                 [01;34mxiaomi_wx08zm[0m
+[01;34mens160_spi[0m           [01;34mmcp4728[0m                  [01;34msm2135[0m                  [01;34mxl9535[0m
+[01;34mens210[0m               [01;34mmcp47a1[0m                  [01;34msm2235[0m                  [01;34mxpt2046[0m
+[01;34mes8311[0m               [01;34mmcp9600[0m                  [01;34msm2335[0m                  [01;34myashima[0m
+[01;34mesp32[0m                [01;34mmcp9808[0m                  [01;34msm300d2[0m                 [01;34mzhlt01[0m
+[01;34mesp32_ble[0m            [01;34mmd5[0m                      [01;34msml[0m                     [01;34mzio_ultrasonic[0m
+[01;34mesp32_ble_beacon[0m     [01;34mmdns[0m                     [01;34msmt100[0m                  [01;34mzyaura[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components[00m$ cd ..
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome[00m$ cd ..
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome[00m$ ls
+[?2004lCODE_OF_CONDUCT.md  LICENSE                 README.md                  [0m[01;34mscript[0m
+CODEOWNERS          MANIFEST.in             requirements_dev.txt       sdkconfig.defaults
+CONTRIBUTING.md     platformio.ini          requirements_optional.txt  [01;34mtests[0m
+[01;34mdocker[0m              [01;34mpulse-width-accumulate[0m  requirements_test.txt      typescript
+[01;34mesphome[0m             pyproject.toml          requirements.txt           [01;34mvenv[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome[00m$ cd t[Kscript/
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ ls
+[?2004l[0m[01;34mapi_protobuf[0m              [01;32mdevcontainer-post-create[0m    [01;32mquicklint[0m
+[01;32mbuild_codeowners.py[0m       [01;32mextract_automations.py[0m      [01;32mrun-in-env.sh[0m
+[01;32mbuild_language_schema.py[0m  [01;32mfulltest[0m                    [01;32msetup[0m
+[01;32mbump-version.py[0m           [01;32mhelpers.py[0m                  [01;32msetup.bat[0m
+[01;32mci-custom.py[0m              [01;32mlint-cpp[0m                    [01;32msync-device_class.py[0m
+[01;32mci-suggest-changes[0m        [01;32mlint-python[0m                 [01;32mtest[0m
+[01;32mclang-format[0m              [01;32mlist-components.py[0m          [01;32mtest_build_components[0m
+[01;32mclang-tidy[0m                [01;32mplatformio_install_deps.py[0m  [01;32munit_test[0m
+[01;32mcomponent_test[0m            [01;34m__pycache__[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ less setup.bat 
+[?2004l[?1049h[22;0;0t[?1h=@echo off
+
+if defined DEVCONTAINER goto :install
+if defined VIRTUAL_ENV goto :install
+if defined ESPHOME_NO_VENV goto :install
+
+echo Starting the Virtual Environment
+python -m venv venv
+call venv/Scripts/activate
+echo Running the Virtual Environment
+
+:install
+
+echo Installing required packages...
+
+python.exe -m pip install --upgrade pip
+
+pip3 install -r requirements.txt -r requirements_optional.txt -r requirements_test.txt -r requiremen ts_dev.txt
+pip3 install setuptools wheel
+pip3 install -e ".[dev,test,displays]" --config-settings editable_mode=compat
+
+pre-commit install
+[7msetup.bat[27m[K[K[?1l>[?1049l[23;0;0t[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ setup.bat
+[?2004lsetup.bat: command not found
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ ./setup.bat 
+[?2004l./setup.bat: line 1: @echo: command not found
+./setup.bat: line 29: syntax error: unexpected end of file
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ setup[K[K[K[K[Khess [K[K[K[K[Kless helpers.py 
+[?2004l[?1049h[22;0;0t[?1h=import json
+import os.path
+from pathlib import Path
+import re
+import subprocess
+
+import colorama
+
+root_path = os.path.abspath(os.path.normpath(os.path.join(__file__, "..", "..")))
+basepath = os.path.join(root_path, "esphome")
+temp_folder = os.path.join(root_path, ".temp")
+temp_header_file = os.path.join(temp_folder, "all-include.cpp")
+
+
+def styled(color, msg, reset=True):
+    prefix = "".join(color) if isinstance(color, tuple) else color
+    suffix = colorama.Style.RESET_ALL if reset else ""
+    return prefix + msg + suffix
+
+
+def print_error_for_file(file, body):
+    print(
+        styled(colorama.Fore.GREEN, "### File ")
+[7mhelpers.py[27m[K[K [KESCESC[KOO[KBB[K        + styled((colorama.Fore.GREEN, colorama.Style.BRIGHT), file)
+:[K[K [KESCESC[KOO[KBB[K    )
+:[K[K [KESCESC[KOO[KBB[K    print()
+:[K[K [KESCESC[KOO[KBB[K    if body is not None:
+:[K[K [KESCESC[KOO[KBB[K        print(body)
+:[K[K [KESCESC[KOO[KBB[K        print()
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[Kdef build_all_include():
+:[K[K [KESCESC[KOO[KBB[K    # Build a cpp file that includes all header files in this repo.
+:[K[K [KESCESC[KOO[KBB[K    # Otherwise header-only integrations would not be tested by clang-tidy
+:[K[K [KESCESC[KOO[KBB[K    headers = []
+:[K[K [KESCESC[KOO[KBB[K    for path in walk_files(basepath):
+:[K[K [KESCESC[KOO[KBB[K        filetypes = (".h",)
+:[K[K [KESCESC[KOO[KBB[K        ext = os.path.splitext(path)[1]
+:[K[K [KESCESC[KOO[KBB[K        if ext in filetypes:
+:[K[K [KESCESC[KOO[KBB[K            path = os.path.relpath(path, root_path)
+:[K[K [KESCESC[KOO[KBB[K            include_p = path.replace(os.path.sep, "/")
+:[K[K [KESCESC[KOO[KBB[K            headers.append(f'#include "{include_p}"')
+:[K[K [KESCESC[KOO[KBB[K    headers.sort()
+:[K[K [KESCESC[KOO[KBB[K    headers.append("")
+:[K[K [KESCESC[KOO[KBB[K    content = "\n".join(headers)
+:[K[K [KESCESC[KOO[KBB[K    p = Path(temp_header_file)
+:[K[K [KESCESC[KOO[KBB[K    p.parent.mkdir(exist_ok=True)
+:[K[K [KESCESC[KOO[KBB[K    p.write_text(content, encoding="utf-8")
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[Kdef walk_files(path):
+:[K[K [KESCESC[KOO[KBB[K    for root, _, files in os.walk(path):
+:[K[K [KESCESC[KOO[KBB[K        for name in files:
+:[K[K [KESCESC[KOO[KBB[K            yield os.path.join(root, name)
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[Kdef get_output(*args):
+:[K[K [KESCESC[KOO[KBB[K    with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+:[K[K [KESCESC[KOO[KBB[K        output, _ = proc.communicate()
+:[K[K [KESCESC[KOO[KBB[K    return output.decode("utf-8")
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[Kdef get_err(*args):
+:[K[K [KESCESC[KOO[KBB[K    with subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+:[K[K [KESCESC[KOO[KBB[K        _, err = proc.communicate()
+:[K[K [KESCESC[KOO[KBB[K    return err.decode("utf-8")
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[Kdef splitlines_no_ends(string):
+:[K[K [KESCESC[KOO[KBB[K    return [s.strip() for s in string.splitlines()]
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[Kdef changed_files(branch="dev"):
+:[K[K [KESCESC[KOO[KBB[K    check_remotes = ["upstream", "origin"]
+:[K[K [KESCESC[KOO[KBB[K    check_remotes.extend(splitlines_no_ends(get_output("git", "remote")))
+:[K[K [KESCESC[KOO[KBB[K    for remote in check_remotes:
+:[K[K [KESCESC[KOO[KBB[K        command = ["git", "merge-base", f"refs/remotes/{remote}/{branch}", "HEAD"]
+:[K[K [KESCESC[KOO[KBB[K        try:
+:[K[K [KESCESC[KOO[KBB[K            merge_base = splitlines_no_ends(get_output(*command))[0]
+:[K[K [KESCESC[KOO[KBB[K            break
+:[K[K [KESCESC[KOO[KBB[K        # pylint: disable=bare-except
+:[K[K [KESCESC[KOO[KBB[K        except:  # noqa: E722
+:[K[K [KESCESC[KOO[KBB[K            pass
+:[K[K [KESCESC[KOO[KBB[K    else:
+:[K[K [KESCESC[KOO[KBB[K        raise ValueError("Git not configured")
+:[K[K [KESCESC[KOO[KBB[K    command = ["git", "diff", merge_base, "--name-only"]
+:[K[K [KESCESC[KOO[KBB[K    changed = splitlines_no_ends(get_output(*command))
+:[K[K [KESCESC[KOO[KBB[K    changed = [os.path.relpath(f, os.getcwd()) for f in changed]
+:[K[K [KESCESC[KOO[KBB[K    changed.sort()
+:[K[K [KESCESC[KOO[KBB[K    return changed
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[Kdef filter_changed(files):
+:[K[K [KESCESC[KOO[KBB[K    changed = changed_files()
+:[K[K [KESCESC[KOO[KBB[K    files = [f for f in files if f in changed]
+:[K[K [KESCESC[KOO[KBB[K    print("Changed files:")
+:[K[K [KESCESC[KOO[KBB[K    if not files:
+:[K[K [KESCESC[KOO[KBB[K        print("    No changed files!")
+:[K[K [KESCESC[KOO[KBB[K    for c in files:
+:[K[K [KESCESC[KOO[KBB[K        print(f"    {c}")
+:[K[K [KESCESC[KOO[KBB[K    return files
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[Kdef filter_grep(files, value):
+:[K[K [KESCESC[KOO[KBB[K    matched = []
+:[K[K [KESCESC[KOO[KBB[K    for file in files:
+:[K[K [KESCESC[KOO[KBB[K        with open(file, encoding="utf-8") as handle:
+:[K[K [KESCESC[KOO[KBB[K            contents = handle.read()
+:[K[K [KESCESC[KOO[KBB[K        if value in contents:
+:[K[K [KESCESC[KOO[KBB[K            matched.append(file)
+:[K[K [KESCESC[KOO[KBB[K    return matched
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K[?1l>[?1049l[23;0;0t[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ lessc-[K[K ci-suggest-changes 
+[?2004l[?1049h[22;0;0t[?1h=#!/usr/bin/env bash
+
+set -e
+
+if git diff-index --quiet HEAD --; then
+    echo "No changes detected, formatting is correct!"
+    exit 0
+else
+    echo "========================================================="
+    echo "Your formatting is not correct, ESPHome uses clang-format to format"
+    echo "all source files in a unified way. Please apply the changes listed below"
+    echo
+    echo "The following files need to be changed:"
+    git diff HEAD --name-only | sed 's/^/  /'
+    echo
+    echo
+    echo "========================================================="
+    echo
+    git diff HEAD
+    exit 1
+fi
+[7mci-suggest-changes (END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KAA[K...skipping...
+#!/usr/bin/env bash
+
+set -e
+
+if git diff-index --quiet HEAD --; then
+    echo "No changes detected, formatting is correct!"
+    exit 0
+else
+    echo "========================================================="
+    echo "Your formatting is not correct, ESPHome uses clang-format to format"
+    echo "all source files in a unified way. Please apply the changes listed below"
+    echo
+    echo "The following files need to be changed:"
+    git diff HEAD --name-only | sed 's/^/  /'
+    echo
+    ech
