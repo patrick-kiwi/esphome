@@ -74,10 +74,9 @@ void PulseWidthAccumulateSensor::update() {
   float cumulative_width = this->store_.get_cumulative_pulse_width_s();
   float polling_interval_s = static_cast<float>(this->get_update_interval()) / 1000.0f;
   // Warn if outside normal range (0-103% of polling_interval)
-  if (cumulative_width < 0  || cumulative_width > 1.03f*polling_interval_s) {
-    ESP_LOGW(TAG,
-             "Warning, cumulative pulse width: %.3f s ouside expected range: %.3f "
-             , cumulative_width, polling_interval_s);
+  if (cumulative_width < 0 || cumulative_width > 1.03f * polling_interval_s) {
+    ESP_LOGW(TAG, "Warning, cumulative pulse width: %.3f s ouside expected range: %.3f ", cumulative_width,
+             polling_interval_s);
   }
   // get frequency if needed
   if (this->frequency_sensor_ != nullptr) {
