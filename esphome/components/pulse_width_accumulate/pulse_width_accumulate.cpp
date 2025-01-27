@@ -50,10 +50,8 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
   portENTER_CRITICAL_ISR(&arg->mux_);
   bool pin_state = arg->pin_.digital_read();
   if (pin_state) {
-    // rising edge detected
     arg->last_rise_us_ = now;
   } else {
-    // falling edge detected
     uint32_t pulse_width_us = now - arg->last_rise_us_;
     if (pulse_width_us > MICROSECOND_PER_PULSE_LOWER_THRESHOLD) {
       arg->cumulative_width_us_ += pulse_width_us;
