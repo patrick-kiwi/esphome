@@ -44,7 +44,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   return cumulative_local;
 }
 
-// ISR. Get in and out ASAP.  No floating point math!
+// ISR. Get in and out ASAP.  No floating point math
 void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSensorStore *arg) {
   uint32_t now = micros();
   portENTER_CRITICAL_ISR(&arg->mux_);
