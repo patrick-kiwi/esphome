@@ -1,80 +1,738 @@
-Script started on 2025-01-27 12:04:13+13:00 [TERM="xterm-256color" TTY="/dev/cons2" COLUMNS="191" LINES="14"]
-[?2004hsh-5.2$ exit[K[K[K[Kgit
-[?2004l[6n[6n[m[?25husage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]
-           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
-           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]
-           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
-           [--config-env=<name>=<envvar>] <command> [<args>]
+Script started on 2025-01-28 09:34:24+13:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="100" LINES="24"]
+[?2004h]0;patrick@huxley: ~/repos/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome[00m$ ls
+[?2004lCODE_OF_CONDUCT.md  LICENSE                 README.md                  [0m[01;34mscript[0m
+CODEOWNERS          MANIFEST.in             requirements_dev.txt       sdkconfig.defaults
+CONTRIBUTING.md     platformio.ini          requirements_optional.txt  [01;34mtests[0m
+[01;34mdocker[0m              [01;34mpulse-width-accumulate[0m  requirements_test.txt      typescript
+[01;34mesphome[0m             pyproject.toml          requirements.txt
+[?2004h]0;patrick@huxley: ~/repos/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome[00m$ cd scrit[Kpt/
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ ls
+[?2004l[0m[01;34mapi_protobuf[0m              devcontainer-post-create    run-in-env.sh
+build_codeowners.py       extract_automations.py      setup
+build_language_schema.py  fulltest                    setup.bat
+bump-version.py           helpers.py                  sync-device_class.py
+ci-custom.py              lint-cpp                    test
+ci-suggest-changes        lint-python                 test_build_components
+clang-format              list-components.py          unit_test
+clang-tidy                platformio_install_deps.py
+component_test            quicklint
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ set[K[K[Kpython -V
+[?2004lCommand 'python' not found, did you mean:
+  command 'python3' from deb python3
+  command 'python' from deb python-is-python3
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ python3 -V
+[?2004lPython 3.10.12
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ python se[K[K[K[K[K[K[K[K[Kpython ./sync-device_class.py [K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Ketup
+[?2004lCommand 'python' not found, did you mean:
+  command 'python3' from deb python3
+  command 'python' from deb python-is-python3
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ cd st[K[K[K[K[Kls -l
+[?2004ltotal 172
+drwxrwxr-x 2 patrick patrick  4096 Jan 28 01:00 [0m[01;34mapi_protobuf[0m
+-rw-rw-r-- 1 patrick patrick  3211 Jan 28 01:00 build_codeowners.py
+-rw-rw-r-- 1 patrick patrick 35812 Jan 28 01:00 build_language_schema.py
+-rw-rw-r-- 1 patrick patrick  1740 Jan 28 01:00 bump-version.py
+-rw-rw-r-- 1 patrick patrick 21372 Jan 28 01:00 ci-custom.py
+-rw-rw-r-- 1 patrick patrick   606 Jan 28 01:00 ci-suggest-changes
+-rw-rw-r-- 1 patrick patrick  3085 Jan 28 01:00 clang-format
+-rw-rw-r-- 1 patrick patrick  9152 Jan 28 01:00 clang-tidy
+-rw-rw-r-- 1 patrick patrick    91 Jan 28 01:00 component_test
+-rw-rw-r-- 1 patrick patrick   457 Jan 28 01:00 devcontainer-post-create
+-rw-rw-r-- 1 patrick patrick   662 Jan 28 01:00 extract_automations.py
+-rw-rw-r-- 1 patrick patrick   197 Jan 28 01:00 fulltest
+-rw-rw-r-- 1 patrick patrick  6099 Jan 28 01:00 helpers.py
+-rw-rw-r-- 1 patrick patrick   129 Jan 28 01:00 lint-cpp
+-rw-rw-r-- 1 patrick patrick  3322 Jan 28 01:00 lint-python
+-rw-rw-r-- 1 patrick patrick  5644 Jan 28 01:00 list-components.py
+-rw-rw-r-- 1 patrick patrick  2017 Jan 28 01:00 platformio_install_deps.py
+-rw-rw-r-- 1 patrick patrick   126 Jan 28 01:00 quicklint
+-rw-rw-r-- 1 patrick patrick   221 Jan 28 01:00 run-in-env.sh
+-rw-rw-r-- 1 patrick patrick   734 Jan 28 01:00 setup
+-rw-rw-r-- 1 patrick patrick   756 Jan 28 01:00 setup.bat
+-rw-rw-r-- 1 patrick patrick  2220 Jan 28 01:00 sync-device_class.py
+-rw-rw-r-- 1 patrick patrick   120 Jan 28 01:00 test
+-rw-rw-r-- 1 patrick patrick  4330 Jan 28 01:00 test_build_components
+-rw-rw-r-- 1 patrick patrick    86 Jan 28 01:00 unit_test
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ less les[K[K[Ksetup
+[?2004l[?1049h[22;0;0t[?1h=#!/usr/bin/env bash
+# Set up ESPHome dev environment
 
-These are common Git commands used in various situations:
+set -e
 
-start a working area (see also: git help tutorial)
-   clone     Clone a repository into a new directory
-   init      Create an empty Git repository or reinitialize an existing one
+cd "$(dirname "$0")/.."
+location="venv/bin/activate"
+if [ ! -n "$DEVCONTAINER" ] && [ ! -n "$VIRTUAL_ENV" ] && [ ! "$ESPHOME_NO_VENV" ]; then
+  python3 -m venv venv
+  if [ -f venv/Scripts/activate ]; then
+    location="venv/Scripts/activate"
+  fi
+  source $location
+fi
 
-work on the current change (see also: git help everyday)
-   add       Add file contents to the index
-   mv        Move or rename a file, a directory, or a symlink
-   restore   Restore working tree files
-   rm        Remove files from the working tree and from the index
+pip3 install -r requirements.txt -r requirements_optional.txt -r requirements_test.txt -r requiremen ts_dev.txt
+pip3 install setuptools wheel
+pip3 install -e ".[dev,test,displays]" --config-settings editable_mode=compat
 
-examine the history and state (see also: git help revisions)
-   bisect    Use binary search to find the commit that introduced a bug
-   diff      Show changes between commits, commit and working tree, etc
-   grep      Print lines matching a pattern
-   log       Show commit logs
-   show      Show various types of objects
-   status    Show the working tree status
+pre-commit install
 
-grow, mark and tweak your common history
-   branch    List, create, or delete branches
-   commit    Record changes to the repository
-   merge     Join two or more development histories together
-   rebase    Reapply commits on top of another base tip
-   reset     Reset current HEAD to the specified state
-   switch    Switch branches
-   tag       Create, list, delete or verify a tag object signed with GPG
+script/platformio_install_deps.py platformio.ini --libraries --tools --platforms
+[7msetup[27m[K[K[?1l>[?1049l[23;0;0t[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ ls
+[?2004l[0m[01;34mapi_protobuf[0m              devcontainer-post-create    run-in-env.sh
+build_codeowners.py       extract_automations.py      setup
+build_language_schema.py  fulltest                    setup.bat
+bump-version.py           helpers.py                  sync-device_class.py
+ci-custom.py              lint-cpp                    test
+ci-suggest-changes        lint-python                 test_build_components
+clang-format              list-components.py          unit_test
+clang-tidy                platformio_install_deps.py
+component_test            quicklint
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ chmod 755 *[C[C[1@ [1@-[1@R
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ ls
+[?2004l[0m[01;34mapi_protobuf[0m              [01;32mdevcontainer-post-create[0m    [01;32mrun-in-env.sh[0m
+[01;32mbuild_codeowners.py[0m       [01;32mextract_automations.py[0m      [01;32msetup[0m
+[01;32mbuild_language_schema.py[0m  [01;32mfulltest[0m                    [01;32msetup.bat[0m
+[01;32mbump-version.py[0m           [01;32mhelpers.py[0m                  [01;32msync-device_class.py[0m
+[01;32mci-custom.py[0m              [01;32mlint-cpp[0m                    [01;32mtest[0m
+[01;32mci-suggest-changes[0m        [01;32mlint-python[0m                 [01;32mtest_build_components[0m
+[01;32mclang-format[0m              [01;32mlist-components.py[0m          [01;32munit_test[0m
+[01;32mclang-tidy[0m                [01;32mplatformio_install_deps.py[0m
+[01;32mcomponent_test[0m            [01;32mquicklint[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ setup
+[?2004lCommand 'setup' not found, did you mean:
+  command 'setop' from deb setop (0.1-1build13)
+Try: sudo apt install <deb name>
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ ./setup
+[?2004lCollecting async_timeout==4.0.3
+  Using cached async_timeout-4.0.3-py3-none-any.whl (5.7 kB)
+Collecting cryptography==43.0.0
+  Using cached cryptography-43.0.0-cp39-abi3-manylinux_2_28_x86_64.whl (4.0 MB)
+Collecting voluptuous==0.14.2
+  Using cached voluptuous-0.14.2-py3-none-any.whl (31 kB)
+Collecting PyYAML==6.0.2
+  Using cached PyYAML-6.0.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (751 kB)
+Collecting paho-mqtt==1.6.1
+  Using cached paho-mqtt-1.6.1.tar.gz (99 kB)
+  Preparing metadata (setup.py) ... [?25l- done
+[?25hCollecting colorama==0.4.6
+  Using cached colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Collecting icmplib==3.0.4
+  Using cached icmplib-3.0.4-py3-none-any.whl (30 kB)
+Collecting tornado==6.4
+  Using cached tornado-6.4-cp38-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (435 kB)
+Collecting tzlocal==5.2
+  Using cached tzlocal-5.2-py3-none-any.whl (17 kB)
+Collecting tzdata>=2021.1
+  Using cached tzdata-2025.1-py2.py3-none-any.whl (346 kB)
+Collecting pyserial==3.5
+  Using cached pyserial-3.5-py2.py3-none-any.whl (90 kB)
+Collecting platformio==6.1.16
+  Using cached platformio-6.1.16.tar.gz (239 kB)
+  Preparing metadata (setup.py) ... [?25l- done
+[?25hCollecting esptool==4.7.0
+  Using cached esptool-4.7.0.tar.gz (285 kB)
+  Preparing metadata (setup.py) ... [?25l- done
+[?25hCollecting click==8.1.7
+  Using cached click-8.1.7-py3-none-any.whl (97 kB)
+Collecting esphome-dashboard==20241217.1
+  Using cached esphome_dashboard-20241217.1-py3-none-any.whl (5.7 MB)
+Collecting aioesphomeapi==24.6.2
+  Using cached aioesphomeapi-24.6.2-cp310-cp310-linux_x86_64.whl
+Collecting zeroconf==0.132.2
+  Using cached zeroconf-0.132.2-cp310-cp310-manylinux_2_31_x86_64.whl (10.4 MB)
+Collecting puremagic==1.27
+  Using cached puremagic-1.27-py3-none-any.whl (40 kB)
+Collecting ruamel.yaml==0.18.6
+  Using cached ruamel.yaml-0.18.6-py3-none-any.whl (117 kB)
+Collecting glyphsets==1.0.0
+  Using cached glyphsets-1.0.0-py3-none-any.whl (88 kB)
+Collecting pillow==10.4.0
+  Using cached pillow-10.4.0-cp310-cp310-manylinux_2_28_x86_64.whl (4.5 MB)
+Collecting freetype-py==2.5.1
+  Using cached freetype_py-2.5.1-py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl (1.0 MB)
+Collecting kconfiglib==13.7.1
+  Using cached kconfiglib-13.7.1-py2.py3-none-any.whl (145 kB)
+Collecting pyparsing>=3.0
+  Using cached pyparsing-3.2.1-py3-none-any.whl (107 kB)
+Collecting argcomplete>=2.0.0
+  Using cached argcomplete-3.5.3-py3-none-any.whl (43 kB)
+Collecting cairosvg==2.7.1
+  Using cached CairoSVG-2.7.1-py3-none-any.whl (43 kB)
+Collecting pylint==3.2.7
+  Using cached pylint-3.2.7-py3-none-any.whl (519 kB)
+Collecting flake8==7.0.0
+  Using cached flake8-7.0.0-py2.py3-none-any.whl (57 kB)
+Collecting black==24.4.2
+  Using cached black-24.4.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.8 MB)
+Collecting pyupgrade==3.15.2
+  Using cached pyupgrade-3.15.2-py2.py3-none-any.whl (61 kB)
+Collecting pre-commit
+  Using cached pre_commit-4.1.0-py2.py3-none-any.whl (220 kB)
+Collecting pytest==8.2.0
+  Using cached pytest-8.2.0-py3-none-any.whl (339 kB)
+Collecting pytest-cov==5.0.0
+  Using cached pytest_cov-5.0.0-py3-none-any.whl (21 kB)
+Collecting pytest-mock==3.14.0
+  Using cached pytest_mock-3.14.0-py3-none-any.whl (9.9 kB)
+Collecting pytest-asyncio==0.23.6
+  Using cached pytest_asyncio-0.23.6-py3-none-any.whl (17 kB)
+Collecting asyncmock==0.4.2
+  Using cached asyncmock-0.4.2-py3-none-any.whl (4.2 kB)
+Collecting hypothesis==6.92.1
+  Using cached hypothesis-6.92.1-py3-none-any.whl (429 kB)
+Collecting clang-format==13.0.1
+  Using cached clang_format-13.0.1-py2.py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (960 kB)
+Collecting clang-tidy==18.1.8
+  Using cached clang_tidy-18.1.8-py2.py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (35.6 MB)
+Collecting yamllint==1.35.1
+  Using cached yamllint-1.35.1-py3-none-any.whl (66 kB)
+Collecting cffi>=1.12
+  Using cached cffi-1.17.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (446 kB)
+Collecting ajsonrpc==1.2.*
+  Using cached ajsonrpc-1.2.0-py3-none-any.whl (22 kB)
+Collecting marshmallow==3.*
+  Using cached marshmallow-3.26.0-py3-none-any.whl (50 kB)
+Collecting pyelftools<1,>=0.27
+  Using cached pyelftools-0.31-py3-none-any.whl (180 kB)
+Collecting requests==2.*
+  Using cached requests-2.32.3-py3-none-any.whl (64 kB)
+Collecting semantic_version==2.10.*
+  Using cached semantic_version-2.10.0-py2.py3-none-any.whl (15 kB)
+Collecting starlette<0.40,>=0.19
+  Using cached starlette-0.39.2-py3-none-any.whl (73 kB)
+Collecting tabulate==0.*
+  Using cached tabulate-0.9.0-py3-none-any.whl (35 kB)
+Collecting wsproto==1.*
+  Using cached wsproto-1.2.0-py3-none-any.whl (24 kB)
+Collecting bottle==0.13.*
+  Using cached bottle-0.13.2-py2.py3-none-any.whl (104 kB)
+Collecting uvicorn<0.31,>=0.16
+  Using cached uvicorn-0.30.6-py3-none-any.whl (62 kB)
+Collecting bitstring>=3.1.6
+  Using cached bitstring-4.3.0-py3-none-any.whl (71 kB)
+Collecting ecdsa>=0.16.0
+  Using cached ecdsa-0.19.0-py2.py3-none-any.whl (149 kB)
+Collecting intelhex
+  Using cached intelhex-2.3.0-py2.py3-none-any.whl (50 kB)
+Collecting reedsolo<1.8,>=1.5.3
+  Using cached reedsolo-1.7.0-py3-none-any.whl (32 kB)
+Collecting noiseprotocol<1.0,>=0.3.1
+  Using cached noiseprotocol-0.3.1-py3-none-any.whl (20 kB)
+Collecting chacha20poly1305-reuseable>=0.13.2
+  Using cached chacha20poly1305_reuseable-0.13.2-py3-none-any.whl (8.6 kB)
+Collecting async-interrupt>=1.1.1
+  Using cached async_interrupt-1.2.0-py3-none-any.whl (8.9 kB)
+Collecting aiohappyeyeballs>=2.3.0
+  Using cached aiohappyeyeballs-2.4.4-py3-none-any.whl (14 kB)
+Collecting protobuf>=3.19.0
+  Using cached protobuf-5.29.3-cp38-abi3-manylinux2014_x86_64.whl (319 kB)
+Collecting ifaddr>=0.1.7
+  Using cached ifaddr-0.2.0-py3-none-any.whl (12 kB)
+Collecting ruamel.yaml.clib>=0.2.7
+  Using cached ruamel.yaml.clib-0.2.12-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (722 kB)
+Collecting gflanguages>=0.6.0
+  Using cached gflanguages-0.7.2-py3-none-any.whl (1.4 MB)
+Collecting glyphsLib>=6.7.1
+  Using cached glyphsLib-6.9.6-py3-none-any.whl (897 kB)
+Collecting FontTools[ufo]
+  Using cached fonttools-4.55.6-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.6 MB)
+Collecting defcon
+  Using cached defcon-0.10.3-py3-none-any.whl (231 kB)
+Collecting unicodedata2
+  Using cached unicodedata2-16.0.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (522 kB)
+Requirement already satisfied: setuptools in ./venv/lib/python3.10/site-packages (from glyphsets==1.0.0->-r requirements.txt (line 20)) (59.6.0)
+Collecting cssselect2
+  Using cached cssselect2-0.7.0-py3-none-any.whl (15 kB)
+Collecting tinycss2
+  Using cached tinycss2-1.4.0-py3-none-any.whl (26 kB)
+Collecting cairocffi
+  Using cached cairocffi-1.7.1-py3-none-any.whl (75 kB)
+Collecting defusedxml
+  Using cached defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)
+Collecting platformdirs>=2.2.0
+  Using cached platformdirs-4.3.6-py3-none-any.whl (18 kB)
+Collecting tomlkit>=0.10.1
+  Using cached tomlkit-0.13.2-py3-none-any.whl (37 kB)
+Collecting isort!=5.13.0,<6,>=4.2.5
+  Using cached isort-5.13.2-py3-none-any.whl (92 kB)
+Collecting mccabe<0.8,>=0.6
+  Using cached mccabe-0.7.0-py2.py3-none-any.whl (7.3 kB)
+Collecting tomli>=1.1.0
+  Using cached tomli-2.2.1-py3-none-any.whl (14 kB)
+Collecting dill>=0.2
+  Using cached dill-0.3.9-py3-none-any.whl (119 kB)
+Collecting astroid<=3.3.0-dev0,>=3.2.4
+  Using cached astroid-3.2.4-py3-none-any.whl (276 kB)
+Collecting pyflakes<3.3.0,>=3.2.0
+  Using cached pyflakes-3.2.0-py2.py3-none-any.whl (62 kB)
+Collecting pycodestyle<2.12.0,>=2.11.0
+  Using cached pycodestyle-2.11.1-py2.py3-none-any.whl (31 kB)
+Collecting pathspec>=0.9.0
+  Using cached pathspec-0.12.1-py3-none-any.whl (31 kB)
+Collecting packaging>=22.0
+  Using cached packaging-24.2-py3-none-any.whl (65 kB)
+Collecting typing-extensions>=4.0.1
+  Using cached typing_extensions-4.12.2-py3-none-any.whl (37 kB)
+Collecting mypy-extensions>=0.4.3
+  Using cached mypy_extensions-1.0.0-py3-none-any.whl (4.7 kB)
+Collecting tokenize-rt>=5.2.0
+  Using cached tokenize_rt-6.1.0-py2.py3-none-any.whl (6.0 kB)
+Collecting pluggy<2.0,>=1.5
+  Using cached pluggy-1.5.0-py3-none-any.whl (20 kB)
+Collecting exceptiongroup>=1.0.0rc8
+  Using cached exceptiongroup-1.2.2-py3-none-any.whl (16 kB)
+Collecting iniconfig
+  Using cached iniconfig-2.0.0-py3-none-any.whl (5.9 kB)
+Collecting coverage[toml]>=5.2.1
+  Using cached coverage-7.6.10-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (235 kB)
+Collecting mock
+  Using cached mock-5.1.0-py3-none-any.whl (30 kB)
+Collecting sortedcontainers<3.0.0,>=2.1.0
+  Using cached sortedcontainers-2.4.0-py2.py3-none-any.whl (29 kB)
+Collecting attrs>=22.2.0
+  Using cached attrs-25.1.0-py3-none-any.whl (63 kB)
+Collecting certifi>=2017.4.17
+  Using cached certifi-2024.12.14-py3-none-any.whl (164 kB)
+Collecting urllib3<3,>=1.21.1
+  Using cached urllib3-2.3.0-py3-none-any.whl (128 kB)
+Collecting idna<4,>=2.5
+  Using cached idna-3.10-py3-none-any.whl (70 kB)
+Collecting charset-normalizer<4,>=2
+  Using cached charset_normalizer-3.4.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (146 kB)
+Collecting h11<1,>=0.9.0
+  Using cached h11-0.14.0-py3-none-any.whl (58 kB)
+Collecting identify>=1.0.0
+  Using cached identify-2.6.6-py2.py3-none-any.whl (99 kB)
+Collecting nodeenv>=0.11.1
+  Using cached nodeenv-1.9.1-py2.py3-none-any.whl (22 kB)
+Collecting virtualenv>=20.10.0
+  Using cached virtualenv-20.29.1-py3-none-any.whl (4.3 MB)
+Collecting cfgv>=2.0.0
+  Using cached cfgv-3.4.0-py2.py3-none-any.whl (7.2 kB)
+Collecting bitarray<3.1,>=3.0.0
+  Using cached bitarray-3.0.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (278 kB)
+Collecting pycparser
+  Using cached pycparser-2.22-py3-none-any.whl (117 kB)
+Collecting six>=1.9.0
+  Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+Collecting protobuf>=3.19.0
+  Using cached protobuf-3.20.3-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (1.1 MB)
+Collecting openstep-plist>=0.3.0
+  Using cached openstep_plist-0.4.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.0 MB)
+Collecting ufoLib2>=0.6.2
+  Using cached ufoLib2-0.17.1-py3-none-any.whl (52 kB)
+Collecting anyio<5,>=3.4.0
+  Using cached anyio-4.8.0-py3-none-any.whl (96 kB)
+Collecting filelock<4,>=3.12.2
+  Using cached filelock-3.17.0-py3-none-any.whl (16 kB)
+Collecting distlib<1,>=0.3.7
+  Using cached distlib-0.3.9-py2.py3-none-any.whl (468 kB)
+Collecting webencodings
+  Using cached webencodings-0.5.1-py2.py3-none-any.whl (11 kB)
+Collecting fs<3,>=2.2.0
+  Using cached fs-2.4.16-py2.py3-none-any.whl (135 kB)
+Collecting sniffio>=1.1
+  Using cached sniffio-1.3.1-py3-none-any.whl (10 kB)
+Collecting appdirs~=1.4.3
+  Using cached appdirs-1.4.4-py2.py3-none-any.whl (9.6 kB)
+Using legacy 'setup.py install' for paho-mqtt, since package 'wheel' is not installed.
+Using legacy 'setup.py install' for platformio, since package 'wheel' is not installed.
+Using legacy 'setup.py install' for esptool, since package 'wheel' is not installed.
+Installing collected packages: webencodings, unicodedata2, sortedcontainers, reedsolo, pyserial, pyelftools, puremagic, paho-mqtt, intelhex, ifaddr, esphome-dashboard, distlib, clang-tidy, clang-format, bottle, bitarray, appdirs, voluptuous, urllib3, tzlocal, tzdata, typing-extensions, tornado, tomlkit, tomli, tokenize-rt, tinycss2, tabulate, sniffio, six, semantic_version, ruamel.yaml.clib, PyYAML, pyparsing, pyflakes, pycparser, pycodestyle, protobuf, pluggy, platformdirs, pillow, pathspec, packaging, openstep-plist, nodeenv, mypy-extensions, mock, mccabe, kconfiglib, isort, iniconfig, idna, identify, icmplib, h11, freetype-py, FontTools, filelock, exceptiongroup, dill, defusedxml, coverage, colorama, click, charset-normalizer, cfgv, certifi, bitstring, attrs, async_timeout, async-interrupt, argcomplete, ajsonrpc, aiohappyeyeballs, zeroconf, yamllint, wsproto, virtualenv, uvicorn, ruamel.yaml, requests, pyupgrade, pytest, marshmallow, hypothesis, gflanguages, fs, flake8, ecdsa, cssselect2, cffi, black, asyncmock, astroid, anyio, starlette, pytest-mock, pytest-cov, pytest-asyncio, pylint, pre-commit, cryptography, cairocffi, ufoLib2, platformio, noiseprotocol, esptool, defcon, chacha20poly1305-reuseable, cairosvg, glyphsLib, aioesphomeapi, glyphsets
+  Running setup.py install for paho-mqtt ... [?25l- done
+[?25h  Running setup.py install for platformio ... [?25l- \ | done
+[?25h  Running setup.py install for esptool ... [?25l- \ done
+[?25hSuccessfully installed FontTools-4.55.6 PyYAML-6.0.2 aioesphomeapi-24.6.2 aiohappyeyeballs-2.4.4 ajsonrpc-1.2.0 anyio-4.8.0 appdirs-1.4.4 argcomplete-3.5.3 astroid-3.2.4 async-interrupt-1.2.0 async_timeout-4.0.3 asyncmock-0.4.2 attrs-25.1.0 bitarray-3.0.0 bitstring-4.3.0 black-24.4.2 bottle-0.13.2 cairocffi-1.7.1 cairosvg-2.7.1 certifi-2024.12.14 cffi-1.17.1 cfgv-3.4.0 chacha20poly1305-reuseable-0.13.2 charset-normalizer-3.4.1 clang-format-13.0.1 clang-tidy-18.1.8 click-8.1.7 colorama-0.4.6 coverage-7.6.10 cryptography-43.0.0 cssselect2-0.7.0 defcon-0.10.3 defusedxml-0.7.1 dill-0.3.9 distlib-0.3.9 ecdsa-0.19.0 esphome-dashboard-20241217.1 esptool-4.7.0 exceptiongroup-1.2.2 filelock-3.17.0 flake8-7.0.0 freetype-py-2.5.1 fs-2.4.16 gflanguages-0.7.2 glyphsLib-6.9.6 glyphsets-1.0.0 h11-0.14.0 hypothesis-6.92.1 icmplib-3.0.4 identify-2.6.6 idna-3.10 ifaddr-0.2.0 iniconfig-2.0.0 intelhex-2.3.0 isort-5.13.2 kconfiglib-13.7.1 marshmallow-3.26.0 mccabe-0.7.0 mock-5.1.0 mypy-extensions-1.0.0 nodeenv-1.9.1 noiseprotocol-0.3.1 openstep-plist-0.4.0 packaging-24.2 paho-mqtt-1.6.1 pathspec-0.12.1 pillow-10.4.0 platformdirs-4.3.6 platformio-6.1.16 pluggy-1.5.0 pre-commit-4.1.0 protobuf-3.20.3 puremagic-1.27 pycodestyle-2.11.1 pycparser-2.22 pyelftools-0.31 pyflakes-3.2.0 pylint-3.2.7 pyparsing-3.2.1 pyserial-3.5 pytest-8.2.0 pytest-asyncio-0.23.6 pytest-cov-5.0.0 pytest-mock-3.14.0 pyupgrade-3.15.2 reedsolo-1.7.0 requests-2.32.3 ruamel.yaml-0.18.6 ruamel.yaml.clib-0.2.12 semantic_version-2.10.0 six-1.17.0 sniffio-1.3.1 sortedcontainers-2.4.0 starlette-0.39.2 tabulate-0.9.0 tinycss2-1.4.0 tokenize-rt-6.1.0 tomli-2.2.1 tomlkit-0.13.2 tornado-6.4 typing-extensions-4.12.2 tzdata-2025.1 tzlocal-5.2 ufoLib2-0.17.1 unicodedata2-16.0.0 urllib3-2.3.0 uvicorn-0.30.6 virtualenv-20.29.1 voluptuous-0.14.2 webencodings-0.5.1 wsproto-1.2.0 yamllint-1.35.1 zeroconf-0.132.2
+Requirement already satisfied: setuptools in ./venv/lib/python3.10/site-packages (59.6.0)
+Collecting wheel
+  Using cached wheel-0.45.1-py3-none-any.whl (72 kB)
+Installing collected packages: wheel
+Successfully installed wheel-0.45.1
 
-collaborate (see also: git help workflows)
-   fetch     Download objects and refs from another repository
-   pull      Fetch from and integrate with another repository or a local branch
-   push      Update remote refs along with associated objects
+Usage:   
+  pip3 install [options] <requirement specifier> [package-index-options] ...
+  pip3 install [options] -r <requirements file> [package-index-options] ...
+  pip3 install [options] [-e] <vcs project url> ...
+  pip3 install [options] [-e] <local project path> ...
+  pip3 install [options] <archive url/path> ...
 
-'git help -a' and 'git help -g' list available subcommands and some
-concept guides. See 'git help <command>' or 'git help <concept>'
-to read about a specific subcommand or concept.
-See 'git help git' for an overview of the system.
-[?2004hsh-5.2$ gits[K status
-[?2004l[6n[m[?25hOn branch dev
-Your branch is up to date with 'origin/dev'.
+no such option: --config-settings
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ less setup
+[?2004l[?1049h[22;0;0t[?1h=#!/usr/bin/env bash
+# Set up ESPHome dev environment
 
-Changes to be committed:
-  (use "git restore --staged <file>..." to unstage)
-        [32mmodified:   esphome/components/pulse_width_accumulate/pulse_width_accumulate.h[m[K
+set -e
+
+cd "$(dirname "$0")/.."
+location="venv/bin/activate"
+if [ ! -n "$DEVCONTAINER" ] && [ ! -n "$VIRTUAL_ENV" ] && [ ! "$ESPHOME_NO_VENV" ]; then
+  python3 -m venv venv
+  if [ -f venv/Scripts/activate ]; then
+    location="venv/Scripts/activate"
+  fi
+  source $location
+fi
+
+pip3 install -r requirements.txt -r requirements_optional.txt -r requirements_test.txt -r requiremen ts_dev.txt
+pip3 install setuptools wheel
+pip3 install -e ".[dev,test,displays]" --config-settings editable_mode=compat
+
+pre-commit install
+
+script/platformio_install_deps.py platformio.ini --libraries --tools --platforms
+[7msetup[27m[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[Kecho
+:[K[K [KESCESC[KOO[KBB[Kecho
+:[K[K [KESCESC[KOO[KBB[Kecho "Virtual environment created. Run 'source $location' to use it."
+[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KBB[K[K[7m(END)[27m[K[K [KESCESC[KOO[KAA[K[HMset -e
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HM
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HM# Set up ESPHome dev environment
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HM#!/usr/bin/env bash
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K [KESCESC[KOO[KAA[K[K:[K[K[?1l>[?1049l[23;0;0t[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ ls
+[?2004l[0m[01;34mapi_protobuf[0m              [01;32mdevcontainer-post-create[0m    [01;32mrun-in-env.sh[0m
+[01;32mbuild_codeowners.py[0m       [01;32mextract_automations.py[0m      [01;32msetup[0m
+[01;32mbuild_language_schema.py[0m  [01;32mfulltest[0m                    [01;32msetup.bat[0m
+[01;32mbump-version.py[0m           [01;32mhelpers.py[0m                  [01;32msync-device_class.py[0m
+[01;32mci-custom.py[0m              [01;32mlint-cpp[0m                    [01;32mtest[0m
+[01;32mci-suggest-changes[0m        [01;32mlint-python[0m                 [01;32mtest_build_components[0m
+[01;32mclang-format[0m              [01;32mlist-components.py[0m          [01;32munit_test[0m
+[01;32mclang-tidy[0m                [01;32mplatformio_install_deps.py[0m
+[01;32mcomponent_test[0m            [01;32mquicklint[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ test
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ less test
+[?2004l[?1049h[22;0;0t[?1h=#!/usr/bin/env bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+set -x
+
+for f in ./tests/test*.yaml; do
+  esphome compile $f
+done
+[7mtest (END)[27m[K[K[?1l>[?1049l[23;0;0t[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ less clang-tidy 
+[?2004l[?1049h[22;0;0t[?1h=#!/usr/bin/env python3
+
+import argparse
+import multiprocessing
+import os
+import queue
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import threading
+
+import click
+import colorama
+from helpers import (
+    basepath,
+    build_all_include,
+    filter_changed,
+    filter_grep,
+    get_binary,
+    git_ls_files,
+    load_idedata,
+[7mclang-tidy[27m[K[K [KESCESC[KOO[KBB[K    print_error_for_file,
+:[K[K [KESCESC[KOO[KBB[K    root_path,
+:[K[K [KESCESC[KOO[KBB[K    temp_header_file,
+:[K[K [KESCESC[KOO[KBB[K)
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[Kdef clang_options(idedata):
+:[K[K [KESCESC[KOO[KBB[K    cmd = []
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K    # extract target architecture from triplet in g++ filename
+:[K[K [KESCESC[KOO[KBB[K    triplet = os.path.basename(idedata["cxx_path"])[:-4]
+:[K[K [KESCESC[KOO[KBB[K    if triplet.startswith("xtensa-"):
+:[K[K [KESCESC[KOO[KBB[K        # clang doesn't support Xtensa (yet?), so compile in 32-bit mode and pretend we're the Xtens :[K[K [KESCESC[KOO[KBB[Ka compiler
+:[K[K [KESCESC[KOO[KBB[K        cmd.append("-m32")
+:[K[K [KESCESC[KOO[KBB[K        cmd.append("-D__XTENSA__")
+:[K[K [KESCESC[KOO[KBB[K    else:
+:[K[K [KESCESC[KOO[KBB[K        cmd.append(f"--target={triplet}")
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K    # set flags
+:[K[K [KESCESC[KOO[KBB[K    cmd.extend(
+:[K[K [KESCESC[KOO[KBB[K        [
+:[K[K [KESCESC[KOO[KBB[K            # disable built-in include directories from the host
+:[K[K [KESCESC[KOO[KBB[K            "-nostdinc",
+:[K[K [KESCESC[KOO[KBB[K            "-nostdinc++",
+:[K[K [KESCESC[KOO[KBB[K            # replace pgmspace.h, as it uses GNU extensions clang doesn't support
+:[K[K [KESCESC[KOO[KBB[K            # https://github.com/earlephilhower/newlib-xtensa/pull/18
+:[K[K [KESCESC[KOO[KBB[K            "-D_PGMSPACE_H_",
+:[K[K [KESCESC[KOO[KBB[K            "-Dpgm_read_byte(s)=(*(const uint8_t *)(s))",
+:[K[K [KESCESC[KOO[KBB[K            "-Dpgm_read_byte_near(s)=(*(const uint8_t *)(s))",
+:[K[K [KESCESC[KOO[KBB[K            "-Dpgm_read_word(s)=(*(const uint16_t *)(s))",
+:[K[K [KESCESC[KOO[KAA[K[HM    cmd = []
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HMdef clang_options(idedata):
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HM
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HM
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HM)
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HM    temp_header_file,
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HM    root_path,
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HM    print_error_for_file,
+[24;1H[K:[K[K [KESCESC[KOO[KAA[K[HM    load_idedata,
+[24;1H[K:[K[K [KESCESC[KOO[KBB[K            # disable built-in include directories from the host
+:[K[K [KESCESC[KOO[KBB[K            "-nostdinc",
+:[K[K [KESCESC[KOO[KBB[K            "-nostdinc++",
+:[K[K [KESCESC[KOO[KBB[K            # replace pgmspace.h, as it uses GNU extensions clang doesn't support
+:[K[K [KESCESC[KOO[KBB[K            # https://github.com/earlephilhower/newlib-xtensa/pull/18
+:[K[K [KESCESC[KOO[KBB[K            "-D_PGMSPACE_H_",
+:[K[K [KESCESC[KOO[KBB[K            "-Dpgm_read_byte(s)=(*(const uint8_t *)(s))",
+:[K[K [KESCESC[KOO[KBB[K            "-Dpgm_read_byte_near(s)=(*(const uint8_t *)(s))",
+:[K[K [KESCESC[KOO[KBB[K            "-Dpgm_read_word(s)=(*(const uint16_t *)(s))",
+:[K[K [KESCESC[KOO[KBB[K            "-Dpgm_read_dword(s)=(*(const uint32_t *)(s))",
+:[K[K [KESCESC[KOO[KBB[K            "-DPROGMEM=",
+:[K[K [KESCESC[KOO[KBB[K            "-DPGM_P=const char *",
+:[K[K [KESCESC[KOO[KBB[K            "-DPSTR(s)=(s)",
+:[K[K [KESCESC[KOO[KBB[K            # this next one is also needed with upstream pgmspace.h
+:[K[K [KESCESC[KOO[KBB[K            # suppress warning about identifier naming in expansion of this macro
+:[K[K [KESCESC[KOO[KBB[K            "-DPSTRN(s, n)=(s)",
+:[K[K [KESCESC[KOO[KBB[K            # suppress warning about attribute cannot be applied to type
+:[K[K [KESCESC[KOO[KBB[K            # https://github.com/esp8266/Arduino/pull/8258
+:[K[K [KESCESC[KOO[KBB[K            "-Ddeprecated(x)=",
+:[K[K [KESCESC[KOO[KBB[K            # allow to condition code on the presence of clang-tidy
+:[K[K [KESCESC[KOO[KBB[K            "-DCLANG_TIDY",
+:[K[K [KESCESC[KOO[KBB[K            # (esp-idf) Fix __once_callable in some libstdc++ headers
+:[K[K [KESCESC[KOO[KBB[K            "-D_GLIBCXX_HAVE_TLS",
+:[K[K [KESCESC[KOO[KBB[K        ]
+:[K[K [KESCESC[KOO[KBB[K    )
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K [KESCESC[KOO[KBB[K    # copy compiler flags, except those clang doesn't understand.
+:[K[K [KESCESC[KOO[KBB[K    cmd.extend(
+:[K[K [KESCESC[KOO[KBB[K        flag
+:[K[K [KESCESC[KOO[KBB[K        for flag in idedata["cxx_flags"]
+:[K[K [KESCESC[KOO[KBB[K        if flag
+:[K[K [KESCESC[KOO[KBB[K        not in (
+:[K[K [KESCESC[KOO[KBB[K            "-free",
+:[K[K [KESCESC[KOO[KBB[K            "-fipa-pta",
+:[K[K [KESCESC[KOO[KBB[K            "-fstrict-volatile-bitfields",
+:[K[K [KESCESC[KOO[KBB[K            "-mlongcalls",
+:[K[K [KESCESC[KOO[KBB[K            "-mtext-section-literals",
+:[K[K [KESCESC[KOO[KBB[K            "-mfix-esp32-psram-cache-issue",
+:[K[K [KESCESC[KOO[KBB[K            "-mfix-esp32-psram-cache-strategy=memw",
+:[K[K [KESCESC[KOO[KBB[K            "-fno-tree-switch-conversion",
+:[K[K [KESCESC[KOO[KBB[K        )
+:[K[K [KESCESC[KOO[KBB[K    )
+:[K[K [KESCESC[KOO[KBB[K
+:[K[K[?1l>[?1049l[23;0;0t[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ clang-tidy[K[K[K[K[K[K[K[K[K[K./clang-tidy
+[?2004lTraceback (most recent call last):
+  File "/home/patrick/repos/esphome/script/./clang-tidy", line 300, in <module>
+    sys.exit(main())
+  File "/home/patrick/repos/esphome/script/./clang-tidy", line 206, in main
+    idedata = load_idedata(args.environment)
+  File "/home/patrick/repos/esphome/script/helpers.py", line 150, in load_idedata
+    stdout = subprocess.check_output(["pio", "run", "-t", "idedata", "-e", environment])
+  File "/usr/lib/python3.10/subprocess.py", line 421, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+  File "/usr/lib/python3.10/subprocess.py", line 503, in run
+    with Popen(*popenargs, **kwargs) as process:
+  File "/usr/lib/python3.10/subprocess.py", line 971, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib/python3.10/subprocess.py", line 1863, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: 'pio'
+[0m[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ ls
+[?2004l[0m[01;34mapi_protobuf[0m              [01;32mdevcontainer-post-create[0m    [01;32mquicklint[0m
+[01;32mbuild_codeowners.py[0m       [01;32mextract_automations.py[0m      [01;32mrun-in-env.sh[0m
+[01;32mbuild_language_schema.py[0m  [01;32mfulltest[0m                    [01;32msetup[0m
+[01;32mbump-version.py[0m           [01;32mhelpers.py[0m                  [01;32msetup.bat[0m
+[01;32mci-custom.py[0m              [01;32mlint-cpp[0m                    [01;32msync-device_class.py[0m
+[01;32mci-suggest-changes[0m        [01;32mlint-python[0m                 [01;32mtest[0m
+[01;32mclang-format[0m              [01;32mlist-components.py[0m          [01;32mtest_build_components[0m
+[01;32mclang-tidy[0m                [01;32mplatformio_install_deps.py[0m  [01;32munit_test[0m
+[01;32mcomponent_test[0m            [01;34m__pycache__[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ cd [K[K[Kcd ..
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome[00m$ ls
+[?2004lCODE_OF_CONDUCT.md  LICENSE                 README.md                  [0m[01;34mscript[0m
+CODEOWNERS          MANIFEST.in             requirements_dev.txt       sdkconfig.defaults
+CONTRIBUTING.md     platformio.ini          requirements_optional.txt  [01;34mtests[0m
+[01;34mdocker[0m              [01;34mpulse-width-accumulate[0m  requirements_test.txt      typescript
+[01;34mesphome[0m             pyproject.toml          requirements.txt           [01;34mvenv[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome[00m$ cd [K[K[Kc[Kcd [K[K[Kcd esphome/
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome[00m$ ls
+[?2004lautomation.py         coroutine.py       git.py             pins.py               vscode.py
+codegen.py            cpp_generator.py   helpers.py         platformio_api.py     wizard.py
+[0m[01;34mcomponents[0m            cpp_helpers.py     idf_component.yml  schema_extractors.py  writer.py
+config_helpers.py     cpp_types.py       __init__.py        storage_json.py       yaml_util.py
+config.py             [01;34mdashboard[0m          loader.py          typescript            zeroconf.py
+config_validation.py  espota2.py         log.py             types.py
+const.py              external_files.py  __main__.py        util.py
+[01;34mcore[0m                  final_validate.py  mqtt.py            voluptuous_schema.py
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome[00m$ cd [K[K[Kcode
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome[00m$ ls
+[?2004lautomation.py         cpp_helpers.py     loader.py             types.py
+codegen.py            cpp_types.py       log.py                util.py
+[0m[01;34mcomponents[0m            [01;34mdashboard[0m          __main__.py           voluptuous_schema.py
+config_helpers.py     espota2.py         mqtt.py               vscode.py
+config.py             external_files.py  pins.py               wizard.py
+config_validation.py  final_validate.py  platformio_api.py     writer.py
+const.py              git.py             [01;34m__pycache__[0m           yaml_util.py
+[01;34mcore[0m                  helpers.py         schema_extractors.py  zeroconf.py
+coroutine.py          idf_component.yml  storage_json.py
+cpp_generator.py      __init__.py        typescript
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome[00m$ cd cd [K[K[K..
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome[00m$ ls
+[?2004lCODE_OF_CONDUCT.md  LICENSE                 README.md                  [0m[01;34mscript[0m
+CODEOWNERS          MANIFEST.in             requirements_dev.txt       sdkconfig.defaults
+CONTRIBUTING.md     platformio.ini          requirements_optional.txt  [01;34mtests[0m
+[01;34mdocker[0m              [01;34mpulse-width-accumulate[0m  requirements_test.txt      typescript
+[01;34mesphome[0m             pyproject.toml          requirements.txt           [01;34mvenv[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome[00m$ cd script/
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ s[Kls
+[?2004l[0m[01;34mapi_protobuf[0m              devcontainer-post-create    quicklint
+build_codeowners.py       extract_automations.py      run-in-env.sh
+build_language_schema.py  fulltest                    setup
+bump-version.py           helpers.py                  setup.bat
+ci-custom.py              lint-cpp                    sync-device_class.py
+ci-suggest-changes        lint-python                 test
+clang-format              list-components.py          test_build_components
+clang-tidy                platformio_install_deps.py  unit_test
+component_test            [01;34m__pycache__[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ pwd
+[?2004l/home/patrick/repos/esphome/script
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ cd sc[K[K[K[K[Kls
+[?2004l[0m[01;34mapi_protobuf[0m              devcontainer-post-create    quicklint
+build_codeowners.py       extract_automations.py      run-in-env.sh
+build_language_schema.py  fulltest                    setup
+bump-version.py           helpers.py                  setup.bat
+ci-custom.py              lint-cpp                    sync-device_class.py
+ci-suggest-changes        lint-python                 test
+clang-format              list-components.py          test_build_components
+clang-tidy                platformio_install_deps.py  unit_test
+component_test            [01;34m__pycache__[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ lspwd[1Plscd script/ls[Kcd ..[3Plscode[2Plscd esphome/ls[Kcd ..[3Pls./clang-tidyless clang-tidy [7Ptest[5Ptest[2Plsess setup[3P./setup[2Psetup[3Plschmod -R 755 *ls[Kess setup[5Ps -less setups[Kchmod -R 755 *
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/script[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/script[00m$ cd ..
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome[00m$ ls
+[?2004lCODE_OF_CONDUCT.md  LICENSE                 README.md                  [0m[01;34mscript[0m
+CODEOWNERS          MANIFEST.in             requirements_dev.txt       sdkconfig.defaults
+CONTRIBUTING.md     platformio.ini          requirements_optional.txt  [01;34mtests[0m
+[01;34mdocker[0m              [01;34mpulse-width-accumulate[0m  requirements_test.txt      typescript
+[01;34mesphome[0m             pyproject.toml          requirements.txt           [01;34mvenv[0m
+[?2004h]0;patrick@huxley: ~/repos/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome[00m$ cd pulse-width-accumulate/[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kcd [K[K[Kls[K[Kcd esphome/
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome[00m$ ls
+[?2004lautomation.py         cpp_helpers.py     loader.py             types.py
+codegen.py            cpp_types.py       log.py                util.py
+[0m[01;34mcomponents[0m            [01;34mdashboard[0m          __main__.py           voluptuous_schema.py
+config_helpers.py     espota2.py         mqtt.py               vscode.py
+config.py             external_files.py  pins.py               wizard.py
+config_validation.py  final_validate.py  platformio_api.py     writer.py
+const.py              git.py             [01;34m__pycache__[0m           yaml_util.py
+[01;34mcore[0m                  helpers.py         schema_extractors.py  zeroconf.py
+coroutine.py          idf_component.yml  storage_json.py
+cpp_generator.py      __init__.py        typescript
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome[00m$ cd components/
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components[00m$ cd pulse_widtha[K_accumulate/
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ ls
+[?2004l__init__.py  pulse_width_accumulate.cpp  pulse_width_accumulate.h  sensor.py
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ ls -l
+[?2004ltotal 16
+-rw-rw-r-- 1 patrick patrick   31 Jan 28 01:00 __init__.py
+-rw-rw-r-- 1 patrick patrick 3398 Jan 28 01:01 pulse_width_accumulate.cpp
+-rw-rw-r-- 1 patrick patrick 1404 Jan 28 01:00 pulse_width_accumulate.h
+-rw-rw-r-- 1 patrick patrick 1626 Jan 28 01:00 sensor.py
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ apg[K[K[Kdos2unix
+[?2004lCommand 'dos2unix' not found, but can be installed with:
+sudo apt install dos2unix
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ apt[K[K[Ksudo apt install dos2unix
+[?2004l[sudo] password for patrick: 
+Reading package lists... 0%Reading package lists... 100%Reading package lists... Done
+Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree... Done
+Reading state information... 0% Reading state information... 0%Reading state information... Done
+The following NEW packages will be installed:
+  dos2unix
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 384 kB of archives.
+After this operation, 1,367 kB of additional disk space will be used.
+[33m0% [Working][0m            Get:1 http://nz.archive.ubuntu.com/ubuntu jammy/universe amd64 dos2unix amd64 7.4.2-2 [384 kB]
+[33m1% [1 dos2unix 2,603 B/384 kB 1%][0m[33m                                 100% [Working][0m              Fetched 384 kB in 0s (1,816 kB/s)
+
+7[0;23r8[1ASelecting previously unselected package dos2unix.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 221422 files and directories currently installed.)
+Preparing to unpack .../dos2unix_7.4.2-2_amd64.deb ...
+7[24;0f[42m[30mProgress: [  0%][49m[39m [..............................................................................] 87[24;0f[42m[30mProgress: [ 20%][49m[39m [###############...............................................................] 8Unpacking dos2unix (7.4.2-2) ...
+7[24;0f[42m[30mProgress: [ 40%][49m[39m [###############################...............................................] 8Setting up dos2unix (7.4.2-2) ...
+7[24;0f[42m[30mProgress: [ 60%][49m[39m [##############################################................................] 87[24;0f[42m[30mProgress: [ 80%][49m[39m [##############################################################................] 8Processing triggers for man-db (2.10.2-1) ...
+
+7[0;24r8[1A[J[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ dos2unix *
+[?2004ldos2unix: converting file __init__.py to Unix format...
+dos2unix: converting file pulse_width_accumulate.cpp to Unix format...
+dos2unix: converting file pulse_width_accumulate.h to Unix format...
+dos2unix: converting file sensor.py to Unix format...
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ ls[K[Ki[Kgit status
+[?2004lOn branch dev
+Your branch is ahead of 'origin/dev' by 1 commit.
+  (use "git push" to publish your local commits)
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
-        [31mmodified:   pulse-width-accumulate[m (new commits)[K
-        [31mmodified:   typescript[m[K
+	[31mmodified:   ../../../script/api_protobuf/api_protobuf.py[m
+	[31mmodified:   ../../../script/build_codeowners.py[m
+	[31mmodified:   ../../../script/build_language_schema.py[m
+	[31mmodified:   ../../../script/bump-version.py[m
+	[31mmodified:   ../../../script/ci-custom.py[m
+	[31mmodified:   ../../../script/ci-suggest-changes[m
+	[31mmodified:   ../../../script/clang-format[m
+	[31mmodified:   ../../../script/clang-tidy[m
+	[31mmodified:   ../../../script/component_test[m
+	[31mmodified:   ../../../script/devcontainer-post-create[m
+	[31mmodified:   ../../../script/extract_automations.py[m
+	[31mmodified:   ../../../script/fulltest[m
+	[31mmodified:   ../../../script/helpers.py[m
+	[31mmodified:   ../../../script/lint-cpp[m
+	[31mmodified:   ../../../script/lint-python[m
+	[31mmodified:   ../../../script/list-components.py[m
+	[31mmodified:   ../../../script/platformio_install_deps.py[m
+	[31mmodified:   ../../../script/quicklint[m
+	[31mmodified:   ../../../script/run-in-env.sh[m
+	[31mmodified:   ../../../script/setup[m
+	[31mmodified:   ../../../script/setup.bat[m
+	[31mmodified:   ../../../script/sync-device_class.py[m
+	[31mmodified:   ../../../script/test[m
+	[31mmodified:   ../../../script/test_build_components[m
+	[31mmodified:   ../../../script/unit_test[m
+	[31mmodified:   ../../../typescript[m
 
-[?2004hsh-5.2$ git add .
-[?2004l[6n[m[?25h[?2004hsh-5.2$ git add .
-[?2004l[6n[m[?25h[?2004hsh-5.2$ git commit [K -m "removed some comments [K"
-[?2004l[6n[m[?25hAuthor identity unknown
+no changes added to commit (use "git add" and/or "git commit -a")
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ git add .
+[?2004l[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ git commit -m "do[K[Kapplied dos 2unix"
+[?2004lOn branch dev
+Your branch is ahead of 'origin/dev' by 1 commit.
+  (use "git push" to publish your local commits)
 
-*** Please tell me who you are.
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	[31mmodified:   ../../../script/api_protobuf/api_protobuf.py[m
+	[31mmodified:   ../../../script/build_codeowners.py[m
+	[31mmodified:   ../../../script/build_language_schema.py[m
+	[31mmodified:   ../../../script/bump-version.py[m
+	[31mmodified:   ../../../script/ci-custom.py[m
+	[31mmodified:   ../../../script/ci-suggest-changes[m
+	[31mmodified:   ../../../script/clang-format[m
+	[31mmodified:   ../../../script/clang-tidy[m
+	[31mmodified:   ../../../script/component_test[m
+	[31mmodified:   ../../../script/devcontainer-post-create[m
+	[31mmodified:   ../../../script/extract_automations.py[m
+	[31mmodified:   ../../../script/fulltest[m
+	[31mmodified:   ../../../script/helpers.py[m
+	[31mmodified:   ../../../script/lint-cpp[m
+	[31mmodified:   ../../../script/lint-python[m
+	[31mmodified:   ../../../script/list-components.py[m
+	[31mmodified:   ../../../script/platformio_install_deps.py[m
+	[31mmodified:   ../../../script/quicklint[m
+	[31mmodified:   ../../../script/run-in-env.sh[m
+	[31mmodified:   ../../../script/setup[m
+	[31mmodified:   ../../../script/setup.bat[m
+	[31mmodified:   ../../../script/sync-device_class.py[m
+	[31mmodified:   ../../../script/test[m
+	[31mmodified:   ../../../script/test_build_components[m
+	[31mmodified:   ../../../script/unit_test[m
+	[31mmodified:   ../../../typescript[m
 
-Run
-
-  git config --global user.email "you@example.com"
-  git config --global user.name "Your Name"
-
-to set your account's default identity.
-Omit --global to set the identity only in this repository.
-
-fatal: unable to auto-detect email address (got 'Patrick@Huxley.(none)')
-[?2004hsh-5.2$ exit
-[?2004lexit
-
-Script done on 2025-01-27 12:05:13+13:00 [COMMAND_EXIT_CODE="128"]
+no changes added to commit (use "git add" and/or "git commit -a")
+[?2004h]0;patrick@huxley: ~/repos/esphome/esphome/components/pulse_width_accumulate[01;32mpatrick@huxley[00m:[01;34m~/repos/esphome/esphome/components/pulse_width_accumulate[00m$ git commit -m "applied dos2unix"[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+[C[C[C[C[C[C[K[K[K[K[K[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[K
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
