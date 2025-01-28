@@ -30,35 +30,40 @@ float PulseWidthAccumulateSensorStore::get_pulses_this_cycle() {
 // (ie. ~71.58 min)
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
-  portENTER_CRITICAL(&this->mux_);
+  
   // handle long pulses that span beyond the polling window
   if (this->pin_.digital_read()) {
-    uint32_t now = micros();
+    portENTER_CRITICAL(&this->mux_);
     cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
     this->last_rise_us_ = now;
+    portEXIT_CRITICAL(&this->mux_);
   } else {
+    portENTER_CRITICAL(&this->mux_);
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
+    portEXIT_CRITICAL(&this->mux_);
   }
-  portEXIT_CRITICAL(&this->mux_);
+  
   return cumulative_local;
 }
 
 // ISR. Get in and out ASAP. No floating point math
 void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSensorStore *arg) {
   uint32_t now = micros();
-  portENTER_CRITICAL_ISR(&arg->mux_);
-  bool pin_state = arg->pin_.digital_read();
-  if (pin_state) {
+  if (arg->pin_.digital_read()) {
+    portENTER_CRITICAL_ISR(&arg->mux_);
     arg->last_rise_us_ = now;
+    portEXIT_CRITICAL_ISR(&arg->mux_);
   } else {
+    portENTER_CRITICAL_ISR(&arg->mux_);
     uint32_t pulse_width_us = now - arg->last_rise_us_;
     if (pulse_width_us > MICROSECOND_PER_PULSE_LOWER_THRESHOLD) {
       arg->cumulative_width_us_ += pulse_width_us;
       arg->pulse_count_ += 1;
     }
+    portEXIT_CRITICAL_ISR(&arg->mux_);
   }
-  portEXIT_CRITICAL_ISR(&arg->mux_);
+  
 }
 
 void PulseWidthAccumulateSensor::dump_config() {
