@@ -30,7 +30,7 @@ float PulseWidthAccumulateSensorStore::get_pulses_this_cycle() {
 // (ie. ~71.58 min)
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
-  
+  uint32_t now = micros();
   // handle long pulses that span beyond the polling window
   if (this->pin_.digital_read()) {
     portENTER_CRITICAL(&this->mux_);
