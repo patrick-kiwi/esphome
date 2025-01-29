@@ -68,11 +68,10 @@ void PulseWidthAccumulateSensor::dump_config() {
 }
 
 float PulseWidthAccumulateSensor::get_rejection_threshold(const float& interval) const {
-  float max(float a, float b) { return (a > b) ? a : b; }
-  float min(float a, float b) { return (a < b) ? a : b; }
-  float short_pulse_threshold = min(5*interval, 1000.0f);
+  float short_pulse_threshold = (5 * interval < 1000.0f) ? 5 * interval: 1000.0f;
   float long_pulses_threshold = 2*interval;
-  return max(short_pulse_threshold, long_pulses_threshold);
+  float output = (short_pulse_threshold > long_pulses_threshold) ? short_pulse_threshold : long_pulses_threshold; 
+  return output;
 }
 
 void PulseWidthAccumulateSensor::update() {
