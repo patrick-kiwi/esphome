@@ -67,6 +67,14 @@ void PulseWidthAccumulateSensor::dump_config() {
   LOG_PIN("  Pin: ", this->pin_);
 }
 
+float PulseWidthAccumulateSensor::get_rejection_threshold(const float& interval) const {
+  float max(float a, float b) { return (a > b) ? a : b; }
+  float min(float a, float b) { return (a < b) ? a : b; }
+  float short_pulse_threshold = min(5*interval, 1000.0f);
+  float long_pulses_threshold = 2*interval;
+  return max(short_pulse_threshold, long_pulses_threshold);
+}
+
 void PulseWidthAccumulateSensor::update() {
   // Retrieve cumulative pulse width, and zero the counter
   float cumulative_width = this->store_.get_cumulative_pulse_width_s();
@@ -76,6 +84,14 @@ void PulseWidthAccumulateSensor::update() {
     ESP_LOGW(TAG, "Warning, cumulative pulse width: %.3f s ouside expected range: %.3f ", cumulative_width,
              polling_interval_s);
   }
+  //correct errors
+  float rejection_threshold = get_rejection_threshold(polling_interval_s);
+  if (cumulative_width >= rejection_threshold) {
+    ESP_LOGW(TAG, "Rejected interval time: %.3f s Exceeds rejection threshold: %.3f ", cumulative_width,
+             rejection_threshold);
+    cumulative_width = 0.0f;
+  }
+
   // get frequency if needed
   if (this->frequency_sensor_ != nullptr) {
     float pulse_count = this->store_.get_pulses_this_cycle();

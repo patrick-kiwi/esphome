@@ -31,6 +31,7 @@ class PulseWidthAccumulateSensor : public sensor::Sensor, public PollingComponen
   void setup() override { this->store_.setup(this->pin_); }
   void dump_config() override;
   float get_setup_priority() const override { return setup_priority::DATA; }
+  float get_rejection_threshold(const float& interval) const;
   void update();
   void set_frequency_sensor(sensor::Sensor *frequency_sensor) { frequency_sensor_ = frequency_sensor; }
 
