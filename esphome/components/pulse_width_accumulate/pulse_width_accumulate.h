@@ -23,7 +23,6 @@ class PulseWidthAccumulateSensorStore {
   uint32_t last_fall_us_{0};
   uint32_t cumulative_width_us_{0};
   float cumulative_width_s_{0.0f};
-  float rejection_threshold_{1000.0f};
   uint32_t pulse_count_{0};
 };
 class PulseWidthAccumulateSensor : public sensor::Sensor, public PollingComponent {
@@ -37,6 +36,7 @@ class PulseWidthAccumulateSensor : public sensor::Sensor, public PollingComponen
   void set_frequency_sensor(sensor::Sensor *frequency_sensor) { frequency_sensor_ = frequency_sensor; }
 
  private:
+  float rejection_threshold_{1000.0f};
   PulseWidthAccumulateSensorStore store_;
   InternalGPIOPin *pin_;
   sensor::Sensor *frequency_sensor_{nullptr};
