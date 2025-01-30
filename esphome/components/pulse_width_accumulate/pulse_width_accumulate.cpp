@@ -96,7 +96,7 @@ void PulseWidthAccumulateSensor::update() {
   //float rejection_threshold = get_rejection_threshold(polling_interval_s);
   if (cumulative_width >= this->rejection_threshold_) {
     ESP_LOGW(TAG, "Discarding data: %.3f s Exceeds rejection threshold: %.3f ", cumulative_width,
-             this->rejection_threshold);
+             this->rejection_threshold_);
     cumulative_width = 0.0f;
   }
 
