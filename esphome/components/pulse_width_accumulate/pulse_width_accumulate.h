@@ -23,15 +23,16 @@ class PulseWidthAccumulateSensorStore {
   uint32_t last_fall_us_{0};
   uint32_t cumulative_width_us_{0};
   float cumulative_width_s_{0.0f};
+  float rejection_threshold_{1000.0f};
   uint32_t pulse_count_{0};
 };
 class PulseWidthAccumulateSensor : public sensor::Sensor, public PollingComponent {
  public:
   void set_pin(InternalGPIOPin *pin) { pin_ = pin; }
-  void setup() override { this->store_.setup(this->pin_); }
+  void setup() override; 
   void dump_config() override;
   float get_setup_priority() const override { return setup_priority::DATA; }
-  float get_rejection_threshold(const float& interval) const;
+  //float get_rejection_threshold(const float& interval) const;
   void update();
   void set_frequency_sensor(sensor::Sensor *frequency_sensor) { frequency_sensor_ = frequency_sensor; }
 

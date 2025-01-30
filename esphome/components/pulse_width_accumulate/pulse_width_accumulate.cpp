@@ -26,6 +26,15 @@ float PulseWidthAccumulateSensorStore::get_pulses_this_cycle() {
   return static_cast<float>(pulses_this_cycle);
 }
 
+PulseWidthAccumulateSensor::setup() {
+  this->store_.setup(this->pin_); 
+  float interval = static_cast<float>(this->get_update_interval()) / 1000.0f;
+  float short_pulse_threshold = (5 * interval < 1000.0f) ? 5 * interval: 1000.0f;
+  float long_pulses_threshold = 2*interval;
+  this->rejection_threshold_ = (short_pulse_threshold > long_pulses_threshold) ? short_pulse_threshold : long_pulses_threshold;
+  ESP_LOGW(TAG, "Rejection threshold set: %.1f s", this->rejection_threshold_);
+}
+
 // Zero the microsecond counter every polling cycle so we never overflow at 2^32
 // (ie. ~71.58 min)
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
@@ -66,28 +75,28 @@ void PulseWidthAccumulateSensor::dump_config() {
   LOG_UPDATE_INTERVAL(this)
   LOG_PIN("  Pin: ", this->pin_);
 }
-
+/*
 float PulseWidthAccumulateSensor::get_rejection_threshold(const float& interval) const {
   float short_pulse_threshold = (5 * interval < 1000.0f) ? 5 * interval: 1000.0f;
   float long_pulses_threshold = 2*interval;
   float output = (short_pulse_threshold > long_pulses_threshold) ? short_pulse_threshold : long_pulses_threshold; 
   return output;
 }
-
+*/
 void PulseWidthAccumulateSensor::update() {
   // Retrieve cumulative pulse width, and zero the counter
   float cumulative_width = this->store_.get_cumulative_pulse_width_s();
   float polling_interval_s = static_cast<float>(this->get_update_interval()) / 1000.0f;
   // Warn if outside normal range (0-103% of polling_interval)
   if (cumulative_width < 0 || cumulative_width > 1.03f * polling_interval_s) {
-    ESP_LOGW(TAG, "Warning, cumulative pulse width: %.3f s ouside expected range: %.3f ", cumulative_width,
+    ESP_LOGW(TAG, "Cumulative pulse width: %.3f s exceeded polling interval: %.3f ", cumulative_width,
              polling_interval_s);
   }
   //correct errors
-  float rejection_threshold = get_rejection_threshold(polling_interval_s);
-  if (cumulative_width >= rejection_threshold) {
-    ESP_LOGW(TAG, "Rejected interval time: %.3f s Exceeds rejection threshold: %.3f ", cumulative_width,
-             rejection_threshold);
+  //float rejection_threshold = get_rejection_threshold(polling_interval_s);
+  if (cumulative_width >= this->rejection_threshold_) {
+    ESP_LOGW(TAG, "Discarding data: %.3f s Exceeds rejection threshold: %.3f ", cumulative_width,
+             this->rejection_threshold);
     cumulative_width = 0.0f;
   }
 
