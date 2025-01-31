@@ -7,7 +7,7 @@ namespace esphome {
 namespace pulse_width_accumulate {
 static const char *const TAG = "pulse_width";
 constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;
-constexpr uint32_t LOCKED_HIGH_THRESHOLD = 9e5L;  //0.9 seconds, Regard as continuously on (this must be less that the polling interval)
+constexpr uint32_t LOCKED_HIGH_THRESHOLD = 9e5L;  //threshold to regard GPIO as continuously on (this time must never exceed the polling interval)
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
 void PulseWidthAccumulateSensorStore::setup(InternalGPIOPin *pin) {
@@ -49,12 +49,12 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
       cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
       this->last_rise_us_ = now;
     } else {
-      // Function executed while a short pulse was in progress
+      // Standard short pulse.  Executed while input HIGH
       cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
       this->cumulative_width_us_ = 0;
     }
   } else {
-    // Function executed while no pulse was in progress
+    // Standard short pulse.  Executed while input LOW
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
   }
