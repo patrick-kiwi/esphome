@@ -6,7 +6,8 @@
 namespace esphome {
 namespace pulse_width_accumulate {
 static const char *const TAG = "pulse_width";
-constexpr uint32_t MICROSECOND_PER_PULSE_LOWER_THRESHOLD = 17;
+constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;
+constexpr uint32_t LOCKED_HIGH_THRESHOLD = 5L*1e6L;
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
 void PulseWidthAccumulateSensorStore::setup(InternalGPIOPin *pin) {
@@ -41,10 +42,16 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
   // handle long pulses that span beyond the polling window
+  //this is causing problems!!!  observed 50% duty cycle results in 50% skipped values
   portENTER_CRITICAL(&this->mux_);
-  if (this->pin_.digital_read()) {
-    cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
-    this->last_rise_us_ = now;
+  if (this->pulse_in_progress_) {
+    if (now - this->last_rise_us_ > LOCKED_HIGH_THRESHOLD) {
+      cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
+      this->last_rise_us_ = now;
+    } else {
+      cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
+      this->cumulative_width_us_ = 0;
+    }
   } else {
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
@@ -58,10 +65,14 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
   uint32_t now = micros();
   portENTER_CRITICAL_ISR(&arg->mux_);
   if (arg->pin_.digital_read()) {
+    // detected rising edge
     arg->last_rise_us_ = now;
+    arg->pulse_in_progress = true;
   } else {
+    // detected falling edge
     uint32_t pulse_width_us = now - arg->last_rise_us_;
-    if (pulse_width_us > MICROSECOND_PER_PULSE_LOWER_THRESHOLD) {
+    arg->pulse_in_progress = false;
+    if (pulse_width_us > LOWER_PULSE_WIDTH_THRESHOLD) {
       arg->cumulative_width_us_ += pulse_width_us;
       arg->pulse_count_ += 1;
     }
@@ -94,7 +105,7 @@ void PulseWidthAccumulateSensor::update() {
   }
   //correct errors
   //float rejection_threshold = get_rejection_threshold(polling_interval_s);
-  if (cumulative_width >= this->rejection_threshold_) {
+  if (cumulative_width > this->rejection_threshold_) {
     ESP_LOGW(TAG, "Discarding data: %.3f s Exceeds rejection threshold: %.3f ", cumulative_width,
              this->rejection_threshold_);
     cumulative_width = 0.0f;
