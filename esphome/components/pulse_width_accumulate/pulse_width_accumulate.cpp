@@ -67,11 +67,11 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
   if (arg->pin_.digital_read()) {
     // detected rising edge
     arg->last_rise_us_ = now;
-    arg->pulse_in_progress = true;
+    arg->pulse_in_progress_ = true;
   } else {
     // detected falling edge
     uint32_t pulse_width_us = now - arg->last_rise_us_;
-    arg->pulse_in_progress = false;
+    arg->pulse_in_progress_ = false;
     if (pulse_width_us > LOWER_PULSE_WIDTH_THRESHOLD) {
       arg->cumulative_width_us_ += pulse_width_us;
       arg->pulse_count_ += 1;
