@@ -44,7 +44,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   // handle long pulses that span beyond the polling window
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
-    if ( (now - this->last_rise_us_) > static_cast<uint32_t>(this->get_update_interval()*1000) ) {
+    if ( (now - this->last_rise_us_) > static_cast<uint32_t>(PulseWidthAccumulateSensor::get_update_interval()*1000) ) {
       // GPIO is continuously on. Disect the on-time into manageable chunks
       cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
       this->last_rise_us_ = now;
