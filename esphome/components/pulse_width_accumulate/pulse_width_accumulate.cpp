@@ -6,8 +6,8 @@
 namespace esphome {
 namespace pulse_width_accumulate {
 static const char *const TAG = "pulse_width";
-constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;
-constexpr uint32_t LOCKED_HIGH_THRESHOLD = 4.5e5L;  //threshold to regard GPIO as continuously on (this time must never exceed the polling interval)
+constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;  //microseconds, pulse dropped if shorter that this
+constexpr uint32_t DISECTION_THRESHOLD = 4.5e5L;  //Pulse disected if ontime greater than this
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
 void PulseWidthAccumulateSensorStore::setup(InternalGPIOPin *pin) {
@@ -44,7 +44,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   // handle long pulses that span beyond the polling window
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
-    if (now - this->last_rise_us_ > LOCKED_HIGH_THRESHOLD) {
+    if ( (now - this->last_rise_us_) > static_cast<uint32_t>(this->get_update_interval()*1000) ) {
       // GPIO is continuously on. Disect the on-time into manageable chunks
       cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
       this->last_rise_us_ = now;
@@ -104,7 +104,6 @@ void PulseWidthAccumulateSensor::update() {
              this->rejection_threshold_);
     cumulative_width = 0.0f;
   }
-
   // get frequency if needed
   if (this->frequency_sensor_ != nullptr) {
     float pulse_count = this->store_.get_pulses_this_cycle();
