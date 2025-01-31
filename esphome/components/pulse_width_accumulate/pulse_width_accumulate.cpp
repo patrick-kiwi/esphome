@@ -7,7 +7,7 @@ namespace esphome {
 namespace pulse_width_accumulate {
 static const char *const TAG = "pulse_width";
 constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;
-constexpr uint32_t LOCKED_HIGH_THRESHOLD = 9e5L;  //threshold to regard GPIO as continuously on (this time must never exceed the polling interval)
+constexpr uint32_t LOCKED_HIGH_THRESHOLD = 4.5e5L;  //threshold to regard GPIO as continuously on (this time must never exceed the polling interval)
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
 void PulseWidthAccumulateSensorStore::setup(InternalGPIOPin *pin) {
