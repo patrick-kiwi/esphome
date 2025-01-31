@@ -7,7 +7,7 @@ namespace esphome {
 namespace pulse_width_accumulate {
 static const char *const TAG = "pulse_width";
 constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;
-constexpr uint32_t LOCKED_HIGH_THRESHOLD = 5L*1e6L;
+constexpr uint32_t LOCKED_HIGH_THRESHOLD = 9e5L;  //0.9 seconds, Regard as continuously on (this must be less that the polling interval)
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
 void PulseWidthAccumulateSensorStore::setup(InternalGPIOPin *pin) {
@@ -42,17 +42,19 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
   // handle long pulses that span beyond the polling window
-  //this is causing problems!!!  observed 50% duty cycle results in 50% skipped values
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
     if (now - this->last_rise_us_ > LOCKED_HIGH_THRESHOLD) {
+      // GPIO is continuously on. Disect the on-time into manageable chunks
       cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
       this->last_rise_us_ = now;
     } else {
+      // Function executed while a short pulse was in progress
       cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
       this->cumulative_width_us_ = 0;
     }
   } else {
+    // Function executed while no pulse was in progress
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
   }
@@ -86,14 +88,7 @@ void PulseWidthAccumulateSensor::dump_config() {
   LOG_UPDATE_INTERVAL(this)
   LOG_PIN("  Pin: ", this->pin_);
 }
-/*
-float PulseWidthAccumulateSensor::get_rejection_threshold(const float& interval) const {
-  float short_pulse_threshold = (5 * interval < 1000.0f) ? 5 * interval: 1000.0f;
-  float long_pulses_threshold = 2*interval;
-  float output = (short_pulse_threshold > long_pulses_threshold) ? short_pulse_threshold : long_pulses_threshold; 
-  return output;
-}
-*/
+
 void PulseWidthAccumulateSensor::update() {
   // Retrieve cumulative pulse width, and zero the counter
   float cumulative_width = this->store_.get_cumulative_pulse_width_s();
@@ -103,8 +98,7 @@ void PulseWidthAccumulateSensor::update() {
     ESP_LOGW(TAG, "Cumulative pulse width: %.3f s exceeded polling interval: %.3f ", cumulative_width,
              polling_interval_s);
   }
-  //correct errors
-  //float rejection_threshold = get_rejection_threshold(polling_interval_s);
+  // catch and fix errors so they dont corrupt the whole dataset
   if (cumulative_width > this->rejection_threshold_) {
     ESP_LOGW(TAG, "Discarding data: %.3f s Exceeds rejection threshold: %.3f ", cumulative_width,
              this->rejection_threshold_);
