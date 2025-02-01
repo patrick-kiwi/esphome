@@ -33,6 +33,7 @@ float PulseWidthAccumulateSensorStore::get_pulses_this_cycle() {
 void PulseWidthAccumulateSensor::setup(void) {
   this->store_.setup(this->pin_); 
   float interval = static_cast<float>(this->get_update_interval()) / 1000.0f;
+  uint32_t interval_us_ = this->get_update_interval() / 1000L;
   float short_pulse_threshold = (5 * interval < 1000.0f) ? 5 * interval: 1000.0f;
   float long_pulses_threshold = 2*interval;
   this->rejection_threshold_ = (short_pulse_threshold > long_pulses_threshold) ? short_pulse_threshold : long_pulses_threshold;
@@ -47,7 +48,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   // handle long pulses that span beyond the polling window
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
-    if ( (now - this->last_rise_us_) >= 1e6L ) {
+    if ( (now - this->last_rise_us_) >= PulseWidthAccumulateSensor::getInterval() ) {
       // GPIO is continuously on. Disect microsecound counter into manageable chunks
 
       cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;

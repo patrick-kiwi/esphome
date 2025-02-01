@@ -15,6 +15,7 @@ class PulseWidthAccumulateSensorStore {
   static void gpio_intr(PulseWidthAccumulateSensorStore *arg);
   float get_pulses_this_cycle();
   float get_cumulative_pulse_width_s();
+  static float getInterval() { return interval_us_; }
 
  private:
   ISRInternalGPIOPin pin_;
@@ -24,6 +25,7 @@ class PulseWidthAccumulateSensorStore {
   bool pulse_in_progress_{false};
   float cumulative_width_s_{0.0f};
   uint32_t pulse_count_{0};
+  uint32_t interval_us_{60*1e6L};
   portMUX_TYPE mux_;
 };
 
