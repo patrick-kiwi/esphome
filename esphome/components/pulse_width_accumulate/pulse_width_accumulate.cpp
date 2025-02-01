@@ -58,6 +58,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
       ESP_LOGW(TAG, "disecting out time: %.1f s", cumulative_local);
       //make cumulative_width_us smaller by the same amount
       this->cumulative_width_us_ = this->cumulative_width_us_ - disection_threshold;
+      this->last_rise_us_ = this->last_rise_us_ + disection_threshold;
     } else {
       // Assume a standard short pulse which by chance executed while input was HIGH
       cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
