@@ -45,19 +45,19 @@ void PulseWidthAccumulateSensor::setup(void) {
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
-  uint32_t chomping_amount_us = 1e6;  //1 second
+  uint32_t disection_threshold = 1e6;  //1 second
 
   
   // handle long pulses that span beyond the polling interval
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
-    ESP_LOGW(TAG, "now: %d, polling interval: %d", now - this->last_rise_us_, chomping_amount_us);
-    if ( (now - this->last_rise_us_) >=  chomping_amount_us) {
+    ESP_LOGW(TAG, "Difference: %d, Polling interval: %d", now - this->last_rise_us_, disection_threshold);
+    if ( this->cumulative_width_us_ >=  disection_threshold) {
       // GPIO is continuously on. Disect the microsecound counter into polling interval sized chunks
-      cumulative_local = static_cast<float>(chomping_amount_us)/1e6f;
+      cumulative_local = static_cast<float>(disection_threshold)/1e6f;
       ESP_LOGW(TAG, "disecting out time: %.1f s", cumulative_local);
-      //Bring forward the pulse start time by amount logged
-      this->cumulative_width_us_ = this->cumulative_width_us_ - chomping_amount_us;
+      //make cumulative_width_us smaller by the same amount
+      this->cumulative_width_us_ = this->cumulative_width_us_ - disection_threshold;
     } else {
       // Assume a standard short pulse which by chance executed while input was HIGH
       cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
