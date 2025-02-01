@@ -10,9 +10,7 @@ constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;  //pulses shorter than this
 constexpr uint32_t DISECTION_THRESHOLD = 4.5e5L;  //pulses longer than this will be disected during polling
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
-//This is probably not the best way of getting the update interval
-PulseWidthAccumulateSensor sensor;  // Create an instance
-uint32_t interval_us = sensor.get_update_interval() * 1000.0f;
+
 
 
 
@@ -48,6 +46,9 @@ void PulseWidthAccumulateSensor::setup(void) {
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
+  //This is probably not the best way of getting the update interval
+PulseWidthAccumulateSensor sensor;  // Create an instance
+uint32_t interval_us = sensor.get_update_interval() * 1000.0f;
   
   // handle long pulses that span beyond the polling interval
   portENTER_CRITICAL(&this->mux_);
