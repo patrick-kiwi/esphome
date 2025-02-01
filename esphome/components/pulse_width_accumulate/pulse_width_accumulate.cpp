@@ -40,7 +40,7 @@ void PulseWidthAccumulateSensor::setup(void) {
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
-  go_slow_flag = false;
+  bool go_slow_flag = false;
   // Short pulse logic - Fast simple & accurate but unsuitable for long pulses
   portENTER_CRITICAL(&this->mux_);
     if (now-this->last_rise_us_ <= DISSECTION_THRESHOLD) {
