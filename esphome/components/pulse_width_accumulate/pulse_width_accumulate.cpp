@@ -32,10 +32,10 @@ float PulseWidthAccumulateSensorStore::get_pulses_this_cycle() {
 
 void PulseWidthAccumulateSensor::setup(void) {
   this->store_.setup(this->pin_); 
-  float interval = static_cast<float>(this->get_update_interval()) / 1000.0f;
-  uint32_t interval_us_ = this->get_update_interval() / 1000L;
-  float short_pulse_threshold = (5 * interval < 1000.0f) ? 5 * interval: 1000.0f;
-  float long_pulses_threshold = 2*interval;
+  float interval_s = static_cast<float>(this->get_update_interval()) / 1000.0f;
+  uint32_t interval_us_ = this->get_update_interval() * 1000L;
+  float short_pulse_threshold = (5 * interval_s < 1000.0f) ? 5 * interval_s: 1000.0f;
+  float long_pulses_threshold = 2*interval_s;
   this->rejection_threshold_ = (short_pulse_threshold > long_pulses_threshold) ? short_pulse_threshold : long_pulses_threshold;
   ESP_LOGW(TAG, "Rejection threshold set: %.1f s", this->rejection_threshold_);
 }
@@ -45,21 +45,22 @@ void PulseWidthAccumulateSensor::setup(void) {
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
-  // handle long pulses that span beyond the polling window
+  uint32_t polling_interval_us = PulseWidthAccumulateSensor::getInterval();
+  // handle long pulses that span beyond the polling interval
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
-    if ( (now - this->last_rise_us_) >= PulseWidthAccumulateSensor::getInterval() ) {
-      // GPIO is continuously on. Disect microsecound counter into manageable chunks
+    if ( (now - this->last_rise_us_) >=  polling_interval_us) {
+      // GPIO continuously on. Disect microsecound counter into polling interval sized chunks
 
       cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
       this->last_rise_us_ = now;
     } else {
-      // Standard short pulse.  Executed while input HIGH
+      // Standard short pulse.  by chance executed while input HIGH
       cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
       this->cumulative_width_us_ = 0;
     }
   } else {
-    // Standard short pulse.  Executed while input LOW
+    // Standard short pulse.  by chance executed while input LOW
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
   }
