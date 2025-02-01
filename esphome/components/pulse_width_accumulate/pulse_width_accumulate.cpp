@@ -37,7 +37,7 @@ void PulseWidthAccumulateSensor::setup(void) {
   ESP_LOGW(TAG, "Rejection threshold set: %.1f s", this->rejection_threshold_);
 }
 
-/*
+
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
@@ -79,8 +79,8 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
 
   return cumulative_local;
 }
-*/
-
+/*
+//for fast pulses
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   portENTER_CRITICAL(&this->mux_);
@@ -89,7 +89,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   portEXIT_CRITICAL(&this->mux_);
   return cumulative_local;
 }
-
+*/
 
 // ISR. Get in and out ASAP. No floating point math
 void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSensorStore *arg) {
