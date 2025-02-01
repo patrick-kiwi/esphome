@@ -36,6 +36,7 @@ class PulseWidthAccumulateSensor : public sensor::Sensor, public PollingComponen
   float get_setup_priority() const override { return setup_priority::DATA; }
   void update();
   void set_frequency_sensor(sensor::Sensor *frequency_sensor) { frequency_sensor_ = frequency_sensor; }
+  static uint32_t get_update_interval_us(void) { return static_cast<uint32_t>(this->get_update_interval()) / 1000L; }
 
  private:
   float rejection_threshold_{1000.0f};

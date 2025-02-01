@@ -18,6 +18,7 @@ void PulseWidthAccumulateSensorStore::setup(InternalGPIOPin *pin) {
   this->last_rise_us_ = micros();
   pin->attach_interrupt(&PulseWidthAccumulateSensorStore::gpio_intr, this, gpio::INTERRUPT_ANY_EDGE);
 }
+
 float PulseWidthAccumulateSensorStore::get_pulses_this_cycle() {
   uint32_t pulse_count = 0;
   // Safely copy & reset the pulse counter
