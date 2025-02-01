@@ -45,25 +45,27 @@ void PulseWidthAccumulateSensor::setup(void) {
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
-  uint32_t dissection_threshold = 1e6;  // 1 second
+  uint32_t disection_threshold = 1e6;  //1 second
+
+  
+  // handle long pulses that span beyond the polling interval
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
-    uint32_t pulse_duration = now - this->last_rise_us_;
-    ESP_LOGW(TAG, "Difference: %u, Polling interval: %u", pulse_duration, dissection_threshold);
-    if (pulse_duration >= dissection_threshold) {
-      // GPIO is continuously HIGH, break time into chunks
-      cumulative_local = static_cast<float>(dissection_threshold) / 1e6f;
-      ESP_LOGW(TAG, "Dissecting out time: %.1f s", cumulative_local);
-      // Move the reference point forward by 1 second
-      this->last_rise_us_ += dissection_threshold;
-      this->cumulative_width_us_ -= dissection_threshold;
+    ESP_LOGW(TAG, "Difference: %d, Polling interval: %d", now - this->last_rise_us_, disection_threshold);
+    if ( this->cumulative_width_us_ >=  disection_threshold) {
+      // GPIO is continuously on. Disect the microsecound counter into polling interval sized chunks
+      cumulative_local = static_cast<float>(disection_threshold)/1e6f;
+      ESP_LOGW(TAG, "disecting out time: %.1f s", cumulative_local);
+      //make cumulative_width_us smaller by the same amount
+      this->cumulative_width_us_ = this->cumulative_width_us_ - disection_threshold;
+      this->last_rise_us_ = this->last_rise_us_ + disection_threshold;
     } else {
-      // Assume a short pulse or unfinished long pulse
+      // Assume a standard short pulse which by chance executed while input was HIGH
       cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
       this->cumulative_width_us_ = 0;
     }
   } else {
-    // Input LOW case
+    // Standard short pulse.  by chance executed while input LOW
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
   }
@@ -71,6 +73,26 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   return cumulative_local;
 }
 
+// ISR. Get in and out ASAP. No floating point math
+void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSensorStore *arg) {
+  uint32_t now = micros();
+  portENTER_CRITICAL_ISR(&arg->mux_);
+  if (arg->pin_.digital_read()) {
+    // detected rising edge
+    arg->last_rise_us_ = now;
+    arg->pulse_in_progress_ = true;
+  } else {
+    // detected falling edge
+    uint32_t pulse_width_us = now - arg->last_rise_us_;
+    arg->pulse_in_progress_ = false;
+    if (pulse_width_us > LOWER_PULSE_WIDTH_THRESHOLD) {
+      arg->cumulative_width_us_ += pulse_width_us;
+      arg->pulse_count_ += 1;
+    }
+  }
+  portEXIT_CRITICAL_ISR(&arg->mux_);
+  
+}
 
 void PulseWidthAccumulateSensor::dump_config() {
   LOG_SENSOR("", "Pulse Width", this)
