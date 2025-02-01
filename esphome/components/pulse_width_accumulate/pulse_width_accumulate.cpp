@@ -37,11 +37,55 @@ void PulseWidthAccumulateSensor::setup(void) {
   ESP_LOGW(TAG, "Rejection threshold set: %.1f s", this->rejection_threshold_);
 }
 
+/*
+float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
+  float cumulative_local = 0;
+  uint32_t now = micros();
+  uint32_t dissection_threshold = 1e6;  // 1 second
+  uint32_t pulse_duration;
+  // Enter critical section only for the necessary data read
+  portENTER_CRITICAL(&this->mux_);
+  bool pulse_active = this->pulse_in_progress_;
+  pulse_duration = now - this->last_rise_us_;
+  uint32_t cumulative_width_copy = this->cumulative_width_us_;
+  portEXIT_CRITICAL(&this->mux_);  // Leave critical section ASAP
+  ESP_LOGW(TAG, "Pulse in progress: %d, Difference: %u µs, Polling interval: %u µs, Cumulative: %u µs", 
+           pulse_active, pulse_duration, dissection_threshold, cumulative_width_copy);
+  if (pulse_active) {
+    if (pulse_duration >= dissection_threshold) {
+      ESP_LOGW(TAG, "Long pulse detected. Returning 1s, reducing cumulative time.");
+      cumulative_local = static_cast<float>(dissection_threshold) / 1e6f;
+      // Now update values (with a minimal critical section)
+      portENTER_CRITICAL(&this->mux_);
+      this->last_rise_us_ += dissection_threshold;
+      this->cumulative_width_us_ -= dissection_threshold;
+      portEXIT_CRITICAL(&this->mux_);
+      ESP_LOGW(TAG, "Updated last_rise_us_: %u, Remaining cumulative_width_us_: %u", 
+               this->last_rise_us_, this->cumulative_width_us_);
+    } else {
+      ESP_LOGW(TAG, "Short pulse or incomplete long pulse.");
+      cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
+      portENTER_CRITICAL(&this->mux_);
+      this->cumulative_width_us_ = 0;
+      portEXIT_CRITICAL(&this->mux_);
+    }
+  } else {
+    ESP_LOGW(TAG, "Pulse not in progress. Normal behavior.");
+    cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
+    portENTER_CRITICAL(&this->mux_);
+    this->cumulative_width_us_ = 0;
+    portEXIT_CRITICAL(&this->mux_);
+  }
+
+  return cumulative_local;
+}
+*/
+
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   bool go_slow_flag = false;
   uint32_t now = micros();
-  // Short pulse logic - Fast simple & accurate but unsuitable for long pulses
+  // Handle short pulses - Super fast & accurate simple logic
   portENTER_CRITICAL(&this->mux_);
     if (now-this->last_rise_us_ <= DISSECTION_THRESHOLD) {
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
@@ -50,39 +94,45 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
       go_slow_flag = true;
     }
   portEXIT_CRITICAL(&this->mux_);
-  // Long pulse logic - Extra complexity slows the ISR, Critical sections require splitting otherwise program crashes
+  //Handle long pulses - Slower and less accurate but handles more complex critical section without crashing
   if (go_slow_flag) {
     go_slow_flag = false;
+    uint32_t dissection_threshold = 1e6;  // 1 second
     uint32_t pulse_duration;
     // Enter critical section only for the necessary data read
     portENTER_CRITICAL(&this->mux_);
     bool pulse_active = this->pulse_in_progress_;
     pulse_duration = now - this->last_rise_us_;
     uint32_t cumulative_width_copy = this->cumulative_width_us_;
-    portEXIT_CRITICAL(&this->mux_);  
+    portEXIT_CRITICAL(&this->mux_);  // Leave critical section ASAP
+    ESP_LOGW(TAG, "Pulse in progress: %d, Difference: %u µs, Polling interval: %u µs, Cumulative: %u µs", 
+           pulse_active, pulse_duration, dissection_threshold, cumulative_width_copy);
     if (pulse_active) {
-      if (pulse_duration >= DISSECTION_THRESHOLD) {
+      if (pulse_duration >= dissection_threshold) {
         ESP_LOGW(TAG, "Long pulse detected. Returning 1s, reducing cumulative time.");
-        cumulative_local = static_cast<float>(DISSECTION_THRESHOLD) / 1e6f;
+        cumulative_local = static_cast<float>(dissection_threshold) / 1e6f;
         // Now update values (with a minimal critical section)
         portENTER_CRITICAL(&this->mux_);
-        this->last_rise_us_ += DISSECTION_THRESHOLD;
-        this->cumulative_width_us_ -= DISSECTION_THRESHOLD;
+        this->last_rise_us_ += dissection_threshold;
+        this->cumulative_width_us_ -= dissection_threshold;
         portEXIT_CRITICAL(&this->mux_);
+        ESP_LOGW(TAG, "Updated last_rise_us_: %u, Remaining cumulative_width_us_: %u", 
+               this->last_rise_us_, this->cumulative_width_us_);
       } else {
-        // Short pulse or incomplete long pulse.
+        ESP_LOGW(TAG, "Short pulse or incomplete long pulse.");
         cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
         portENTER_CRITICAL(&this->mux_);
         this->cumulative_width_us_ = 0;
         portEXIT_CRITICAL(&this->mux_);
       }
     } else {
-      // Pulse not in progress. Normal behavior.
+      ESP_LOGW(TAG, "Pulse not in progress. Normal behavior.");
       cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
       portENTER_CRITICAL(&this->mux_);
       this->cumulative_width_us_ = 0;
       portEXIT_CRITICAL(&this->mux_);
     }
+
     }
   return cumulative_local;
 }
