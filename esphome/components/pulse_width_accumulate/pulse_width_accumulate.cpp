@@ -10,9 +10,6 @@ constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;  //pulses shorter than this
 constexpr uint32_t DISECTION_THRESHOLD = 4.5e5L;  //pulses longer than this will be disected during polling
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
-
-
-
 void PulseWidthAccumulateSensorStore::setup(InternalGPIOPin *pin) {
   pin->setup();
   this->pin_ = pin->to_isr();
@@ -40,76 +37,33 @@ void PulseWidthAccumulateSensor::setup(void) {
   ESP_LOGW(TAG, "Rejection threshold set: %.1f s", this->rejection_threshold_);
 }
 
-/*Zero the microsecond counter every polling cycle so we never overflow at 2^32
-// (ie. ~71.58 min)
-float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
-  float cumulative_local = 0;
-  uint32_t now = micros();
-  uint32_t dissection_threshold = 1e6;  //1 second
-
-  
-  // handle long pulses that span beyond the polling interval
-  portENTER_CRITICAL(&this->mux_);
-  if (this->pulse_in_progress_) {
-    uint32_t pulse_duration = now - this->last_rise_us_;
-    ESP_LOGW(TAG, "Difference: %d, Polling interval: %d", now - this->last_rise_us_, dissection_threshold);
-    if ( pulse_duration >=  dissection_threshold) {
-      // GPIO is continuously on. Disect the microsecound counter into polling interval sized chunks
-      cumulative_local = static_cast<float>(dissection_threshold) / 1e6f;
-      ESP_LOGW(TAG, "Dissecting out time: %.1f s", cumulative_local);
-      
-      // Move the reference point forward by 1 second
-      this->last_rise_us_ += dissection_threshold;
-      this->cumulative_width_us_ -= dissection_threshold;
-    } else {
-      // Assume a standard short pulse which by chance executed while input was HIGH
-      cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
-      this->cumulative_width_us_ = 0;
-    }
-  } else {
-    // Standard short pulse.  by chance executed while input LOW
-    cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
-    this->cumulative_width_us_ = 0;
-  }
-  portEXIT_CRITICAL(&this->mux_);
-  return cumulative_local;
-}
-*/
-
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
   uint32_t dissection_threshold = 1e6;  // 1 second
   uint32_t pulse_duration;
-  
   // Enter critical section only for the necessary data read
   portENTER_CRITICAL(&this->mux_);
   bool pulse_active = this->pulse_in_progress_;
   pulse_duration = now - this->last_rise_us_;
   uint32_t cumulative_width_copy = this->cumulative_width_us_;
   portEXIT_CRITICAL(&this->mux_);  // Leave critical section ASAP
-
   ESP_LOGW(TAG, "Pulse in progress: %d, Difference: %u µs, Polling interval: %u µs, Cumulative: %u µs", 
            pulse_active, pulse_duration, dissection_threshold, cumulative_width_copy);
-
   if (pulse_active) {
     if (pulse_duration >= dissection_threshold) {
       ESP_LOGW(TAG, "Long pulse detected. Returning 1s, reducing cumulative time.");
-
       cumulative_local = static_cast<float>(dissection_threshold) / 1e6f;
-
       // Now update values (with a minimal critical section)
       portENTER_CRITICAL(&this->mux_);
       this->last_rise_us_ += dissection_threshold;
       this->cumulative_width_us_ -= dissection_threshold;
       portEXIT_CRITICAL(&this->mux_);
-
       ESP_LOGW(TAG, "Updated last_rise_us_: %u, Remaining cumulative_width_us_: %u", 
                this->last_rise_us_, this->cumulative_width_us_);
     } else {
       ESP_LOGW(TAG, "Short pulse or incomplete long pulse.");
       cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
-
       portENTER_CRITICAL(&this->mux_);
       this->cumulative_width_us_ = 0;
       portEXIT_CRITICAL(&this->mux_);
@@ -117,7 +71,6 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   } else {
     ESP_LOGW(TAG, "Pulse not in progress. Normal behavior.");
     cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
-
     portENTER_CRITICAL(&this->mux_);
     this->cumulative_width_us_ = 0;
     portEXIT_CRITICAL(&this->mux_);
@@ -125,7 +78,6 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
 
   return cumulative_local;
 }
-
 
 
 // ISR. Get in and out ASAP. No floating point math
@@ -146,7 +98,6 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
     }
   }
   portEXIT_CRITICAL_ISR(&arg->mux_);
-  
 }
 
 void PulseWidthAccumulateSensor::dump_config() {
