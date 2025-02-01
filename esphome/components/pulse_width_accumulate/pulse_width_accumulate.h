@@ -14,10 +14,10 @@ class PulseWidthAccumulateSensorStore {
   void setup(InternalGPIOPin *pin);
   static void gpio_intr(PulseWidthAccumulateSensorStore *arg);
   float get_pulses_this_cycle();
-  
+  portMUX_TYPE mux_;
 
  private:
-  portMUX_TYPE mux_;
+  
   ISRInternalGPIOPin pin_;
   uint32_t last_rise_us_{0};
   uint32_t last_fall_us_{0};
