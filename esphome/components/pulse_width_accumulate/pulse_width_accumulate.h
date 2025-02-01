@@ -25,7 +25,7 @@ class PulseWidthAccumulateSensorStore {
   bool pulse_in_progress_{false};
   float cumulative_width_s_{0.0f};
   uint32_t pulse_count_{0};
-  uint32_t interval_us_{0};
+  static uint32_t interval_us_{60L*1e6L};
   portMUX_TYPE mux_;
 };
 
