@@ -10,7 +10,9 @@ constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;  //pulses shorter than this
 constexpr uint32_t DISECTION_THRESHOLD = 4.5e5L;  //pulses longer than this will be disected during polling
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
-
+ //This is probably not the best way of getting the update interval
+PulseWidthAccumulateSensor sensor;  // Create an instance
+uint32_t interval_us = sensor.get_update_interval() * 1000.0f;
 
 
 
@@ -46,9 +48,7 @@ void PulseWidthAccumulateSensor::setup(void) {
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
-  //This is probably not the best way of getting the update interval
-PulseWidthAccumulateSensor sensor;  // Create an instance
-uint32_t interval_us = sensor.get_update_interval() * 1000.0f;
+
   
   // handle long pulses that span beyond the polling interval
   portENTER_CRITICAL(&this->mux_);
@@ -58,7 +58,7 @@ uint32_t interval_us = sensor.get_update_interval() * 1000.0f;
       // GPIO is continuously on. Disect the microsecound counter into polling interval sized chunks
       cumulative_local = static_cast<float>(interval_us)/1e6f;
       ESP_LOGW(TAG, "disecting out time: %.1f s", cumulative_local);
-      this->last_rise_us_ = this->last_rise_us_ - polling_interval_us;
+      this->last_rise_us_ = this->last_rise_us_ - interval_us;
     } else {
       // Assume a standard short pulse which by chance executed while input was HIGH
       cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
