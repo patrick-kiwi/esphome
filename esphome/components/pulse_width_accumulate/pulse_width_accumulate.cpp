@@ -84,7 +84,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
 
   portENTER_CRITICAL(&this->mux_);
   
-  if (this->pulse_in_progress_) {
+  if (this->pin_.digital_read()) {
     uint32_t pulse_duration = now - this->last_rise_us_;
     ESP_LOGW(TAG, "Pulse in progress. Difference: %u µs, Polling interval: %u µs, Cumulative: %u µs", 
              pulse_duration, dissection_threshold, this->cumulative_width_us_);
