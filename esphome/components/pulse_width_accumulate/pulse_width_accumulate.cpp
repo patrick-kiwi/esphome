@@ -9,7 +9,9 @@ static const char *const TAG = "pulse_width";
 constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;  //pulses shorter than this will be dropped
 constexpr uint32_t DISECTION_THRESHOLD = 4.5e5L;  //pulses longer than this will be disected during polling
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
-uint32_t PulseWidthAccumulateSensor::interval_us_;
+
+//global variables
+uint32_t interval_us = PulseWidthAccumulateSensor::get_update_interval() * 1000.0f;
 
 
 
@@ -34,7 +36,6 @@ float PulseWidthAccumulateSensorStore::get_pulses_this_cycle() {
 void PulseWidthAccumulateSensor::setup(void) {
   this->store_.setup(this->pin_); 
   float interval_s = static_cast<float>(this->get_update_interval()) / 1000.0f;
-  PulseWidthAccumulateSensor::interval_us_ = this->get_update_interval() * 1000L;
   float short_pulse_threshold = (5 * interval_s < 1000.0f) ? 5 * interval_s: 1000.0f;
   float long_pulses_threshold = 2*interval_s;
   this->rejection_threshold_ = (short_pulse_threshold > long_pulses_threshold) ? short_pulse_threshold : long_pulses_threshold;
@@ -46,14 +47,14 @@ void PulseWidthAccumulateSensor::setup(void) {
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
-  uint32_t polling_interval_us = PulseWidthAccumulateSensor::getInterval();
+  
   // handle long pulses that span beyond the polling interval
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
-    ESP_LOGW(TAG, "now: %d, polling interval: %d", now - this->last_rise_us_, polling_interval_us);
-    if ( (now - this->last_rise_us_) >  polling_interval_us) {
+    ESP_LOGW(TAG, "now: %d, polling interval: %d", now - this->last_rise_us_, interval_us);
+    if ( (now - this->last_rise_us_) >  interval_us) {
       // GPIO is continuously on. Disect the microsecound counter into polling interval sized chunks
-      cumulative_local = static_cast<float>(polling_interval_us*1e6L);
+      cumulative_local = static_cast<float>(interval_us)/1e6f;
       ESP_LOGW(TAG, "disecting out time: %.1f s", cumulative_local);
       this->last_rise_us_ = this->last_rise_us_ - polling_interval_us;
     } else {
