@@ -51,12 +51,11 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
     if ( (now - this->last_rise_us_) >=  polling_interval_us) {
-      // GPIO continuously on. Disect microsecound counter into polling interval sized chunks
-
-      cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
-      this->last_rise_us_ = now;
+      // GPIO is continuously on. Disect the microsecound counter into polling interval sized chunks
+      cumulative_local = static_cast<float>(polling_interval_us) / 1e6f;
+      this->last_rise_us_ = this->last_rise_us_ - polling_interval_us;
     } else {
-      // Standard short pulse.  by chance executed while input HIGH
+      // Assume a standard short pulse which by chance executed while input was HIGH
       cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
       this->cumulative_width_us_ = 0;
     }
