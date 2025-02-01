@@ -89,11 +89,11 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     if (now-this->last_rise_us_ <= 1e6L) {
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
-    return cumulative_local;
     } else {
       go_slow_flag = true;
     }
   portEXIT_CRITICAL(&this->mux_);
+  return cumulative_local;
 }
 
 
