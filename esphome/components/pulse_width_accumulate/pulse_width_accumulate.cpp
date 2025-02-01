@@ -41,28 +41,28 @@ void PulseWidthAccumulateSensor::setup(void) {
 
 // Zero the microsecond counter every polling cycle so we never overflow at 2^32
 // (ie. ~71.58 min)
-float PulseWidthAccumulateSensor::get_cumulative_pulse_width_s() {
+float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t now = micros();
   // handle long pulses that span beyond the polling window
-  portENTER_CRITICAL(&this->store_.mux_);
-  if (this->store_.pulse_in_progress_) {
-    if ( (now - this->store_.last_rise_us_) >= 1e6L ) {
+  portENTER_CRITICAL(&this->mux_);
+  if (this->pulse_in_progress_) {
+    if ( (now - this->last_rise_us_) >= 1e6L ) {
       // GPIO is continuously on. Disect microsecound counter into manageable chunks
 
-      cumulative_local = static_cast<float>(now - this->store_.last_rise_us_) / 1e6f;
-      this->store_.last_rise_us_ = now;
+      cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
+      this->last_rise_us_ = now;
     } else {
       // Standard short pulse.  Executed while input HIGH
-      cumulative_local = static_cast<float>(this->store_.cumulative_width_us_) / 1e6f;
-      this->store_.cumulative_width_us_ = 0;
+      cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
+      this->cumulative_width_us_ = 0;
     }
   } else {
     // Standard short pulse.  Executed while input LOW
-    cumulative_local = static_cast<float>(this->store_.cumulative_width_us_) / 1e6f;
-    this->store_.cumulative_width_us_ = 0;
+    cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
+    this->cumulative_width_us_ = 0;
   }
-  portEXIT_CRITICAL(&this->store_.mux_);
+  portEXIT_CRITICAL(&this->mux_);
   return cumulative_local;
 }
 
