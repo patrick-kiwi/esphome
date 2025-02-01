@@ -86,8 +86,8 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   
   if (this->pin_.digital_read()) {
     uint32_t pulse_duration = micros() - this->last_rise_us_;
-    ESP_LOGW(TAG, "Pulse in progress. Difference: %u µs, Polling interval: %u µs, Cumulative: %u µs", 
-             pulse_duration, dissection_threshold, this->cumulative_width_us_);
+    ESP_LOGW(TAG, "Pulse in progress. Difference: %u µs, Polling interval: %u µs, 
+             pulse_duration, dissection_threshold);
 
     if (pulse_duration >= dissection_threshold) {
       ESP_LOGW(TAG, "Long pulse detected. Returning 1s, reducing cumulative time.");
@@ -96,7 +96,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
 
       // Move reference point forward by 1 second
       this->last_rise_us_ += dissection_threshold;
-      this->cumulative_width_us_ -= dissection_threshold;
+      //this->cumulative_width_us_ -= dissection_threshold;
 
       ESP_LOGW(TAG, "New last_rise_us_: %u, Remaining cumulative_width_us_: %u", 
                this->last_rise_us_, this->cumulative_width_us_);
