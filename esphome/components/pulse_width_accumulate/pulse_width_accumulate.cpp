@@ -50,6 +50,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   // handle long pulses that span beyond the polling interval
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
+    ESP_LOGW(TAG, "now: %d, polling interval: %d", now - this->last_rise_us_, polling_interval_us);
     if ( (now - this->last_rise_us_) >=  polling_interval_us) {
       // GPIO is continuously on. Disect the microsecound counter into polling interval sized chunks
       cumulative_local = static_cast<float>(polling_interval_us*1e6L);
