@@ -53,7 +53,8 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     if ( (now - this->last_rise_us_) >=  polling_interval_us) {
       // GPIO is continuously on. Disect the microsecound counter into polling interval sized chunks
       cumulative_local = static_cast<float>(polling_interval_us) / 1e6f;
-      this->last_rise_us_ = this->last_rise_us_ - polling_interval_us;
+      ESP_LOGW(TAG, "disecting out time: %.1f s", cumulative_local);
+      this->cumulative_width_us_ = this->cumulative_width_us_ - polling_interval_us;
     } else {
       // Assume a standard short pulse which by chance executed while input was HIGH
       cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
