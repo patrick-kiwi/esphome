@@ -57,7 +57,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
       cumulative_local = static_cast<float>(chomping_amount_us)/1e6f;
       ESP_LOGW(TAG, "disecting out time: %.1f s", cumulative_local);
       //Bring forward the pulse start time by amount logged
-      this->last_rise_us_ = this->last_rise_us_ + chomping_amount_us;
+      this->cumulative_width_us_ = this->cumulative_width_us_ - chomping_amount_us;
     } else {
       // Assume a standard short pulse which by chance executed while input was HIGH
       cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
