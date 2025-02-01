@@ -7,6 +7,8 @@
 namespace esphome {
 namespace pulse_width_accumulate {
 
+uint32_t PulseWidthAccumulateSensorStore::interval_us_ = 60L * 1e6L;
+
 // Store data in a class that doesn't use multiple-inheritance (vtables in flash)
 class PulseWidthAccumulateSensorStore {
  public:
@@ -41,7 +43,7 @@ class PulseWidthAccumulateSensor : public sensor::Sensor, public PollingComponen
 
  private:
   float rejection_threshold_{1000.0f};
-  static uint32_t interval_us_{60L*1e6L};
+  static uint32_t interval_us_;
   PulseWidthAccumulateSensorStore store_;
   InternalGPIOPin *pin_;
   sensor::Sensor *frequency_sensor_{nullptr};
