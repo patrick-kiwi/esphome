@@ -34,7 +34,7 @@ float PulseWidthAccumulateSensorStore::get_pulses_this_cycle() {
 void PulseWidthAccumulateSensor::setup(void) {
   this->store_.setup(this->pin_); 
   float interval_s = static_cast<float>(this->get_update_interval()) / 1000.0f;
-  uint32_t interval_us_ = this->get_update_interval() * 1000L;
+  PulseWidthAccumulateSensor::interval_us_ = this->get_update_interval() * 1000L;
   float short_pulse_threshold = (5 * interval_s < 1000.0f) ? 5 * interval_s: 1000.0f;
   float long_pulses_threshold = 2*interval_s;
   this->rejection_threshold_ = (short_pulse_threshold > long_pulses_threshold) ? short_pulse_threshold : long_pulses_threshold;
