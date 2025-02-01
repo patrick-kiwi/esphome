@@ -9,7 +9,7 @@ static const char *const TAG = "pulse_width";
 constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;  //pulses shorter than this will be dropped
 constexpr uint32_t DISECTION_THRESHOLD = 4.5e5L;  //pulses longer than this will be disected during polling
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
-uint32_t PulseWidthAccumulateSensor::interval_us_ = 60L * 1e6L;
+//uint32_t PulseWidthAccumulateSensor::interval_us_ = 60L * 1e6L;
 
 
 
