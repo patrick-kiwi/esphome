@@ -10,11 +10,12 @@ namespace pulse_width_accumulate {
 // Store data in a class that doesn't use multiple-inheritance (vtables in flash)
 class PulseWidthAccumulateSensorStore {
  public:
-  PulseWidthAccumulateSensorStore();
+  PulseWidthAccumulateSensorStore(); 
   void setup(InternalGPIOPin *pin);
   static void gpio_intr(PulseWidthAccumulateSensorStore *arg);
   float get_cumulative_pulse_width_s();
   float get_pulses_this_cycle();
+  
 
  private:
   portMUX_TYPE mux_;

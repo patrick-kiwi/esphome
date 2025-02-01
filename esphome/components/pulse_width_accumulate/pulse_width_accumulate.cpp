@@ -10,6 +10,8 @@ constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;  //pulses shorter than this
 constexpr uint32_t DISECTION_THRESHOLD = 4.5e5L;  //pulses longer than this will be disected during polling
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
+
+
 void PulseWidthAccumulateSensorStore::setup(InternalGPIOPin *pin) {
   pin->setup();
   this->pin_ = pin->to_isr();
@@ -44,8 +46,9 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   // handle long pulses that span beyond the polling window
   portENTER_CRITICAL(&this->mux_);
   if (this->pulse_in_progress_) {
-    if ( (now - this->last_rise_us_) > 4.5e5L ) {
-      // GPIO is continuously on. Disect the on-time into manageable chunks
+    if ( (now - this->last_rise_us_) >= PulseWidthAccumulateSensor::get_update_interval_us() ) {
+      // GPIO is continuously on. Disect microsecound counter into manageable chunks
+
       cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
       this->last_rise_us_ = now;
     } else {
