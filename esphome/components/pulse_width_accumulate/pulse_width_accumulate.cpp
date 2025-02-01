@@ -84,11 +84,9 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   portENTER_CRITICAL(&this->mux_);
-  // handle long pulses that span beyond the polling window
-  if (this->pin_.digital_read()) {
-    uint32_t now = micros();
-    cumulative_local = static_cast<float>(now - this->last_rise_us_) / 1e6f;
-    this->last_rise_us_ = now;
+  // handle incomplete pulses
+  if (this->pulse_in_progress_) {
+    cumulative_local = static_cast<float>(micros() - this->last_rise_us_) / 1e6f;
   } else {
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
