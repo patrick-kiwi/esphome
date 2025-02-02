@@ -59,12 +59,12 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
 // Long pulse logic - Extra complexity slows the ISR, Critical sections require splitting otherwise program crashes
   portENTER_CRITICAL(&this->mux_);
   gpio_high = this->pulse_in_progress_;
-  pulse_duration = micros() - this->last_rise_us_;
+  //pulse_duration = micros() - this->last_rise_us_;
   portEXIT_CRITICAL(&this->mux_); 
 
   if (gpio_high) {
     ESP_LOGW(TAG, "Slow Route, GPIO HIGH");
-    cumulative_local = static_cast<float>(pulse_duration) / 1e6f;
+    cumulative_local = static_cast<float>(cumulative_width_us_) / 1e6f;
     portENTER_CRITICAL(&this->mux_);
     this->last_rise_us_ = micros();
     this->cumulative_width_us_ -= pulse_duration;
