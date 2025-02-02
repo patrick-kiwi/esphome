@@ -44,7 +44,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   bool go_slow_flag = false;
   // Short pulse logic - Fast simple & accurate but unsuitable for long pulses
   portENTER_CRITICAL(&this->mux_);
-    if (now-this->last_rise_us_ <= DISSECTION_THRESHOLD) {
+    if (now-this->last_rise_us_ <= 0.5*DISSECTION_THRESHOLD) {
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
     } else {
