@@ -51,14 +51,14 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
 
 
   
-  if (now - last_rising_edge_local > DISSECTION_THRESHOLD) {
+  if (micros() - last_rising_edge_local > DISSECTION_THRESHOLD) {
     //direct test for GPIO activity in case startup occured while pin was high
     bool pulse_active = false;
     portENTER_CRITICAL(&this->mux_);
     pulse_active = this->pin_.digital_read(); //subtract time from cumulative pulse width the next time the ISR cycles
     portEXIT_CRITICAL(&this->mux_);
     if (pulse_active) {
-    uint32_t right_shift = now - last_rising_edge_local;
+    uint32_t right_shift = micros() - last_rising_edge_local;
     portENTER_CRITICAL(&this->mux_);
     this->last_rise_us_ += right_shift; //subtract time from cumulative pulse width the next time the ISR cycles
     portEXIT_CRITICAL(&this->mux_);
