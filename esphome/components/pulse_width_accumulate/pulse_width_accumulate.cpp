@@ -50,6 +50,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   portEXIT_CRITICAL(&this->mux_);  // Leave critical section ASAP
   return cumulative_local;
 }
+}
 
 
 
