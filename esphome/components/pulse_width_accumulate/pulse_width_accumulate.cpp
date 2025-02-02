@@ -42,12 +42,24 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   uint32_t pulse_duration;
   uint32_t now = micros();
   bool gpio_high = false;
+  bool go_slow_flag = false;
 
+  // Short pulse logic - Fast simple & accurate but unsuitable for long pulses
+  portENTER_CRITICAL(&this->mux_);
+    if (now-this->last_rise_us_ <= DISSECTION_THRESHOLD) {
+    cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
+    this->cumulative_width_us_ = 0;
+    } else {
+      go_slow_flag = true;
+    }
+  portEXIT_CRITICAL(&this->mux_);
+
+  if (go_slow_flag) {
+// Long pulse logic - Extra complexity slows the ISR, Critical sections require splitting otherwise program crashes
   portENTER_CRITICAL(&this->mux_);
   pulse_duration = micros() - this->last_rise_us_;
   gpio_high = this->pulse_in_progress_;
   portEXIT_CRITICAL(&this->mux_); 
-
 
   if (gpio_high) {
     cumulative_local = static_cast<float>(pulse_duration) / 1e6f;
@@ -56,6 +68,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     this->cumulative_width_us_ -= pulse_duration;
     portEXIT_CRITICAL(&this->mux_); 
 }
+  }
 return cumulative_local;
 }
 
