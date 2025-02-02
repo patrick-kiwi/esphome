@@ -52,6 +52,8 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     this->cumulative_width_us_ = 0;
     } else {
       go_slow_flag = true;
+      float contents_blah = static_cast<float>(this->cumulative_width_us_) / 1e6f;
+      ESP_LOGW(TAG, "fast route else block, cumulative width S: %.4f ", contents_blah);
       //capture the front edge of any pulses that were smaller than the dissection threshold
       //cumulative_local += static_cast<float>(this->cumulative_width_us_) / 1e6f;
       //cumulative_width_us_ = 0;
