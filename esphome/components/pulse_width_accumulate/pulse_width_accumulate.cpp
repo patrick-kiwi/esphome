@@ -55,9 +55,10 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
 
   if (pulse_active) {
     if (pulse_duration >= dissection_threshold) {
-      ESP_LOGW(TAG, "Long pulse detected. Returning 1s, reducing cumulative time.");
+      
 
       cumulative_local = static_cast<float>(pulse_duration) / 1e6f;
+      ESP_LOGW(TAG, "Long pulse detected. Returning %.1f s, reducing cumulative time.", cumulative_local);
 
       // Now update values (with a minimal critical section)
       portENTER_CRITICAL(&this->mux_);
