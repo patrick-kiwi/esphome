@@ -71,6 +71,7 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
     arg->last_rise_us_ = now;
   } else {
     // detected falling edge
+    arg->last_fall_us_ = now;
     uint32_t pulse_width_us = now - arg->last_rise_us_;
     if (pulse_width_us > LOWER_PULSE_WIDTH_THRESHOLD) {
       arg->cumulative_width_us_ += pulse_width_us;
