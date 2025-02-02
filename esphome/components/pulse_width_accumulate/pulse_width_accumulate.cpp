@@ -39,14 +39,14 @@ void PulseWidthAccumulateSensor::setup(void) {
 
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
-  uint32_t now = micros();
+  //uint32_t now = micros();
   uint32_t dissection_threshold = 1e6;  // 1 second
   uint32_t pulse_duration;
   
   // Enter critical section only for the necessary data read
   portENTER_CRITICAL(&this->mux_);
   bool pulse_active = this->pulse_in_progress_;
-  pulse_duration = now - this->last_rise_us_;
+  pulse_duration = micros() - this->last_rise_us_;
   uint32_t cumulative_width_copy = this->cumulative_width_us_;
   portEXIT_CRITICAL(&this->mux_);  // Leave critical section ASAP
 
