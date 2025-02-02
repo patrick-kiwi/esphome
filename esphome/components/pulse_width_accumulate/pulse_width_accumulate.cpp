@@ -38,15 +38,15 @@ void PulseWidthAccumulateSensor::setup(void) {
 }
 
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
-  float cumulative_local = 0;
+  float cumulative_local = NULL;
   uint32_t pulse_duration;
   uint32_t now = micros();
   bool gpio_high = false;
-  bool go_slow_flag = false;
+  bool go_slow_flag = false; 
 
   // Short pulse logic - Fast simple & accurate but unsuitable for long pulses
   portENTER_CRITICAL(&this->mux_);
-    if (now-this->last_rise_us_ < DISSECTION_THRESHOLD) {
+    if (now-this->last_rise_us_ < DISSECTION_THRESHOLD && now-this->last_fall_us_ < DISSECTION_THRESHOLD) {
       ESP_LOGW(TAG, "Fast Route");
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
@@ -71,7 +71,11 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     portEXIT_CRITICAL(&this->mux_); 
 }
   } else {
-    ESP_LOGW(TAG, "Slow Route, GPIO low, we shouldn't be here");
+    ESP_LOGW(TAG, "Slow Route, pulse ended, extract remainder of pulse");
+    portENTER_CRITICAL(&this->mux_);
+    cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
+    this->cumulative_width_us_ = 0;
+    portEXIT_CRITICAL(&this->mux_); 
   }
 return cumulative_local;
 }
