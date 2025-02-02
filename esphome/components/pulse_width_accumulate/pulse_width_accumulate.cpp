@@ -46,7 +46,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
 
   // Short pulse logic - Fast simple & accurate but unsuitable for long pulses
   portENTER_CRITICAL(&this->mux_);
-    if (now-this->last_rise_us_ <= DISSECTION_THRESHOLD) {
+    if (now-this->last_rise_us_ >= DISSECTION_THRESHOLD) {
       ESP_LOGW(TAG, "Fast Route");
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
