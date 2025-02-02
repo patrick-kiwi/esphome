@@ -47,6 +47,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   // Short pulse logic - Fast simple & accurate but unsuitable for long pulses
   portENTER_CRITICAL(&this->mux_);
     if (now-this->last_rise_us_ <= DISSECTION_THRESHOLD) {
+      ESP_LOGW(TAG, "Fast Route");
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
     } else {
@@ -57,17 +58,20 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   if (go_slow_flag) {
 // Long pulse logic - Extra complexity slows the ISR, Critical sections require splitting otherwise program crashes
   portENTER_CRITICAL(&this->mux_);
-  pulse_duration = micros() - this->last_rise_us_;
   gpio_high = this->pulse_in_progress_;
+  pulse_duration = micros() - this->last_rise_us_;
   portEXIT_CRITICAL(&this->mux_); 
 
   if (gpio_high) {
+    ESP_LOGW(TAG, "Slow Route, GPIO HIGH");
     cumulative_local = static_cast<float>(pulse_duration) / 1e6f;
     portENTER_CRITICAL(&this->mux_);
     this->last_rise_us_ = micros();
     this->cumulative_width_us_ -= pulse_duration;
     portEXIT_CRITICAL(&this->mux_); 
 }
+  } else {
+    ESP_LOGW(TAG, "Slow Route, GPIO low, we shouldn't be here");
   }
 return cumulative_local;
 }
