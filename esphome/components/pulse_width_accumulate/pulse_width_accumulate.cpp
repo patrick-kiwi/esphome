@@ -78,13 +78,13 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
       portEXIT_CRITICAL(&this->mux_);
     }
   } else {
-    ESP_LOGW(TAG, "Pulse not in progress. Normal behavior.");
+    ESP_LOGW(TAG, "Pulse not in progress. Normal behavior. Do nothing");
     //cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
 
-    portENTER_CRITICAL(&this->mux_);
-      cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
-      this->cumulative_width_us_ = 0;
-      portEXIT_CRITICAL(&this->mux_);
+   // portENTER_CRITICAL(&this->mux_);
+   //   cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
+   //   this->cumulative_width_us_ = 0;
+    //  portEXIT_CRITICAL(&this->mux_);
   }
 
   return cumulative_local;
