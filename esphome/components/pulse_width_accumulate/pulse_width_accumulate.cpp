@@ -58,7 +58,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     portENTER_CRITICAL(&this->mux_);
     this->last_rise_us_ += right_shift;
     portEXIT_CRITICAL(&this->mux_);
-    cumulative_local += static_cast<float>(this->right_shift) / 1e6f;
+    cumulative_local += static_cast<float>(right_shift) / 1e6f;
   }
   
   return cumulative_local;
