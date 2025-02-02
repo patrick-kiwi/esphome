@@ -7,7 +7,7 @@ namespace esphome {
 namespace pulse_width_accumulate {
 static const char *const TAG = "pulse_width";
 constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;  //pulses shorter than this will be dropped
-constexpr uint32_t DISSECTION_THRESHOLD = 9.9e5L;  //pulses longer than this will be disected during polling
+constexpr uint32_t DISSECTION_THRESHOLD = 1e6L;  //pulses longer than this will be disected during polling
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
 void PulseWidthAccumulateSensorStore::setup(InternalGPIOPin *pin) {
@@ -55,6 +55,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   if (go_slow_flag) {
     go_slow_flag = false;
     uint32_t pulse_duration;
+    uint32_t dissection_threshold = 1e6L;
     // Enter critical section only for the necessary data read
     portENTER_CRITICAL(&this->mux_);
     bool pulse_active = this->pulse_in_progress_;
