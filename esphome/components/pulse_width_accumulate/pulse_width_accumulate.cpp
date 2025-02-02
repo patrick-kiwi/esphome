@@ -7,7 +7,7 @@ namespace esphome {
 namespace pulse_width_accumulate {
 static const char *const TAG = "pulse_width";
 constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;  //pulses shorter than this will be dropped
-constexpr uint32_t DISSECTION_THRESHOLD = 4.9e5L;  //pulses longer than this will be disected during polling
+constexpr uint32_t DISSECTION_THRESHOLD = 4.9e5L;  //longer pulses disected during polling.  0.49 seconds works okay for polling periods >=1s
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
 
 void PulseWidthAccumulateSensorStore::setup(InternalGPIOPin *pin) {
@@ -41,13 +41,15 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t last_rising_edge_local = 0;
   uint32_t last_falling_edge_local = 0;
-  //ultrafast high frequency section 
+  uint32_t cumulative_width_us_local = 0;
+  //Fast code. Interacts wiht ISR at high frequency up to 10 KHz
   portENTER_CRITICAL(&this->mux_);
-    cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
+    cumulative_width_us_local = this->cumulative_width_us_;
     this->cumulative_width_us_ = 0;
     last_rising_edge_local = this->last_rise_us_;
   portEXIT_CRITICAL(&this->mux_);
-  //Slow low frequency section -  Dissects the pulse if it becomes too long
+  cumulative_local = static_cast<float>(this->cumulative_width_us_local) / 1e6f;
+  //Slow complex code. Interacts with ISR at low frequency (1/DISSECTION_THRESHOLD) Hz 
   if (micros() - last_rising_edge_local > DISSECTION_THRESHOLD) {
     //Measure GPIO directly in case startup occured while pin was high
     bool pulse_active = false;
@@ -57,11 +59,11 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     if (pulse_active) {
     uint32_t right_shift = micros() - last_rising_edge_local;
     portENTER_CRITICAL(&this->mux_);
-    this->last_rise_us_ += right_shift; //subtract time from cumulative pulse width the next time the ISR cycles
+    this->last_rise_us_ += right_shift; //subtract time-chunk from next ISR cycle
     portEXIT_CRITICAL(&this->mux_);
-    cumulative_local += static_cast<float>(right_shift) / 1e6f;  //bring forward that time to now same amount
+    cumulative_local += static_cast<float>(right_shift) / 1e6f;  //bring forward time-chunk to current polling cycle
   }
-  //do nothing, falling edge interrupt takes care of accounting
+  //do nothing, falling edge interrupt has taken care of accounting
   }
   return cumulative_local;
 }
