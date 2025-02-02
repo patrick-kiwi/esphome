@@ -21,7 +21,6 @@ class PulseWidthAccumulateSensorStore {
   uint32_t last_rise_us_{0};
   uint32_t last_fall_us_{0};
   uint32_t cumulative_width_us_{0};
-  //bool pulse_in_progress_{false};
   float cumulative_width_s_{0.0f};
   uint32_t pulse_count_{0};
   portMUX_TYPE mux_;
