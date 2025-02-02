@@ -52,6 +52,9 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     this->cumulative_width_us_ = 0;
     } else {
       go_slow_flag = true;
+      //capture the front edge of any pulses that were smaller than the dissection threshold
+      cumulative_local += static_cast<float>(this->cumulative_width_us_) / 1e6f;
+      cumulative_width_us_ = 0;
     }
   portEXIT_CRITICAL(&this->mux_);
 
@@ -64,10 +67,10 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
 
   if (gpio_high) {
     ESP_LOGW(TAG, "Slow Route, GPIO HIGH");
-    cumulative_local = static_cast<float>(cumulative_width_us_) / 1e6f;
+    cumulative_local += static_cast<float>(pulse_duration) / 1e6f;
     portENTER_CRITICAL(&this->mux_);
-    this->last_rise_us_ += pulse_duration;
-    //this->cumulative_width_us_ -= pulse_duration;
+    this->last_rise_us_ = micros();
+    this->cumulative_width_us_ -= pulse_duration;
     portEXIT_CRITICAL(&this->mux_); 
 }
   } else {
