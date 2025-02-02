@@ -44,7 +44,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   portENTER_CRITICAL(&this->mux_);
   pulse_duration = micros() - this->last_rise_us_;
   if (this->pulse_in_progress_) {
-    cumulative_local = pulse_duration;
+    cumulative_local = static_cast<float>(pulse_duration) / 1e6f;
     this->last_rise_us_ += pulse_duration;
     this->cumulative_width_us_ -= pulse_duration;
   portEXIT_CRITICAL(&this->mux_);  // Leave critical section ASAP
