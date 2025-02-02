@@ -41,29 +41,24 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   float cumulative_local = 0;
   uint32_t last_rising_edge_local = 0;
   uint32_t last_falling_edge_local = 0;
-  uint32_t now = micros();
-
-
-
   portENTER_CRITICAL(&this->mux_);
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
     last_rising_edge_local = this->last_rise_us_;
     last_falling_edge_local = this->last_fall_us_;
   portEXIT_CRITICAL(&this->mux_);
-
-  //Edit internal counters if pulse gets too long
+  //Dissect the pulse if it becomes too long
+  uint32_t now = micros();
   if (now - last_rising_edge_local > DISSECTION_THRESHOLD && last_rising_edge_local > last_falling_edge_local) {
+    
     uint32_t right_shift = now - last_rising_edge_local;
     portENTER_CRITICAL(&this->mux_);
-    this->last_rise_us_ += right_shift;
+    this->last_rise_us_ += right_shift; //subtract time from cumulative pulse width the next time the ISR cycles
     portEXIT_CRITICAL(&this->mux_);
-    cumulative_local += static_cast<float>(right_shift) / 1e6f;
+    cumulative_local += static_cast<float>(right_shift) / 1e6f;  //bring forward that time to now same amount
+    ESP_LOGW(TAG, "Inside disection statement right shift: %.4f s", this->right_shift);
   }
-  
   return cumulative_local;
-
-
 }
 
 // ISR. Get in and out ASAP. No floating point math
@@ -73,11 +68,9 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
   if (arg->pin_.digital_read()) {
     // detected rising edge
     arg->last_rise_us_ = now;
-    //arg->pulse_in_progress_ = true;
   } else {
     // detected falling edge
     uint32_t pulse_width_us = now - arg->last_rise_us_;
-    //arg->pulse_in_progress_ = false;
     if (pulse_width_us > LOWER_PULSE_WIDTH_THRESHOLD) {
       arg->cumulative_width_us_ += pulse_width_us;
       arg->pulse_count_ += 1;
