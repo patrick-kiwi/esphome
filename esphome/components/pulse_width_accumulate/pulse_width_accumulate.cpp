@@ -56,7 +56,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     this->last_rise_us_ += right_shift; //subtract time from cumulative pulse width the next time the ISR cycles
     portEXIT_CRITICAL(&this->mux_);
     cumulative_local += static_cast<float>(right_shift) / 1e6f;  //bring forward that time to now same amount
-    ESP_LOGW(TAG, "Inside disection statement right shift: %.4f s", this->right_shift);
+    ESP_LOGW(TAG, "Inside disection statement right shift: %.4f s", right_shift);
   }
   return cumulative_local;
 }
