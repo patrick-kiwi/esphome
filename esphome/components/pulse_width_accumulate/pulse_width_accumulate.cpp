@@ -53,8 +53,8 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     } else {
       go_slow_flag = true;
       //capture the front edge of any pulses that were smaller than the dissection threshold
-      cumulative_local += static_cast<float>(this->cumulative_width_us_) / 1e6f;
-      cumulative_width_us_ = 0;
+      //cumulative_local += static_cast<float>(this->cumulative_width_us_) / 1e6f;
+      //cumulative_width_us_ = 0;
     }
   portEXIT_CRITICAL(&this->mux_);
 
