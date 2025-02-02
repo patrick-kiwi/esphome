@@ -78,7 +78,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   } else {
     ESP_LOGW(TAG, "Slow Route, pulse ended, extract remainder of pulse");
     portENTER_CRITICAL(&this->mux_);
-    cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
+    cumulative_local += static_cast<float>(this->last_fall_us_ - this->last_rise_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
     portEXIT_CRITICAL(&this->mux_); 
   }
