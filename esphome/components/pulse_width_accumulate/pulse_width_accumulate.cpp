@@ -54,9 +54,6 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
       go_slow_flag = true;
       float contents_blah = static_cast<float>(this->cumulative_width_us_) / 1e6f;
       ESP_LOGW(TAG, "fast route else block, cumulative width S: %.4f ", contents_blah);
-      //capture the front edge of any pulses that were smaller than the dissection threshold
-      //cumulative_local += static_cast<float>(this->cumulative_width_us_) / 1e6f;
-      //cumulative_width_us_ = 0;
     }
   portEXIT_CRITICAL(&this->mux_);
 
@@ -72,14 +69,12 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     cumulative_local += static_cast<float>(pulse_duration) / 1e6f;
     portENTER_CRITICAL(&this->mux_);
     this->last_rise_us_ = micros();
-    this->cumulative_width_us_ -= pulse_duration;
     portEXIT_CRITICAL(&this->mux_); 
 }
   } else {
     ESP_LOGW(TAG, "Slow Route, pulse ended, extract remainder of pulse");
     portENTER_CRITICAL(&this->mux_);
     cumulative_local += static_cast<float>(this->last_fall_us_ - this->last_rise_us_) / 1e6f;
-    this->cumulative_width_us_ = 0;
     portEXIT_CRITICAL(&this->mux_); 
   }
 return cumulative_local;
