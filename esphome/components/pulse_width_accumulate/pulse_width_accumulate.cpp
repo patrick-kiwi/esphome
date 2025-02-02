@@ -38,7 +38,7 @@ void PulseWidthAccumulateSensor::setup(void) {
 }
 
 float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
-  float cumulative_local = NULL;
+  float cumulative_local = 0;
   uint32_t pulse_duration;
   uint32_t now = micros();
   bool gpio_high = false;
