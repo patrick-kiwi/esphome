@@ -57,6 +57,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     portEXIT_CRITICAL(&this->mux_);
     cumulative_local += static_cast<float>(right_shift) / 1e6f;  //bring forward that time to now same amount
     ESP_LOGW(TAG, "Inside disection statement right shift: %.4f s", static_cast<float>(right_shift) / 1e6f);
+    ESP_LOGW(TAG, "lre: %d us, lfe: %d us", last_rising_edge_local, last_falling_edge_local);
   }
   return cumulative_local;
 }
