@@ -48,9 +48,16 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     last_falling_edge_local = this->last_fall_us_;
   portEXIT_CRITICAL(&this->mux_);
   //Dissect the pulse if it becomes too long
-  uint32_t now = micros();
-  if (now - last_rising_edge_local > DISSECTION_THRESHOLD && last_rising_edge_local > last_falling_edge_local) {
-    
+
+
+  
+  if (now - last_rising_edge_local > DISSECTION_THRESHOLD) {
+    //direct test for GPIO activity in case startup occured while pin was high
+    bool pulse_active = false;
+    portENTER_CRITICAL(&this->mux_);
+    pulse_active = this->pin_.digital_read(); //subtract time from cumulative pulse width the next time the ISR cycles
+    portEXIT_CRITICAL(&this->mux_);
+    if (pulse_active) {
     uint32_t right_shift = now - last_rising_edge_local;
     portENTER_CRITICAL(&this->mux_);
     this->last_rise_us_ += right_shift; //subtract time from cumulative pulse width the next time the ISR cycles
@@ -58,6 +65,8 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     cumulative_local += static_cast<float>(right_shift) / 1e6f;  //bring forward that time to now same amount
     ESP_LOGW(TAG, "Inside disection statement right shift: %.4f s", static_cast<float>(right_shift) / 1e6f);
     ESP_LOGW(TAG, "lre: %d us, lfe: %d us", last_rising_edge_local, last_falling_edge_local);
+  }
+  //do nothing, falling edge interrupt takes care of accounting
   }
   return cumulative_local;
 }
