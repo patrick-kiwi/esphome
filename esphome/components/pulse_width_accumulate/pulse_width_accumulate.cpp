@@ -47,41 +47,43 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   portENTER_CRITICAL(&this->mux_);
   bool pulse_active = this->pulse_in_progress_;
   pulse_duration = micros() - this->last_rise_us_;
-  uint32_t cumulative_width_copy = this->cumulative_width_us_;
+  //uint32_t cumulative_width_copy = this->cumulative_width_us_;
   portEXIT_CRITICAL(&this->mux_);  // Leave critical section ASAP
 
-  ESP_LOGW(TAG, "Pulse in progress: %d, Difference: %u µs, Polling interval: %u µs, Cumulative: %u µs", 
-           pulse_active, pulse_duration, dissection_threshold, cumulative_width_copy);
+  ESP_LOGW(TAG, "Pulse in progress: %d, Difference: %u µs, Polling interval: %u µs", 
+           pulse_active, pulse_duration, dissection_threshold);
 
   if (pulse_active) {
     if (pulse_duration >= dissection_threshold) {
       ESP_LOGW(TAG, "Long pulse detected. Returning 1s, reducing cumulative time.");
 
-      cumulative_local = static_cast<float>(dissection_threshold) / 1e6f;
+      cumulative_local = static_cast<float>(pulse_duration) / 1e6f;
 
       // Now update values (with a minimal critical section)
       portENTER_CRITICAL(&this->mux_);
-      this->last_rise_us_ += dissection_threshold;
-      this->cumulative_width_us_ -= dissection_threshold;
+      this->last_rise_us_ += pulse_duration;
+      this->cumulative_width_us_ -= pulse_duration;
       portEXIT_CRITICAL(&this->mux_);
 
       ESP_LOGW(TAG, "Updated last_rise_us_: %u, Remaining cumulative_width_us_: %u", 
                this->last_rise_us_, this->cumulative_width_us_);
     } else {
       ESP_LOGW(TAG, "Short pulse or incomplete long pulse.");
-      cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
+      //cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
 
       portENTER_CRITICAL(&this->mux_);
+      cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
       this->cumulative_width_us_ = 0;
       portEXIT_CRITICAL(&this->mux_);
     }
   } else {
     ESP_LOGW(TAG, "Pulse not in progress. Normal behavior.");
-    cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
+    //cumulative_local = static_cast<float>(cumulative_width_copy) / 1e6f;
 
     portENTER_CRITICAL(&this->mux_);
-    this->cumulative_width_us_ = 0;
-    portEXIT_CRITICAL(&this->mux_);
+      cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
+      this->cumulative_width_us_ = 0;
+      portEXIT_CRITICAL(&this->mux_);
   }
 
   return cumulative_local;
