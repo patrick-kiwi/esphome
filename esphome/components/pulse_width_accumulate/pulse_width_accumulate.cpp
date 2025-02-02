@@ -44,7 +44,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   bool go_slow_flag = false;
   // Short pulse logic - Fast simple & accurate but unsuitable for long pulses
   portENTER_CRITICAL(&this->mux_);
-    if (now-this->last_rise_us_ <= 0.5*DISSECTION_THRESHOLD) {
+    if (now-this->last_rise_us_ <= DISSECTION_THRESHOLD) {
     cumulative_local = static_cast<float>(this->cumulative_width_us_) / 1e6f;
     this->cumulative_width_us_ = 0;
     } else {
@@ -52,7 +52,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
     }
   portEXIT_CRITICAL(&this->mux_);
   // Long pulse logic - Extra complexity slows the ISR, Critical sections require splitting otherwise program crashes
-  if (go_slow_flag) {
+  if (go_slow_flag && this->pulse_in_progress_) {
     go_slow_flag = false;
     uint32_t pulse_duration;
     uint32_t dissection_threshold = 1e6L;
