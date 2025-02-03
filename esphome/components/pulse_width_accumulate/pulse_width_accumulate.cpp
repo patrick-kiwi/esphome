@@ -42,14 +42,14 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
   uint32_t last_rising_edge_local = 0;
   uint32_t last_falling_edge_local = 0;
   uint32_t cumulative_width_us_local = 0;
-  //Fast code. Interacts wiht ISR at high frequency up to 10 KHz
+  //Fast section, interacting with an ISR running up to 10 KHz
   portENTER_CRITICAL(&this->mux_);
     cumulative_width_us_local = this->cumulative_width_us_;
     this->cumulative_width_us_ = 0;
     last_rising_edge_local = this->last_rise_us_;
   portEXIT_CRITICAL(&this->mux_);
   cumulative_local = static_cast<float>(this->cumulative_width_us_local) / 1e6f;
-  //Slow complex code. Interacts with ISR at low frequency (1/DISSECTION_THRESHOLD) Hz 
+  //Slow section. Interacts with ISR at(1/DISSECTION_THRESHOLD) Hz 
   if (micros() - last_rising_edge_local > DISSECTION_THRESHOLD) {
     //Measure GPIO directly in case startup occured while pin was high
     bool pulse_active = false;
