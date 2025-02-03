@@ -65,7 +65,7 @@ float PulseWidthAccumulateSensorStore::get_cumulative_pulse_width_s() {
       portEXIT_CRITICAL(&this->mux_);
       cumulative_local += static_cast<float>(right_shift) / 1e6f;  // bring forward time-chunk to current polling cycle
     }
-    // Do nothing. Falling edge interrupt has taken care of the accounting
+    // do nothing, falling edge interrupt has taken care of the accounting
   }
   return cumulative_local;
 }

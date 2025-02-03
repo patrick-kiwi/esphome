@@ -10,12 +10,12 @@ namespace pulse_width_accumulate {
 // Store data in a class that doesn't use multiple-inheritance (vtables in flash)
 class PulseWidthAccumulateSensorStore {
  public:
-  PulseWidthAccumulateSensorStore(); 
+  PulseWidthAccumulateSensorStore();
   void setup(InternalGPIOPin *pin);
   static void gpio_intr(PulseWidthAccumulateSensorStore *arg);
   float get_pulses_this_cycle();
   float get_cumulative_pulse_width_s();
-  
+
  private:
   ISRInternalGPIOPin pin_;
   uint32_t last_rise_us_{0};
@@ -29,7 +29,7 @@ class PulseWidthAccumulateSensorStore {
 class PulseWidthAccumulateSensor : public sensor::Sensor, public PollingComponent {
  public:
   void set_pin(InternalGPIOPin *pin) { pin_ = pin; }
-  void setup() override; 
+  void setup() override;
   void dump_config() override;
   float get_setup_priority() const override { return setup_priority::DATA; }
   void update();
