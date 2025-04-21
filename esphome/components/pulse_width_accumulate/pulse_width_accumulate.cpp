@@ -88,13 +88,17 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
     if (pulse_width_us > LOWER_PULSE_WIDTH_THRESHOLD) {
       arg->cumulative_width_us_ += pulse_width_us;
       arg->pulse_count_ += 1;
-    } else {
+    }
+#if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERBOSE
+     else {
       arg->pulse_skip_count_ += 1;  // count the number of pulses that are too short
     }
+#endif
   }
   portEXIT_CRITICAL_ISR(&arg->mux_);
 }
 
+#if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERBOSE
 uint32_t PulseWidthAccumulateSensorStore::get_pulse_skip_count() {
   uint32_t pulse_skip_count = 0;
   // Safely copy & reset the pulse skip counter
@@ -104,6 +108,7 @@ uint32_t PulseWidthAccumulateSensorStore::get_pulse_skip_count() {
   portEXIT_CRITICAL(&this->mux_);
   return pulse_skip_count;
 }
+#endif
 
 void PulseWidthAccumulateSensor::dump_config() {
   LOG_SENSOR("", "Pulse Width", this)
@@ -145,10 +150,12 @@ void PulseWidthAccumulateSensor::update() {
     this->frequency_sensor_->publish_state(frequency);
   }
 
+  #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERBOSE
   int skipped_count = this->store_.get_pulse_skip_count();
   if (skipped_count > 0) {
     ESP_LOGV(TAG, "Pulses skipped (< %dus): %d", LOWER_PULSE_WIDTH_THRESHOLD_VALUE, skipped_count);
   }
+  #endif
 
   this->publish_state(cumulative_width);
 }
