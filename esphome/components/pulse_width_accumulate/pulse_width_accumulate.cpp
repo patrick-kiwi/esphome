@@ -3,10 +3,14 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
 
+#ifndef LOWER_PULSE_WIDTH_THRESHOLD_VALUE
+#define LOWER_PULSE_WIDTH_THRESHOLD_VALUE 17  // Default value
+#endif
+
 namespace esphome {
 namespace pulse_width_accumulate {
 static const char *const TAG = "pulse_width";
-constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = 17;  // pulses shorter than this will be dropped
+constexpr uint32_t LOWER_PULSE_WIDTH_THRESHOLD = LOWER_PULSE_WIDTH_THRESHOLD_VALUE;  // pulses shorter than this will be dropped
 constexpr uint32_t DISSECTION_THRESHOLD =
     4.9e5L;  // longer pulses disected during polling.  0.49 seconds works okay for polling periods >=1s
 PulseWidthAccumulateSensorStore::PulseWidthAccumulateSensorStore() { mux_ = portMUX_INITIALIZER_UNLOCKED; }
@@ -85,14 +89,33 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
       arg->cumulative_width_us_ += pulse_width_us;
       arg->pulse_count_ += 1;
     }
+#if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERBOSE
+     else {
+      arg->pulse_skip_count_ += 1;  // count the number of pulses that are too short
+    }
+#endif
   }
   portEXIT_CRITICAL_ISR(&arg->mux_);
 }
+
+#if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERBOSE
+uint32_t PulseWidthAccumulateSensorStore::get_pulse_skip_count() {
+  uint32_t pulse_skip_count = 0;
+  // Safely copy & reset the pulse skip counter
+  portENTER_CRITICAL(&this->mux_);
+  pulse_skip_count = this->pulse_skip_count_;
+  this->pulse_skip_count_ = 0;
+  portEXIT_CRITICAL(&this->mux_);
+  return pulse_skip_count;
+}
+#endif
 
 void PulseWidthAccumulateSensor::dump_config() {
   LOG_SENSOR("", "Pulse Width", this)
   LOG_UPDATE_INTERVAL(this)
   LOG_PIN("  Pin: ", this->pin_);
+  ESP_LOGCONFIG(TAG, "  Lower pulse width threshold in us: %d", LOWER_PULSE_WIDTH_THRESHOLD_VALUE);
+  ESP_LOGCONFIG(TAG, "  Relative mode: %s", this->relative_mode_ ? "YES" : "NO");
 }
 
 void PulseWidthAccumulateSensor::update() {
@@ -126,6 +149,14 @@ void PulseWidthAccumulateSensor::update() {
     float frequency = pulse_count / polling_interval_s;
     this->frequency_sensor_->publish_state(frequency);
   }
+
+  #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERBOSE
+  int skipped_count = this->store_.get_pulse_skip_count();
+  if (skipped_count > 0) {
+    ESP_LOGV(TAG, "Pulses skipped (< %dus): %d", LOWER_PULSE_WIDTH_THRESHOLD_VALUE, skipped_count);
+  }
+  #endif
+
   this->publish_state(cumulative_width);
 }
 
