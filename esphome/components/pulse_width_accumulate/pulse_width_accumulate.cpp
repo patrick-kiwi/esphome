@@ -110,6 +110,16 @@ void PulseWidthAccumulateSensor::update() {
              this->rejection_threshold_);
     cumulative_width = 0.0f;
   }
+
+  // Calculate relative pulse width if relative mode is enabled
+  if (this->relative_mode_) {
+    cumulative_width = cumulative_width / polling_interval_s;  // Normalize to 0..1
+    if (cumulative_width > 1.0f) {
+      ESP_LOGW(TAG, "Relative pulse width exceeds 1.0: %.3f", cumulative_width);
+      cumulative_width = 1.0f;  // Clamp to 1.0 if it exceeds
+    }
+  }
+
   // get frequency if needed
   if (this->frequency_sensor_ != nullptr) {
     float pulse_count = this->store_.get_pulses_this_cycle();

@@ -34,12 +34,14 @@ class PulseWidthAccumulateSensor : public sensor::Sensor, public PollingComponen
   float get_setup_priority() const override { return setup_priority::DATA; }
   void update();
   void set_frequency_sensor(sensor::Sensor *frequency_sensor) { frequency_sensor_ = frequency_sensor; }
+  void set_relative_mode(bool relative) { relative_mode_ = relative; }
 
  private:
   float rejection_threshold_{1000.0f};
   PulseWidthAccumulateSensorStore store_;
   InternalGPIOPin *pin_;
   sensor::Sensor *frequency_sensor_{nullptr};
+  bool relative_mode_{false};
 };
 }  // namespace pulse_width_accumulate
 }  // namespace esphome
