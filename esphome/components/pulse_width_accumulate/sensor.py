@@ -59,7 +59,12 @@ async def to_code(config):
     # Pass the relative option to the C++ code
     if config[CONF_RELATIVE]:
         cg.add(var.set_relative_mode(True))
-        cg.add(var.set_unit_of_measurement("%"))
-        cg.add(var.set_icon(ICON_TIMER))
-        cg.add(var.set_accuracy_decimals(1))
-        cg.add(var.set_state_class(cg.RawExpression("esphome::sensor::STATE_CLASS_MEASUREMENT")))
+        # Only set defaults if the user hasn't overridden them
+        if "unit_of_measurement" not in config:
+            cg.add(var.set_unit_of_measurement("%"))
+        if "icon" not in config:
+            cg.add(var.set_icon(ICON_TIMER))
+        if "accuracy_decimals" not in config:
+            cg.add(var.set_accuracy_decimals(1))
+        if "state_class" not in config:
+            cg.add(var.set_state_class(cg.RawExpression("esphome::sensor::STATE_CLASS_MEASUREMENT")))
