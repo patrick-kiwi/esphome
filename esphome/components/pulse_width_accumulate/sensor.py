@@ -59,3 +59,7 @@ async def to_code(config):
     # Pass the relative option to the C++ code
     if config[CONF_RELATIVE]:
         cg.add(var.set_relative_mode(True))
+        cg.add(var.set_unit_of_measurement("%"))
+        cg.add(var.set_icon(ICON_TIMER))
+        cg.add(var.set_accuracy_decimals(1))
+        cg.add(var.set_state_class(cg.RawExpression("esphome::sensor::STATE_CLASS_MEASUREMENT")))
