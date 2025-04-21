@@ -14,6 +14,7 @@ from esphome.const import (
 )
 
 CONF_RELATIVE = "relative"
+CONF_LOWER_THRESHOLD = "lower_threshold_us"
 
 pulse_width_ns = cg.esphome_ns.namespace("pulse_width_accumulate")
 
@@ -39,6 +40,7 @@ CONFIG_SCHEMA = (
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
             cv.Optional(CONF_RELATIVE, default=False): cv.boolean,
+            cv.Optional(CONF_LOWER_THRESHOLD, default=17): cv.int_range(17, 10000),
         }
     )
     .extend(cv.polling_component_schema("60s"))
@@ -56,6 +58,9 @@ async def to_code(config):
     if conf_freq := config.get(CONF_FREQUENCY):
         sens = await sensor.new_sensor(conf_freq)
         cg.add(var.set_frequency_sensor(sens))
+    # Register the lower threshold if configured
+    if CONF_LOWER_THRESHOLD in config:
+        cg.add_define("LOWER_PULSE_WIDTH_THRESHOLD_VALUE", config[CONF_LOWER_THRESHOLD])
     # Pass the relative option to the C++ code
     if config[CONF_RELATIVE]:
         cg.add(var.set_relative_mode(True))

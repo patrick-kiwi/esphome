@@ -14,6 +14,7 @@ class PulseWidthAccumulateSensorStore {
   void setup(InternalGPIOPin *pin);
   static void gpio_intr(PulseWidthAccumulateSensorStore *arg);
   float get_pulses_this_cycle();
+  uint32_t get_pulse_skip_count();
   float get_cumulative_pulse_width_s();
 
  private:
@@ -23,6 +24,7 @@ class PulseWidthAccumulateSensorStore {
   uint32_t cumulative_width_us_{0};
   float cumulative_width_s_{0.0f};
   uint32_t pulse_count_{0};
+  uint32_t pulse_skip_count_{0};
   portMUX_TYPE mux_;
 };
 
