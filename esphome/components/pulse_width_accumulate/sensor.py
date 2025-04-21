@@ -13,6 +13,8 @@ from esphome.const import (
     UNIT_HERTZ,
 )
 
+CONF_RELATIVE = "relative"
+
 pulse_width_ns = cg.esphome_ns.namespace("pulse_width_accumulate")
 
 PulseWidthAccumulateSensor = pulse_width_ns.class_(
@@ -36,6 +38,7 @@ CONFIG_SCHEMA = (
                 icon=ICON_PULSE,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
+            cv.Optional(CONF_RELATIVE, default=False): cv.boolean,
         }
     )
     .extend(cv.polling_component_schema("60s"))
@@ -53,3 +56,6 @@ async def to_code(config):
     if conf_freq := config.get(CONF_FREQUENCY):
         sens = await sensor.new_sensor(conf_freq)
         cg.add(var.set_frequency_sensor(sens))
+    # Pass the relative option to the C++ code
+    if config[CONF_RELATIVE]:
+        cg.add(var.set_relative_mode(True))
