@@ -440,7 +440,7 @@ class ConfigValidationStep(abc.ABC):
     priority: float = 0.0
 
     @abc.abstractmethod
-    def run(self, result: Config) -> None: ...  # noqa: E704
+    def run(self, result: Config) -> None: ...
 
 
 class LoadTargetPlatformValidationStep(ConfigValidationStep):
