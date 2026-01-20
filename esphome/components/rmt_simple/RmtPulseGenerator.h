@@ -59,47 +59,43 @@ template<> class RmtPulseGenerator<2> {
  public:
   RmtPulseGenerator(gpio_num_t gpio_a, gpio_num_t gpio_b, uint32_t resolution_hz = 1000000)
       : resolution_hz_(resolution_hz) {
-    tx_gpio_number[0] = gpio_a;
-    tx_gpio_number[1] = gpio_b;
-    tx_channels[0] = nullptr;
-    tx_channels[1] = nullptr;
-    copyEncoder = nullptr;
-    sync_mgr = nullptr;
-    running = false;
+    tx_gpio_number_[0] = gpio_a;
+    tx_gpio_number_[1] = gpio_b;
+    tx_channels_[0] = nullptr;
+    tx_channels_[1] = nullptr;
+    copy_encoder_ = nullptr;
+    sync_mgr_ = nullptr;
+    running_ = false;
   }
 
   ~RmtPulseGenerator() {
     stop();
-    cleanup();
+    cleanup_();
   }
 
   bool init() {
     for (int i = 0; i < 2; ++i) {
-      rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number[i],
+      rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number_[i],
                                         .clk_src = RMT_CLK_SRC_DEFAULT,
                                         .resolution_hz = resolution_hz_,
                                         .mem_block_symbols = 48,
                                         .trans_queue_depth = 8,
                                         .flags = {}};
-      if (rmt_new_tx_channel(&config, &tx_channels[i]) != ESP_OK) {
+      if (rmt_new_tx_channel(&config, &tx_channels_[i]) != ESP_OK) {
         return false;
       }
-      if (rmt_enable(tx_channels[i]) != ESP_OK) {
+      if (rmt_enable(tx_channels_[i]) != ESP_OK) {
         return false;
       }
     }
 
-    rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels, .array_size = 2};
-    if (rmt_new_sync_manager(&sync_config, &sync_mgr) != ESP_OK) {
+    rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels_, .array_size = 2};
+    if (rmt_new_sync_manager(&sync_config, &sync_mgr_) != ESP_OK) {
       return false;
     }
 
     rmt_copy_encoder_config_t enc_config = {};
-    if (rmt_new_copy_encoder(&enc_config, &copyEncoder) != ESP_OK) {
-      return false;
-    }
-
-    return true;
+    return rmt_new_copy_encoder(&enc_config, &copy_encoder_) == ESP_OK;
   }
 
   bool begin(const std::vector<std::vector<rmt_symbol_word_t>> &patterns) {
@@ -111,21 +107,21 @@ template<> class RmtPulseGenerator<2> {
         synchronize_patterns(patterns[0].data(), patterns[0].size(), patterns[1].data(), patterns[1].size());
 
     // Store synchronized patterns
-    current_patterns[0] = synced_a;
-    current_patterns[1] = synced_b;
+    current_patterns_[0] = synced_a;
+    current_patterns_[1] = synced_b;
 
     rmt_transmit_config_t tx_config = {.loop_count = -1};
 
-    if (rmt_transmit(tx_channels[0], copyEncoder, current_patterns[0].data(),
-                     current_patterns[0].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
+    if (rmt_transmit(tx_channels_[0], copy_encoder_, current_patterns_[0].data(),
+                     current_patterns_[0].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
       return false;
     }
-    if (rmt_transmit(tx_channels[1], copyEncoder, current_patterns[1].data(),
-                     current_patterns[1].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
+    if (rmt_transmit(tx_channels_[1], copy_encoder_, current_patterns_[1].data(),
+                     current_patterns_[1].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
       return false;
     }
 
-    running = true;
+    running_ = true;
     return true;
   }
 
@@ -135,51 +131,51 @@ template<> class RmtPulseGenerator<2> {
   }
 
   void stop() {
-    if (running) {
-      for (int i = 0; i < 2; ++i) {
-        if (tx_channels[i] != nullptr) {
-          rmt_disable(tx_channels[i]);
+    if (running_) {
+      for (auto &tx_channel : tx_channels_) {
+        if (tx_channel != nullptr) {
+          rmt_disable(tx_channel);
         }
       }
-      running = false;
+      running_ = false;
     }
 
     // Re-enable for next use
-    for (int i = 0; i < 2; ++i) {
-      if (tx_channels[i] != nullptr) {
-        rmt_enable(tx_channels[i]);
+    for (auto &tx_channel : tx_channels_) {
+      if (tx_channel != nullptr) {
+        rmt_enable(tx_channel);
       }
     }
   }
 
-  bool is_running() const { return running; }
+  bool is_running() const { return running_; }
 
  private:
-  void cleanup() {
-    if (copyEncoder != nullptr) {
-      rmt_del_encoder(copyEncoder);
-      copyEncoder = nullptr;
+  void cleanup_() {
+    if (copy_encoder_ != nullptr) {
+      rmt_del_encoder(copy_encoder_);
+      copy_encoder_ = nullptr;
     }
-    if (sync_mgr != nullptr) {
-      rmt_del_sync_manager(sync_mgr);
-      sync_mgr = nullptr;
+    if (sync_mgr_ != nullptr) {
+      rmt_del_sync_manager(sync_mgr_);
+      sync_mgr_ = nullptr;
     }
-    for (int i = 0; i < 2; ++i) {
-      if (tx_channels[i] != nullptr) {
-        rmt_disable(tx_channels[i]);
-        rmt_del_channel(tx_channels[i]);
-        tx_channels[i] = nullptr;
+    for (auto &tx_channel : tx_channels_) {
+      if (tx_channel != nullptr) {
+        rmt_disable(tx_channel);
+        rmt_del_channel(tx_channel);
+        tx_channel = nullptr;
       }
     }
   }
 
-  rmt_channel_handle_t tx_channels[2];
-  gpio_num_t tx_gpio_number[2];
-  rmt_encoder_handle_t copyEncoder;
-  rmt_sync_manager_handle_t sync_mgr;
+  rmt_channel_handle_t tx_channels_[2];
+  gpio_num_t tx_gpio_number_[2];
+  rmt_encoder_handle_t copy_encoder_;
+  rmt_sync_manager_handle_t sync_mgr_;
   uint32_t resolution_hz_;
-  bool running;
-  std::vector<rmt_symbol_word_t> current_patterns[2];
+  bool running_;
+  std::vector<rmt_symbol_word_t> current_patterns_[2];
 };
 
 /**
@@ -191,50 +187,46 @@ template<> class RmtPulseGenerator<4> {
   RmtPulseGenerator(gpio_num_t gpio_a, gpio_num_t gpio_b, gpio_num_t gpio_c, gpio_num_t gpio_d,
                     uint32_t resolution_hz = 1000000)
       : resolution_hz_(resolution_hz) {
-    tx_gpio_number[0] = gpio_a;
-    tx_gpio_number[1] = gpio_b;
-    tx_gpio_number[2] = gpio_c;
-    tx_gpio_number[3] = gpio_d;
-    for (int i = 0; i < 4; ++i) {
-      tx_channels[i] = nullptr;
+    tx_gpio_number_[0] = gpio_a;
+    tx_gpio_number_[1] = gpio_b;
+    tx_gpio_number_[2] = gpio_c;
+    tx_gpio_number_[3] = gpio_d;
+    for (auto &tx_channel : tx_channels_) {
+      tx_channel = nullptr;
     }
-    copyEncoder = nullptr;
-    sync_mgr = nullptr;
-    running = false;
+    copy_encoder_ = nullptr;
+    sync_mgr_ = nullptr;
+    running_ = false;
   }
 
   ~RmtPulseGenerator() {
     stop();
-    cleanup();
+    cleanup_();
   }
 
   bool init() {
     for (int i = 0; i < 4; ++i) {
-      rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number[i],
+      rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number_[i],
                                         .clk_src = RMT_CLK_SRC_DEFAULT,
                                         .resolution_hz = resolution_hz_,
                                         .mem_block_symbols = 48,
                                         .trans_queue_depth = 8,
                                         .flags = {}};
-      if (rmt_new_tx_channel(&config, &tx_channels[i]) != ESP_OK) {
+      if (rmt_new_tx_channel(&config, &tx_channels_[i]) != ESP_OK) {
         return false;
       }
-      if (rmt_enable(tx_channels[i]) != ESP_OK) {
+      if (rmt_enable(tx_channels_[i]) != ESP_OK) {
         return false;
       }
     }
 
-    rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels, .array_size = 4};
-    if (rmt_new_sync_manager(&sync_config, &sync_mgr) != ESP_OK) {
+    rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels_, .array_size = 4};
+    if (rmt_new_sync_manager(&sync_config, &sync_mgr_) != ESP_OK) {
       return false;
     }
 
     rmt_copy_encoder_config_t enc_config = {};
-    if (rmt_new_copy_encoder(&enc_config, &copyEncoder) != ESP_OK) {
-      return false;
-    }
-
-    return true;
+    return rmt_new_copy_encoder(&enc_config, &copy_encoder_) == ESP_OK;
   }
 
   bool begin(const std::vector<std::vector<rmt_symbol_word_t>> &patterns) {
@@ -253,21 +245,21 @@ template<> class RmtPulseGenerator<4> {
         synchronize_patterns(synced_b.data(), synced_b.size(), synced_d.data(), synced_d.size());
 
     // Store synchronized patterns
-    current_patterns[0] = synced_a2;
-    current_patterns[1] = synced_b2;
-    current_patterns[2] = synced_c2;
-    current_patterns[3] = synced_d2;
+    current_patterns_[0] = synced_a2;
+    current_patterns_[1] = synced_b2;
+    current_patterns_[2] = synced_c2;
+    current_patterns_[3] = synced_d2;
 
     rmt_transmit_config_t tx_config = {.loop_count = -1};
 
     for (int i = 0; i < 4; ++i) {
-      if (rmt_transmit(tx_channels[i], copyEncoder, current_patterns[i].data(),
-                       current_patterns[i].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
+      if (rmt_transmit(tx_channels_[i], copy_encoder_, current_patterns_[i].data(),
+                       current_patterns_[i].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
         return false;
       }
     }
 
-    running = true;
+    running_ = true;
     return true;
   }
 
@@ -277,51 +269,51 @@ template<> class RmtPulseGenerator<4> {
   }
 
   void stop() {
-    if (running) {
-      for (int i = 0; i < 4; ++i) {
-        if (tx_channels[i] != nullptr) {
-          rmt_disable(tx_channels[i]);
+    if (running_) {
+      for (auto &tx_channel : tx_channels_) {
+        if (tx_channel != nullptr) {
+          rmt_disable(tx_channel);
         }
       }
-      running = false;
+      running_ = false;
     }
 
     // Re-enable for next use
-    for (int i = 0; i < 4; ++i) {
-      if (tx_channels[i] != nullptr) {
-        rmt_enable(tx_channels[i]);
+    for (auto &tx_channel : tx_channels_) {
+      if (tx_channel != nullptr) {
+        rmt_enable(tx_channel);
       }
     }
   }
 
-  bool is_running() const { return running; }
+  bool is_running() const { return running_; }
 
  private:
-  void cleanup() {
-    if (copyEncoder != nullptr) {
-      rmt_del_encoder(copyEncoder);
-      copyEncoder = nullptr;
+  void cleanup_() {
+    if (copy_encoder_ != nullptr) {
+      rmt_del_encoder(copy_encoder_);
+      copy_encoder_ = nullptr;
     }
-    if (sync_mgr != nullptr) {
-      rmt_del_sync_manager(sync_mgr);
-      sync_mgr = nullptr;
+    if (sync_mgr_ != nullptr) {
+      rmt_del_sync_manager(sync_mgr_);
+      sync_mgr_ = nullptr;
     }
-    for (int i = 0; i < 4; ++i) {
-      if (tx_channels[i] != nullptr) {
-        rmt_disable(tx_channels[i]);
-        rmt_del_channel(tx_channels[i]);
-        tx_channels[i] = nullptr;
+    for (auto &tx_channel : tx_channels_) {
+      if (tx_channel != nullptr) {
+        rmt_disable(tx_channel);
+        rmt_del_channel(tx_channel);
+        tx_channel = nullptr;
       }
     }
   }
 
-  rmt_channel_handle_t tx_channels[4];
-  gpio_num_t tx_gpio_number[4];
-  rmt_encoder_handle_t copyEncoder;
-  rmt_sync_manager_handle_t sync_mgr;
+  rmt_channel_handle_t tx_channels_[4];
+  gpio_num_t tx_gpio_number_[4];
+  rmt_encoder_handle_t copy_encoder_;
+  rmt_sync_manager_handle_t sync_mgr_;
   uint32_t resolution_hz_;
-  bool running;
-  std::vector<rmt_symbol_word_t> current_patterns[4];
+  bool running_;
+  std::vector<rmt_symbol_word_t> current_patterns_[4];
 };
 
 }  // namespace rmt_simple
