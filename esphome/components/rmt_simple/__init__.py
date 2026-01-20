@@ -1,13 +1,13 @@
 from esphome import pins
 import esphome.codegen as cg
-import esphome.config_validation as cv
-from esphome.const import CONF_ID
 from esphome.components.esp32 import (
     VARIANT_ESP32C3,
     VARIANT_ESP32C6,
     VARIANT_ESP32S3,
     only_on_variant,
 )
+import esphome.config_validation as cv
+from esphome.const import CONF_ID
 
 # Dependencies
 DEPENDENCIES = ["esp32"]
