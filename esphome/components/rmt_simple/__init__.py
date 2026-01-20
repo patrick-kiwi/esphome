@@ -106,17 +106,15 @@ CONFIG_SCHEMA = cv.All(
 
 def convert_symbols(symbols):
     """Convert RMT symbol config to internal format."""
-    result = []
-    for symbol in symbols:
-        result.append(
-            {
-                "duration0": symbol[CONF_DURATION0],
-                "level0": symbol[CONF_LEVEL0],
-                "duration1": symbol[CONF_DURATION1],
-                "level1": symbol[CONF_LEVEL1],
-            }
-        )
-    return result
+    return [
+        {
+            "duration0": symbol[CONF_DURATION0],
+            "level0": symbol[CONF_LEVEL0],
+            "duration1": symbol[CONF_DURATION1],
+            "level1": symbol[CONF_LEVEL1],
+        }
+        for symbol in symbols
+    ]
 
 
 async def to_code(config):

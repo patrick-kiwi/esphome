@@ -27,17 +27,17 @@ inline std::vector<rmt_symbol_word_t> pad_pattern(const rmt_symbol_word_t *patte
 
 // Utility to synchronize both patterns to the longer one
 inline std::pair<std::vector<rmt_symbol_word_t>, std::vector<rmt_symbol_word_t>> synchronize_patterns(
-    const rmt_symbol_word_t *patternA, size_t lenA, const rmt_symbol_word_t *patternB, size_t lenB) {
-  uint32_t ticksA = total_ticks(patternA, lenA);
-  uint32_t ticksB = total_ticks(patternB, lenB);
+    const rmt_symbol_word_t *pattern_a, size_t len_a, const rmt_symbol_word_t *pattern_b, size_t len_b) {
+  uint32_t ticks_a = total_ticks(pattern_a, len_a);
+  uint32_t ticks_b = total_ticks(pattern_b, len_b);
 
-  if (ticksA > ticksB) {
-    return {std::vector<rmt_symbol_word_t>(patternA, patternA + lenA), pad_pattern(patternB, lenB, ticksA - ticksB)};
-  } else if (ticksB > ticksA) {
-    return {pad_pattern(patternA, lenA, ticksB - ticksA), std::vector<rmt_symbol_word_t>(patternB, patternB + lenB)};
+  if (ticks_a > ticks_b) {
+    return {std::vector<rmt_symbol_word_t>(pattern_a, pattern_a + len_a), pad_pattern(pattern_b, len_b, ticks_a - ticks_b)};
+  } else if (ticks_b > ticks_a) {
+    return {pad_pattern(pattern_a, len_a, ticks_b - ticks_a), std::vector<rmt_symbol_word_t>(pattern_b, pattern_b + len_b)};
   } else {
-    return {std::vector<rmt_symbol_word_t>(patternA, patternA + lenA),
-            std::vector<rmt_symbol_word_t>(patternB, patternB + lenB)};
+    return {std::vector<rmt_symbol_word_t>(pattern_a, pattern_a + len_a),
+            std::vector<rmt_symbol_word_t>(pattern_b, pattern_b + len_b)};
   }
 }
 
@@ -55,10 +55,10 @@ template<int NumChannels> class RmtPulseGenerator {
  */
 template<> class RmtPulseGenerator<2> {
  public:
-  RmtPulseGenerator(gpio_num_t gpioA, gpio_num_t gpioB, uint32_t resolution_hz = 1000000)
+  RmtPulseGenerator(gpio_num_t gpio_a, gpio_num_t gpio_b, uint32_t resolution_hz = 1000000)
       : resolution_hz_(resolution_hz) {
-    tx_gpio_number[0] = gpioA;
-    tx_gpio_number[1] = gpioB;
+    tx_gpio_number[0] = gpio_a;
+    tx_gpio_number[1] = gpio_b;
     tx_channels[0] = nullptr;
     tx_channels[1] = nullptr;
     copyEncoder = nullptr;
@@ -105,12 +105,12 @@ template<> class RmtPulseGenerator<2> {
       return false;
     }
 
-    auto [syncedA, syncedB] =
+    auto [synced_a, synced_b] =
         synchronize_patterns(patterns[0].data(), patterns[0].size(), patterns[1].data(), patterns[1].size());
 
     // Store synchronized patterns
-    current_patterns[0] = syncedA;
-    current_patterns[1] = syncedB;
+    current_patterns[0] = synced_a;
+    current_patterns[1] = synced_b;
 
     rmt_transmit_config_t tx_config = {.loop_count = -1};
 
@@ -186,13 +186,13 @@ template<> class RmtPulseGenerator<2> {
  */
 template<> class RmtPulseGenerator<4> {
  public:
-  RmtPulseGenerator(gpio_num_t gpioA, gpio_num_t gpioB, gpio_num_t gpioC, gpio_num_t gpioD,
+  RmtPulseGenerator(gpio_num_t gpio_a, gpio_num_t gpio_b, gpio_num_t gpio_c, gpio_num_t gpio_d,
                     uint32_t resolution_hz = 1000000)
       : resolution_hz_(resolution_hz) {
-    tx_gpio_number[0] = gpioA;
-    tx_gpio_number[1] = gpioB;
-    tx_gpio_number[2] = gpioC;
-    tx_gpio_number[3] = gpioD;
+    tx_gpio_number[0] = gpio_a;
+    tx_gpio_number[1] = gpio_b;
+    tx_gpio_number[2] = gpio_c;
+    tx_gpio_number[3] = gpio_d;
     for (int i = 0; i < 4; ++i) {
       tx_channels[i] = nullptr;
     }
@@ -241,18 +241,18 @@ template<> class RmtPulseGenerator<4> {
     }
 
     // Synchronize patterns (hacky way from original library)
-    auto [syncedA, syncedB] =
+    auto [synced_a, synced_b] =
         synchronize_patterns(patterns[0].data(), patterns[0].size(), patterns[1].data(), patterns[1].size());
-    auto [syncedC, syncedD] =
+    auto [synced_c, synced_d] =
         synchronize_patterns(patterns[2].data(), patterns[2].size(), patterns[3].data(), patterns[3].size());
-    auto [syncedC2, syncedA2] = synchronize_patterns(syncedC.data(), syncedC.size(), syncedA.data(), syncedA.size());
-    auto [syncedB2, syncedD2] = synchronize_patterns(syncedB.data(), syncedB.size(), syncedD.data(), syncedD.size());
+    auto [synced_c2, synced_a2] = synchronize_patterns(synced_c.data(), synced_c.size(), synced_a.data(), synced_a.size());
+    auto [synced_b2, synced_d2] = synchronize_patterns(synced_b.data(), synced_b.size(), synced_d.data(), synced_d.size());
 
     // Store synchronized patterns
-    current_patterns[0] = syncedA2;
-    current_patterns[1] = syncedB2;
-    current_patterns[2] = syncedC2;
-    current_patterns[3] = syncedD2;
+    current_patterns[0] = synced_a2;
+    current_patterns[1] = synced_b2;
+    current_patterns[2] = synced_c2;
+    current_patterns[3] = synced_d2;
 
     rmt_transmit_config_t tx_config = {.loop_count = -1};
 
