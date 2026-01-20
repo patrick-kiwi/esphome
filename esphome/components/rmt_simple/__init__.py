@@ -1,6 +1,6 @@
+from esphome import pins
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome import pins
 from esphome.const import CONF_ID
 
 # Dependencies
@@ -63,7 +63,9 @@ def validate_at_least_one_pin(config):
         for pin_key in [CONF_PIN_0, CONF_PIN_1, CONF_PIN_2, CONF_PIN_3]
     )
     if not has_pin:
-        raise cv.Invalid("At least one pin must be configured (pin_0, pin_1, pin_2, or pin_3)")
+        raise cv.Invalid(
+            "At least one pin must be configured (pin_0, pin_1, pin_2, or pin_3)"
+        )
     return config
 
 
@@ -96,8 +98,7 @@ CONFIG_SCHEMA = cv.All(
                 min=1, max=80000000
             ),
         }
-    )
-    .extend(cv.COMPONENT_SCHEMA),
+    ).extend(cv.COMPONENT_SCHEMA),
     validate_unique_pins,
     validate_at_least_one_pin,
 )
@@ -142,12 +143,12 @@ async def to_code(config):
                 if symbols:
                     symbols_str = "std::vector<rmt_symbol_word_t>({\n"
                     for sym in symbols:
-                        symbols_str += f"        rmt_symbol_word_t{{{{\n"
+                        symbols_str += "        rmt_symbol_word_t{{\n"
                         symbols_str += f"          .duration0 = {sym['duration0']},\n"
                         symbols_str += f"          .level0 = {sym['level0']},\n"
                         symbols_str += f"          .duration1 = {sym['duration1']},\n"
                         symbols_str += f"          .level1 = {sym['level1']},\n"
-                        symbols_str += f"        }}}},\n"
+                        symbols_str += "        }},\n"
                     symbols_str += "      })"
                 else:
                     # Empty vector

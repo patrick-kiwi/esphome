@@ -38,10 +38,9 @@ void RmtSimpleComponent::setup() {
     }
 
     this->generator_2ch_ = std::make_unique<RmtPulseGenerator<2>>(
-      gpios[0],
-      gpio_index > 1 ? gpios[1] : gpios[0],  // Use first pin twice if only one configured
-      this->resolution_hz_
-    );
+        gpios[0],
+        gpio_index > 1 ? gpios[1] : gpios[0],  // Use first pin twice if only one configured
+        this->resolution_hz_);
 
     if (!this->generator_2ch_->init()) {
       ESP_LOGE(TAG, "Failed to initialize 2-channel RMT peripheral");
@@ -62,9 +61,8 @@ void RmtSimpleComponent::setup() {
       }
     }
 
-    this->generator_4ch_ = std::make_unique<RmtPulseGenerator<4>>(
-      gpios[0], gpios[1], gpios[2], gpios[3], this->resolution_hz_
-    );
+    this->generator_4ch_ =
+        std::make_unique<RmtPulseGenerator<4>>(gpios[0], gpios[1], gpios[2], gpios[3], this->resolution_hz_);
 
     if (!this->generator_4ch_->init()) {
       ESP_LOGE(TAG, "Failed to initialize 4-channel RMT peripheral");
