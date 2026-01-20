@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef USE_ESP32
+
 #include "esphome/core/component.h"
 #include "esphome/core/hal.h"
 #include "RmtPulseGenerator.h"
@@ -40,3 +42,5 @@ class RmtSimpleComponent : public Component {
 
 }  // namespace rmt_simple
 }  // namespace esphome
+
+#endif  // USE_ESP32

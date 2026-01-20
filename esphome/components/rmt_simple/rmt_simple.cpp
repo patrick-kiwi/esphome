@@ -1,6 +1,8 @@
 #include "rmt_simple.h"
 #include "esphome/core/log.h"
 
+#ifdef USE_ESP32
+
 namespace esphome {
 namespace rmt_simple {
 
@@ -188,3 +190,5 @@ bool RmtSimpleComponent::is_running() const {
 
 }  // namespace rmt_simple
 }  // namespace esphome
+
+#endif  // USE_ESP32

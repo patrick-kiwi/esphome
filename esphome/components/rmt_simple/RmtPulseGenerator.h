@@ -1,5 +1,8 @@
 #pragma once
 
+#ifdef USE_ESP32
+
+#include "esphome/core/hal.h"
 #include <driver/rmt_tx.h>
 #include <vector>
 #include <utility>  // for std::pair
@@ -318,3 +321,5 @@ template<> class RmtPulseGenerator<4> {
 
 }  // namespace rmt_simple
 }  // namespace esphome
+
+#endif  // USE_ESP32
