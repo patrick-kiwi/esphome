@@ -32,9 +32,11 @@ inline std::pair<std::vector<rmt_symbol_word_t>, std::vector<rmt_symbol_word_t>>
   uint32_t ticks_b = total_ticks(pattern_b, len_b);
 
   if (ticks_a > ticks_b) {
-    return {std::vector<rmt_symbol_word_t>(pattern_a, pattern_a + len_a), pad_pattern(pattern_b, len_b, ticks_a - ticks_b)};
+    return {std::vector<rmt_symbol_word_t>(pattern_a, pattern_a + len_a),
+            pad_pattern(pattern_b, len_b, ticks_a - ticks_b)};
   } else if (ticks_b > ticks_a) {
-    return {pad_pattern(pattern_a, len_a, ticks_b - ticks_a), std::vector<rmt_symbol_word_t>(pattern_b, pattern_b + len_b)};
+    return {pad_pattern(pattern_a, len_a, ticks_b - ticks_a),
+            std::vector<rmt_symbol_word_t>(pattern_b, pattern_b + len_b)};
   } else {
     return {std::vector<rmt_symbol_word_t>(pattern_a, pattern_a + len_a),
             std::vector<rmt_symbol_word_t>(pattern_b, pattern_b + len_b)};
@@ -245,8 +247,10 @@ template<> class RmtPulseGenerator<4> {
         synchronize_patterns(patterns[0].data(), patterns[0].size(), patterns[1].data(), patterns[1].size());
     auto [synced_c, synced_d] =
         synchronize_patterns(patterns[2].data(), patterns[2].size(), patterns[3].data(), patterns[3].size());
-    auto [synced_c2, synced_a2] = synchronize_patterns(synced_c.data(), synced_c.size(), synced_a.data(), synced_a.size());
-    auto [synced_b2, synced_d2] = synchronize_patterns(synced_b.data(), synced_b.size(), synced_d.data(), synced_d.size());
+    auto [synced_c2, synced_a2] =
+        synchronize_patterns(synced_c.data(), synced_c.size(), synced_a.data(), synced_a.size());
+    auto [synced_b2, synced_d2] =
+        synchronize_patterns(synced_b.data(), synced_b.size(), synced_d.data(), synced_d.size());
 
     // Store synchronized patterns
     current_patterns[0] = synced_a2;
