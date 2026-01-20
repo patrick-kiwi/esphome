@@ -1,0 +1,20 @@
+rmt_simple:
+  resolution_hz: 10000000
+
+  pin_0: GPIO10
+  pulses_0:
+    - duration0: 50
+      level0: 1
+      duration1: 50
+      level1: 0
+
+  pin_1: GPIO11
+  pulses_1:
+    - duration0: 100
+      level0: 1
+      duration1: 100
+      level1: 0
+    - duration0: 200
+      level0: 0
+      duration1: 200
+      level1: 1
