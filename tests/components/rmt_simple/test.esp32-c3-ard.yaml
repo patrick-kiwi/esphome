@@ -1,0 +1,10 @@
+substitutions:
+  pin_0: GPIO7
+  pin_1: GPIO21
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+<<: !include common.yaml

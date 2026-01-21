@@ -1,0 +1,10 @@
+substitutions:
+  pin_0: GPIO10
+  pin_1: GPIO11
+
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: esp-idf
+
+<<: !include common.yaml
