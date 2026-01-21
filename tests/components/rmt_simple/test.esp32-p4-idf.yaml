@@ -1,3 +1,12 @@
+substitutions:
+  pin_0: GPIO19
+  pin_1: GPIO54
+
+esp32:
+  board: esp32-p4-evboard
+  framework:
+    type: esp-idf
+
 rmt_simple:
   id: rmt_test
   resolution_hz: 1000000

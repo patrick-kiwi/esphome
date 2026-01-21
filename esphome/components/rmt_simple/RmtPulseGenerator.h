@@ -13,7 +13,7 @@ inline uint32_t total_ticks(const rmt_symbol_word_t *pattern, size_t len) {
   return total;
 }
 
-// Utility to pad a pattern with dummy ticks to equalize timing
+// Utility to pad a pattern with dummy ticks to reach target length
 inline std::vector<rmt_symbol_word_t> pad_pattern(const rmt_symbol_word_t *pattern, size_t len, uint32_t pad_ticks) {
   std::vector<rmt_symbol_word_t> result(pattern, pattern + len);
   if (pad_ticks > 0) {
@@ -22,20 +22,33 @@ inline std::vector<rmt_symbol_word_t> pad_pattern(const rmt_symbol_word_t *patte
   return result;
 }
 
-// Utility to synchronize both patterns to the longer one
-inline std::pair<std::vector<rmt_symbol_word_t>, std::vector<rmt_symbol_word_t>> synchronize_patterns(
-    const rmt_symbol_word_t *patternA, size_t lenA, const rmt_symbol_word_t *patternB, size_t lenB) {
-  uint32_t ticksA = total_ticks(patternA, lenA);
-  uint32_t ticksB = total_ticks(patternB, lenB);
-
-  if (ticksA > ticksB) {
-    return {std::vector<rmt_symbol_word_t>(patternA, patternA + lenA), pad_pattern(patternB, lenB, ticksA - ticksB)};
-  } else if (ticksB > ticksA) {
-    return {pad_pattern(patternA, lenA, ticksB - ticksA), std::vector<rmt_symbol_word_t>(patternB, patternB + lenB)};
-  } else {
-    return {std::vector<rmt_symbol_word_t>(patternA, patternA + lenA),
-            std::vector<rmt_symbol_word_t>(patternB, patternB + lenB)};
+// Utility to align multiple patterns to the same length by padding shorter ones
+// This does NOT provide timing synchronization - use sync manager for that
+inline std::vector<std::vector<rmt_symbol_word_t>> align_pulse_lengths(
+    const std::vector<std::vector<rmt_symbol_word_t>> &patterns) {
+  if (patterns.empty()) {
+    return {};
   }
+
+  // Find maximum tick count across all patterns
+  uint32_t max_ticks = 0;
+  for (const auto &pattern : patterns) {
+    uint32_t ticks = total_ticks(pattern.data(), pattern.size());
+    if (ticks > max_ticks) {
+      max_ticks = ticks;
+    }
+  }
+
+  // Pad all patterns to match the longest
+  std::vector<std::vector<rmt_symbol_word_t>> aligned;
+  aligned.reserve(patterns.size());
+  for (const auto &pattern : patterns) {
+    uint32_t ticks = total_ticks(pattern.data(), pattern.size());
+    uint32_t pad_ticks = max_ticks - ticks;
+    aligned.push_back(pad_pattern(pattern.data(), pattern.size(), pad_ticks));
+  }
+
+  return aligned;
 }
 
 /**
@@ -52,8 +65,9 @@ template<int NumChannels> class RmtPulseGenerator {
  */
 template<> class RmtPulseGenerator<2> {
  public:
-  RmtPulseGenerator(gpio_num_t gpioA, gpio_num_t gpioB, uint32_t resolution_hz = 1000000)
-      : resolution_hz_(resolution_hz) {
+  RmtPulseGenerator(gpio_num_t gpioA, gpio_num_t gpioB, uint32_t resolution_hz = 1000000,
+                    bool align_pulse_lengths = true, bool use_sync_manager = true)
+      : resolution_hz_(resolution_hz), align_pulse_lengths_(align_pulse_lengths), use_sync_manager_(use_sync_manager) {
     tx_gpio_number[0] = gpioA;
     tx_gpio_number[1] = gpioB;
     tx_channels[0] = nullptr;
@@ -69,12 +83,16 @@ template<> class RmtPulseGenerator<2> {
   }
 
   bool init() {
+    // ESP32 (original) needs different settings than C3/C6/P4/S3
+    uint16_t mem_block_symbols = use_sync_manager_ ? 48 : 64;
+    uint8_t trans_queue_depth = use_sync_manager_ ? 8 : 1;
+
     for (int i = 0; i < 2; ++i) {
       rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number[i],
                                         .clk_src = RMT_CLK_SRC_DEFAULT,
                                         .resolution_hz = resolution_hz_,
-                                        .mem_block_symbols = 48,
-                                        .trans_queue_depth = 8,
+                                        .mem_block_symbols = mem_block_symbols,
+                                        .trans_queue_depth = trans_queue_depth,
                                         .flags = {}};
       if (rmt_new_tx_channel(&config, &tx_channels[i]) != ESP_OK) {
         return false;
@@ -84,9 +102,12 @@ template<> class RmtPulseGenerator<2> {
       }
     }
 
-    rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels, .array_size = 2};
-    if (rmt_new_sync_manager(&sync_config, &sync_mgr) != ESP_OK) {
-      return false;
+    // Create sync manager for boards that support it (C3, C6, P4, S3)
+    if (use_sync_manager_) {
+      rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels, .array_size = 2};
+      if (rmt_new_sync_manager(&sync_config, &sync_mgr) != ESP_OK) {
+        return false;
+      }
     }
 
     rmt_copy_encoder_config_t enc_config = {};
@@ -102,12 +123,18 @@ template<> class RmtPulseGenerator<2> {
       return false;
     }
 
-    auto [syncedA, syncedB] =
-        synchronize_patterns(patterns[0].data(), patterns[0].size(), patterns[1].data(), patterns[1].size());
+    // Conditionally align pulse lengths based on configuration
+    std::vector<std::vector<rmt_symbol_word_t>> aligned_patterns;
+    if (align_pulse_lengths_) {
+      aligned_patterns = align_pulse_lengths(patterns);
+    } else {
+      // Use patterns as-is without length alignment
+      aligned_patterns = patterns;
+    }
 
-    // Store synchronized patterns
-    current_patterns[0] = syncedA;
-    current_patterns[1] = syncedB;
+    // Store aligned patterns
+    current_patterns[0] = aligned_patterns[0];
+    current_patterns[1] = aligned_patterns[1];
 
     rmt_transmit_config_t tx_config = {.loop_count = -1};
 
@@ -173,19 +200,21 @@ template<> class RmtPulseGenerator<2> {
   rmt_encoder_handle_t copyEncoder;
   rmt_sync_manager_handle_t sync_mgr;
   uint32_t resolution_hz_;
+  bool align_pulse_lengths_;
+  bool use_sync_manager_;
   bool running;
   std::vector<rmt_symbol_word_t> current_patterns[2];
 };
 
 /**
  * 4-Channel RMT Pulse Generator
- * For ESP32-S3
+ * For ESP32-S3, ESP32-P4
  */
 template<> class RmtPulseGenerator<4> {
  public:
   RmtPulseGenerator(gpio_num_t gpioA, gpio_num_t gpioB, gpio_num_t gpioC, gpio_num_t gpioD,
-                    uint32_t resolution_hz = 1000000)
-      : resolution_hz_(resolution_hz) {
+                    uint32_t resolution_hz = 1000000, bool align_pulse_lengths = true)
+      : resolution_hz_(resolution_hz), align_pulse_lengths_(align_pulse_lengths) {
     tx_gpio_number[0] = gpioA;
     tx_gpio_number[1] = gpioB;
     tx_gpio_number[2] = gpioC;
@@ -204,6 +233,7 @@ template<> class RmtPulseGenerator<4> {
   }
 
   bool init() {
+    // 4-channel variants always have sync manager support
     for (int i = 0; i < 4; ++i) {
       rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number[i],
                                         .clk_src = RMT_CLK_SRC_DEFAULT,
@@ -219,6 +249,7 @@ template<> class RmtPulseGenerator<4> {
       }
     }
 
+    // Create sync manager for reliable edge alignment
     rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels, .array_size = 4};
     if (rmt_new_sync_manager(&sync_config, &sync_mgr) != ESP_OK) {
       return false;
@@ -237,19 +268,19 @@ template<> class RmtPulseGenerator<4> {
       return false;
     }
 
-    // Synchronize patterns (hacky way from original library)
-    auto [syncedA, syncedB] =
-        synchronize_patterns(patterns[0].data(), patterns[0].size(), patterns[1].data(), patterns[1].size());
-    auto [syncedC, syncedD] =
-        synchronize_patterns(patterns[2].data(), patterns[2].size(), patterns[3].data(), patterns[3].size());
-    auto [syncedC2, syncedA2] = synchronize_patterns(syncedC.data(), syncedC.size(), syncedA.data(), syncedA.size());
-    auto [syncedB2, syncedD2] = synchronize_patterns(syncedB.data(), syncedB.size(), syncedD.data(), syncedD.size());
+    // Align pulse lengths - 4-channel variants must always align
+    // (experimentally determined requirement)
+    std::vector<std::vector<rmt_symbol_word_t>> aligned_patterns;
+    if (align_pulse_lengths_) {
+      aligned_patterns = align_pulse_lengths(patterns);
+    } else {
+      aligned_patterns = patterns;
+    }
 
-    // Store synchronized patterns
-    current_patterns[0] = syncedA2;
-    current_patterns[1] = syncedB2;
-    current_patterns[2] = syncedC2;
-    current_patterns[3] = syncedD2;
+    // Store aligned patterns
+    for (int i = 0; i < 4; ++i) {
+      current_patterns[i] = aligned_patterns[i];
+    }
 
     rmt_transmit_config_t tx_config = {.loop_count = -1};
 
@@ -313,6 +344,7 @@ template<> class RmtPulseGenerator<4> {
   rmt_encoder_handle_t copyEncoder;
   rmt_sync_manager_handle_t sync_mgr;
   uint32_t resolution_hz_;
+  bool align_pulse_lengths_;
   bool running;
   std::vector<rmt_symbol_word_t> current_patterns[4];
 };

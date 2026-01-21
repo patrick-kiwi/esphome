@@ -1,10 +1,40 @@
-substitutions:
-  pin_0: GPIO10
-  pin_1: GPIO11
-
 esp32:
   board: esp32-s3-devkitc-1
   framework:
     type: arduino
 
-<<: !include common.yaml
+rmt_simple:
+  id: rmt_test
+  resolution_hz: 1000000
+  pin_0:
+    gpio_number: GPIO8
+    pulse_sequence:
+      - duration0: 100
+        level0: 1
+        duration1: 100
+        level1: 0
+      - duration0: 200
+        level0: 1
+        duration1: 200
+        level1: 0
+  pin_1:
+    gpio_number: GPIO9
+    pulse_sequence:
+      - duration0: 50
+        level0: 1
+        duration1: 50
+        level1: 0
+  pin_2:
+    gpio_number: GPIO10
+    pulse_sequence:
+      - duration0: 75
+        level0: 1
+        duration1: 75
+        level1: 0
+  pin_3:
+    gpio_number: GPIO11
+    pulse_sequence:
+      - duration0: 150
+        level0: 1
+        duration1: 150
+        level1: 0

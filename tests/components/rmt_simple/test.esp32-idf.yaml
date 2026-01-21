@@ -1,6 +1,16 @@
+substitutions:
+  pin_0: GPIO26
+  pin_1: GPIO16
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
 rmt_simple:
   id: rmt_test
   resolution_hz: 1000000
+  align_pulse_lengths: false  # ESP32 (original) can disable pulse length alignment
   pin_0:
     gpio_number: ${pin_0}
     pulse_sequence:

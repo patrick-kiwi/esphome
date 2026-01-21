@@ -1,6 +1,6 @@
 substitutions:
-  pin_0: GPIO7
-  pin_1: GPIO21
+  pin_0: GPIO21
+  pin_1: GPIO7
 
 esp32:
   board: esp32-c3-devkitm-1
