@@ -1,5 +1,9 @@
+substitutions:
+  pin_0: GPIO19
+  pin_1: GPIO54
+
 esp32:
-  board: esp32-s3-devkitc-1
+  board: esp32-p4-evboard
   framework:
     type: esp-idf
 
@@ -7,7 +11,7 @@ rmt_simple:
   id: rmt_test
   resolution_hz: 1000000
   pin_0:
-    gpio_number: GPIO8
+    gpio_number: ${pin_0}
     pulse_sequence:
       - duration0: 100
         level0: 1
@@ -18,23 +22,9 @@ rmt_simple:
         duration1: 200
         level1: 0
   pin_1:
-    gpio_number: GPIO9
+    gpio_number: ${pin_1}
     pulse_sequence:
       - duration0: 50
         level0: 1
         duration1: 50
-        level1: 0
-  pin_2:
-    gpio_number: GPIO10
-    pulse_sequence:
-      - duration0: 75
-        level0: 1
-        duration1: 75
-        level1: 0
-  pin_3:
-    gpio_number: GPIO11
-    pulse_sequence:
-      - duration0: 150
-        level0: 1
-        duration1: 150
         level1: 0

@@ -1,14 +1,8 @@
 #pragma once
 
-#ifdef USE_ESP32
-
-#include "esphome/core/hal.h"
 #include <driver/rmt_tx.h>
 #include <vector>
 #include <utility>  // for std::pair
-
-namespace esphome {
-namespace rmt_simple {
 
 // Utility to count total ticks in a pulse pattern
 inline uint32_t total_ticks(const rmt_symbol_word_t *pattern, size_t len) {
@@ -19,7 +13,7 @@ inline uint32_t total_ticks(const rmt_symbol_word_t *pattern, size_t len) {
   return total;
 }
 
-// Utility to pad a pattern with dummy ticks to equalize timing
+// Utility to pad a pattern with dummy ticks to reach target length
 inline std::vector<rmt_symbol_word_t> pad_pattern(const rmt_symbol_word_t *pattern, size_t len, uint32_t pad_ticks) {
   std::vector<rmt_symbol_word_t> result(pattern, pattern + len);
   if (pad_ticks > 0) {
@@ -28,22 +22,33 @@ inline std::vector<rmt_symbol_word_t> pad_pattern(const rmt_symbol_word_t *patte
   return result;
 }
 
-// Utility to synchronize both patterns to the longer one
-inline std::pair<std::vector<rmt_symbol_word_t>, std::vector<rmt_symbol_word_t>> synchronize_patterns(
-    const rmt_symbol_word_t *pattern_a, size_t len_a, const rmt_symbol_word_t *pattern_b, size_t len_b) {
-  uint32_t ticks_a = total_ticks(pattern_a, len_a);
-  uint32_t ticks_b = total_ticks(pattern_b, len_b);
-
-  if (ticks_a > ticks_b) {
-    return {std::vector<rmt_symbol_word_t>(pattern_a, pattern_a + len_a),
-            pad_pattern(pattern_b, len_b, ticks_a - ticks_b)};
-  } else if (ticks_b > ticks_a) {
-    return {pad_pattern(pattern_a, len_a, ticks_b - ticks_a),
-            std::vector<rmt_symbol_word_t>(pattern_b, pattern_b + len_b)};
-  } else {
-    return {std::vector<rmt_symbol_word_t>(pattern_a, pattern_a + len_a),
-            std::vector<rmt_symbol_word_t>(pattern_b, pattern_b + len_b)};
+// Utility to align multiple patterns to the same length by padding shorter ones
+// This does NOT provide timing synchronization - use sync manager for that
+inline std::vector<std::vector<rmt_symbol_word_t>> align_pulse_lengths(
+    const std::vector<std::vector<rmt_symbol_word_t>> &patterns) {
+  if (patterns.empty()) {
+    return {};
   }
+
+  // Find maximum tick count across all patterns
+  uint32_t max_ticks = 0;
+  for (const auto &pattern : patterns) {
+    uint32_t ticks = total_ticks(pattern.data(), pattern.size());
+    if (ticks > max_ticks) {
+      max_ticks = ticks;
+    }
+  }
+
+  // Pad all patterns to match the longest
+  std::vector<std::vector<rmt_symbol_word_t>> aligned;
+  aligned.reserve(patterns.size());
+  for (const auto &pattern : patterns) {
+    uint32_t ticks = total_ticks(pattern.data(), pattern.size());
+    uint32_t pad_ticks = max_ticks - ticks;
+    aligned.push_back(pad_pattern(pattern.data(), pattern.size(), pad_ticks));
+  }
+
+  return aligned;
 }
 
 /**
@@ -60,45 +65,57 @@ template<int NumChannels> class RmtPulseGenerator {
  */
 template<> class RmtPulseGenerator<2> {
  public:
-  RmtPulseGenerator(gpio_num_t gpio_a, gpio_num_t gpio_b, uint32_t resolution_hz = 1000000)
-      : resolution_hz_(resolution_hz) {
-    tx_gpio_number_[0] = gpio_a;
-    tx_gpio_number_[1] = gpio_b;
-    tx_channels_[0] = nullptr;
-    tx_channels_[1] = nullptr;
-    copy_encoder_ = nullptr;
-    sync_mgr_ = nullptr;
-    running_ = false;
+  RmtPulseGenerator(gpio_num_t gpioA, gpio_num_t gpioB, uint32_t resolution_hz = 1000000,
+                    bool align_pulse_lengths = true, bool use_sync_manager = true)
+      : resolution_hz_(resolution_hz), align_pulse_lengths_(align_pulse_lengths), use_sync_manager_(use_sync_manager) {
+    tx_gpio_number[0] = gpioA;
+    tx_gpio_number[1] = gpioB;
+    tx_channels[0] = nullptr;
+    tx_channels[1] = nullptr;
+    copyEncoder = nullptr;
+    sync_mgr = nullptr;
+    running = false;
   }
 
   ~RmtPulseGenerator() {
     stop();
-    cleanup_();
+    cleanup();
   }
 
   bool init() {
+    // ESP32 (original) needs different settings than C3/C6/P4/S3
+    uint16_t mem_block_symbols = use_sync_manager_ ? 48 : 64;
+    uint8_t trans_queue_depth = use_sync_manager_ ? 8 : 1;
+
     for (int i = 0; i < 2; ++i) {
-      rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number_[i],
+      rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number[i],
                                         .clk_src = RMT_CLK_SRC_DEFAULT,
                                         .resolution_hz = resolution_hz_,
-                                        .mem_block_symbols = 48,
-                                        .trans_queue_depth = 8,
+                                        .mem_block_symbols = mem_block_symbols,
+                                        .trans_queue_depth = trans_queue_depth,
                                         .flags = {}};
-      if (rmt_new_tx_channel(&config, &tx_channels_[i]) != ESP_OK) {
+      if (rmt_new_tx_channel(&config, &tx_channels[i]) != ESP_OK) {
         return false;
       }
-      if (rmt_enable(tx_channels_[i]) != ESP_OK) {
+      if (rmt_enable(tx_channels[i]) != ESP_OK) {
         return false;
       }
     }
 
-    rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels_, .array_size = 2};
-    if (rmt_new_sync_manager(&sync_config, &sync_mgr_) != ESP_OK) {
-      return false;
+    // Create sync manager for boards that support it (C3, C6, P4, S3)
+    if (use_sync_manager_) {
+      rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels, .array_size = 2};
+      if (rmt_new_sync_manager(&sync_config, &sync_mgr) != ESP_OK) {
+        return false;
+      }
     }
 
     rmt_copy_encoder_config_t enc_config = {};
-    return rmt_new_copy_encoder(&enc_config, &copy_encoder_) == ESP_OK;
+    if (rmt_new_copy_encoder(&enc_config, &copyEncoder) != ESP_OK) {
+      return false;
+    }
+
+    return true;
   }
 
   bool begin(const std::vector<std::vector<rmt_symbol_word_t>> &patterns) {
@@ -106,25 +123,31 @@ template<> class RmtPulseGenerator<2> {
       return false;
     }
 
-    auto [synced_a, synced_b] =
-        synchronize_patterns(patterns[0].data(), patterns[0].size(), patterns[1].data(), patterns[1].size());
+    // Conditionally align pulse lengths based on configuration
+    std::vector<std::vector<rmt_symbol_word_t>> aligned_patterns;
+    if (align_pulse_lengths_) {
+      aligned_patterns = align_pulse_lengths(patterns);
+    } else {
+      // Use patterns as-is without length alignment
+      aligned_patterns = patterns;
+    }
 
-    // Store synchronized patterns
-    current_patterns_[0] = synced_a;
-    current_patterns_[1] = synced_b;
+    // Store aligned patterns
+    current_patterns[0] = aligned_patterns[0];
+    current_patterns[1] = aligned_patterns[1];
 
     rmt_transmit_config_t tx_config = {.loop_count = -1};
 
-    if (rmt_transmit(tx_channels_[0], copy_encoder_, current_patterns_[0].data(),
-                     current_patterns_[0].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
+    if (rmt_transmit(tx_channels[0], copyEncoder, current_patterns[0].data(),
+                     current_patterns[0].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
       return false;
     }
-    if (rmt_transmit(tx_channels_[1], copy_encoder_, current_patterns_[1].data(),
-                     current_patterns_[1].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
+    if (rmt_transmit(tx_channels[1], copyEncoder, current_patterns[1].data(),
+                     current_patterns[1].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
       return false;
     }
 
-    running_ = true;
+    running = true;
     return true;
   }
 
@@ -134,102 +157,110 @@ template<> class RmtPulseGenerator<2> {
   }
 
   void stop() {
-    if (running_) {
-      for (auto &tx_channel : tx_channels_) {
-        if (tx_channel != nullptr) {
-          rmt_disable(tx_channel);
+    if (running) {
+      for (int i = 0; i < 2; ++i) {
+        if (tx_channels[i] != nullptr) {
+          rmt_disable(tx_channels[i]);
         }
       }
-      running_ = false;
+      running = false;
     }
 
     // Re-enable for next use
-    for (auto &tx_channel : tx_channels_) {
-      if (tx_channel != nullptr) {
-        rmt_enable(tx_channel);
+    for (int i = 0; i < 2; ++i) {
+      if (tx_channels[i] != nullptr) {
+        rmt_enable(tx_channels[i]);
       }
     }
   }
 
-  bool is_running() const { return running_; }
+  bool is_running() const { return running; }
 
  private:
-  void cleanup_() {
-    if (copy_encoder_ != nullptr) {
-      rmt_del_encoder(copy_encoder_);
-      copy_encoder_ = nullptr;
+  void cleanup() {
+    if (copyEncoder != nullptr) {
+      rmt_del_encoder(copyEncoder);
+      copyEncoder = nullptr;
     }
-    if (sync_mgr_ != nullptr) {
-      rmt_del_sync_manager(sync_mgr_);
-      sync_mgr_ = nullptr;
+    if (sync_mgr != nullptr) {
+      rmt_del_sync_manager(sync_mgr);
+      sync_mgr = nullptr;
     }
-    for (auto &tx_channel : tx_channels_) {
-      if (tx_channel != nullptr) {
-        rmt_disable(tx_channel);
-        rmt_del_channel(tx_channel);
-        tx_channel = nullptr;
+    for (int i = 0; i < 2; ++i) {
+      if (tx_channels[i] != nullptr) {
+        rmt_disable(tx_channels[i]);
+        rmt_del_channel(tx_channels[i]);
+        tx_channels[i] = nullptr;
       }
     }
   }
 
-  rmt_channel_handle_t tx_channels_[2];
-  gpio_num_t tx_gpio_number_[2];
-  rmt_encoder_handle_t copy_encoder_;
-  rmt_sync_manager_handle_t sync_mgr_;
+  rmt_channel_handle_t tx_channels[2];
+  gpio_num_t tx_gpio_number[2];
+  rmt_encoder_handle_t copyEncoder;
+  rmt_sync_manager_handle_t sync_mgr;
   uint32_t resolution_hz_;
-  bool running_;
-  std::vector<rmt_symbol_word_t> current_patterns_[2];
+  bool align_pulse_lengths_;
+  bool use_sync_manager_;
+  bool running;
+  std::vector<rmt_symbol_word_t> current_patterns[2];
 };
 
 /**
  * 4-Channel RMT Pulse Generator
- * For ESP32-S3
+ * For ESP32-S3, ESP32-P4
  */
 template<> class RmtPulseGenerator<4> {
  public:
-  RmtPulseGenerator(gpio_num_t gpio_a, gpio_num_t gpio_b, gpio_num_t gpio_c, gpio_num_t gpio_d,
-                    uint32_t resolution_hz = 1000000)
-      : resolution_hz_(resolution_hz) {
-    tx_gpio_number_[0] = gpio_a;
-    tx_gpio_number_[1] = gpio_b;
-    tx_gpio_number_[2] = gpio_c;
-    tx_gpio_number_[3] = gpio_d;
-    for (auto &tx_channel : tx_channels_) {
-      tx_channel = nullptr;
+  RmtPulseGenerator(gpio_num_t gpioA, gpio_num_t gpioB, gpio_num_t gpioC, gpio_num_t gpioD,
+                    uint32_t resolution_hz = 1000000, bool align_pulse_lengths = true)
+      : resolution_hz_(resolution_hz), align_pulse_lengths_(align_pulse_lengths) {
+    tx_gpio_number[0] = gpioA;
+    tx_gpio_number[1] = gpioB;
+    tx_gpio_number[2] = gpioC;
+    tx_gpio_number[3] = gpioD;
+    for (int i = 0; i < 4; ++i) {
+      tx_channels[i] = nullptr;
     }
-    copy_encoder_ = nullptr;
-    sync_mgr_ = nullptr;
-    running_ = false;
+    copyEncoder = nullptr;
+    sync_mgr = nullptr;
+    running = false;
   }
 
   ~RmtPulseGenerator() {
     stop();
-    cleanup_();
+    cleanup();
   }
 
   bool init() {
+    // 4-channel variants always have sync manager support
     for (int i = 0; i < 4; ++i) {
-      rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number_[i],
+      rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number[i],
                                         .clk_src = RMT_CLK_SRC_DEFAULT,
                                         .resolution_hz = resolution_hz_,
                                         .mem_block_symbols = 48,
                                         .trans_queue_depth = 8,
                                         .flags = {}};
-      if (rmt_new_tx_channel(&config, &tx_channels_[i]) != ESP_OK) {
+      if (rmt_new_tx_channel(&config, &tx_channels[i]) != ESP_OK) {
         return false;
       }
-      if (rmt_enable(tx_channels_[i]) != ESP_OK) {
+      if (rmt_enable(tx_channels[i]) != ESP_OK) {
         return false;
       }
     }
 
-    rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels_, .array_size = 4};
-    if (rmt_new_sync_manager(&sync_config, &sync_mgr_) != ESP_OK) {
+    // Create sync manager for reliable edge alignment
+    rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels, .array_size = 4};
+    if (rmt_new_sync_manager(&sync_config, &sync_mgr) != ESP_OK) {
       return false;
     }
 
     rmt_copy_encoder_config_t enc_config = {};
-    return rmt_new_copy_encoder(&enc_config, &copy_encoder_) == ESP_OK;
+    if (rmt_new_copy_encoder(&enc_config, &copyEncoder) != ESP_OK) {
+      return false;
+    }
+
+    return true;
   }
 
   bool begin(const std::vector<std::vector<rmt_symbol_word_t>> &patterns) {
@@ -237,32 +268,30 @@ template<> class RmtPulseGenerator<4> {
       return false;
     }
 
-    // Synchronize patterns (hacky way from original library)
-    auto [synced_a, synced_b] =
-        synchronize_patterns(patterns[0].data(), patterns[0].size(), patterns[1].data(), patterns[1].size());
-    auto [synced_c, synced_d] =
-        synchronize_patterns(patterns[2].data(), patterns[2].size(), patterns[3].data(), patterns[3].size());
-    auto [synced_c2, synced_a2] =
-        synchronize_patterns(synced_c.data(), synced_c.size(), synced_a.data(), synced_a.size());
-    auto [synced_b2, synced_d2] =
-        synchronize_patterns(synced_b.data(), synced_b.size(), synced_d.data(), synced_d.size());
+    // Align pulse lengths - 4-channel variants must always align
+    // (experimentally determined requirement)
+    std::vector<std::vector<rmt_symbol_word_t>> aligned_patterns;
+    if (align_pulse_lengths_) {
+      aligned_patterns = align_pulse_lengths(patterns);
+    } else {
+      aligned_patterns = patterns;
+    }
 
-    // Store synchronized patterns
-    current_patterns_[0] = synced_a2;
-    current_patterns_[1] = synced_b2;
-    current_patterns_[2] = synced_c2;
-    current_patterns_[3] = synced_d2;
+    // Store aligned patterns
+    for (int i = 0; i < 4; ++i) {
+      current_patterns[i] = aligned_patterns[i];
+    }
 
     rmt_transmit_config_t tx_config = {.loop_count = -1};
 
     for (int i = 0; i < 4; ++i) {
-      if (rmt_transmit(tx_channels_[i], copy_encoder_, current_patterns_[i].data(),
-                       current_patterns_[i].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
+      if (rmt_transmit(tx_channels[i], copyEncoder, current_patterns[i].data(),
+                       current_patterns[i].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
         return false;
       }
     }
 
-    running_ = true;
+    running = true;
     return true;
   }
 
@@ -272,54 +301,50 @@ template<> class RmtPulseGenerator<4> {
   }
 
   void stop() {
-    if (running_) {
-      for (auto &tx_channel : tx_channels_) {
-        if (tx_channel != nullptr) {
-          rmt_disable(tx_channel);
+    if (running) {
+      for (int i = 0; i < 4; ++i) {
+        if (tx_channels[i] != nullptr) {
+          rmt_disable(tx_channels[i]);
         }
       }
-      running_ = false;
+      running = false;
     }
 
     // Re-enable for next use
-    for (auto &tx_channel : tx_channels_) {
-      if (tx_channel != nullptr) {
-        rmt_enable(tx_channel);
+    for (int i = 0; i < 4; ++i) {
+      if (tx_channels[i] != nullptr) {
+        rmt_enable(tx_channels[i]);
       }
     }
   }
 
-  bool is_running() const { return running_; }
+  bool is_running() const { return running; }
 
  private:
-  void cleanup_() {
-    if (copy_encoder_ != nullptr) {
-      rmt_del_encoder(copy_encoder_);
-      copy_encoder_ = nullptr;
+  void cleanup() {
+    if (copyEncoder != nullptr) {
+      rmt_del_encoder(copyEncoder);
+      copyEncoder = nullptr;
     }
-    if (sync_mgr_ != nullptr) {
-      rmt_del_sync_manager(sync_mgr_);
-      sync_mgr_ = nullptr;
+    if (sync_mgr != nullptr) {
+      rmt_del_sync_manager(sync_mgr);
+      sync_mgr = nullptr;
     }
-    for (auto &tx_channel : tx_channels_) {
-      if (tx_channel != nullptr) {
-        rmt_disable(tx_channel);
-        rmt_del_channel(tx_channel);
-        tx_channel = nullptr;
+    for (int i = 0; i < 4; ++i) {
+      if (tx_channels[i] != nullptr) {
+        rmt_disable(tx_channels[i]);
+        rmt_del_channel(tx_channels[i]);
+        tx_channels[i] = nullptr;
       }
     }
   }
 
-  rmt_channel_handle_t tx_channels_[4];
-  gpio_num_t tx_gpio_number_[4];
-  rmt_encoder_handle_t copy_encoder_;
-  rmt_sync_manager_handle_t sync_mgr_;
+  rmt_channel_handle_t tx_channels[4];
+  gpio_num_t tx_gpio_number[4];
+  rmt_encoder_handle_t copyEncoder;
+  rmt_sync_manager_handle_t sync_mgr;
   uint32_t resolution_hz_;
-  bool running_;
-  std::vector<rmt_symbol_word_t> current_patterns_[4];
+  bool align_pulse_lengths_;
+  bool running;
+  std::vector<rmt_symbol_word_t> current_patterns[4];
 };
-
-}  // namespace rmt_simple
-}  // namespace esphome
-
-#endif  // USE_ESP32

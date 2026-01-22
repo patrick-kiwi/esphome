@@ -5,6 +5,6 @@ substitutions:
 esp32:
   board: esp32-c3-devkitm-1
   framework:
-    type: esp-idf
+    type: arduino
 
 <<: !include common.yaml

@@ -1,8 +1,6 @@
 #include "rmt_simple.h"
 #include "esphome/core/log.h"
 
-#ifdef USE_ESP32
-
 namespace esphome {
 namespace rmt_simple {
 
@@ -12,8 +10,8 @@ void RmtSimpleComponent::setup() {
   ESP_LOGCONFIG(TAG, "Setting up RMT Simple...");
 
   // Count configured channels
-  for (const auto &pin : this->pins_) {
-    if (pin != nullptr) {
+  for (int i = 0; i < 4; i++) {
+    if (this->pins_[i] != nullptr) {
       this->num_channels_++;
     }
   }
@@ -42,7 +40,7 @@ void RmtSimpleComponent::setup() {
     this->generator_2ch_ = std::make_unique<RmtPulseGenerator<2>>(
         gpios[0],
         gpio_index > 1 ? gpios[1] : gpios[0],  // Use first pin twice if only one configured
-        this->resolution_hz_);
+        this->resolution_hz_, this->align_pulse_lengths_, this->use_sync_manager_);
 
     if (!this->generator_2ch_->init()) {
       ESP_LOGE(TAG, "Failed to initialize 2-channel RMT peripheral");
@@ -63,8 +61,8 @@ void RmtSimpleComponent::setup() {
       }
     }
 
-    this->generator_4ch_ =
-        std::make_unique<RmtPulseGenerator<4>>(gpios[0], gpios[1], gpios[2], gpios[3], this->resolution_hz_);
+    this->generator_4ch_ = std::make_unique<RmtPulseGenerator<4>>(gpios[0], gpios[1], gpios[2], gpios[3],
+                                                                  this->resolution_hz_, this->align_pulse_lengths_);
 
     if (!this->generator_4ch_->init()) {
       ESP_LOGE(TAG, "Failed to initialize 4-channel RMT peripheral");
@@ -78,7 +76,7 @@ void RmtSimpleComponent::setup() {
   ESP_LOGCONFIG(TAG, "RMT Simple initialized successfully");
 
   // Auto-start pulses
-  this->auto_start_();
+  this->auto_start();
 }
 
 void RmtSimpleComponent::dump_config() {
@@ -86,9 +84,9 @@ void RmtSimpleComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "  Channels: %d", this->num_channels_);
   ESP_LOGCONFIG(TAG, "  Resolution: %u Hz", this->resolution_hz_);
 
-  for (size_t i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; i++) {
     if (this->pins_[i] != nullptr) {
-      ESP_LOGCONFIG(TAG, "  Channel %zu:", i);
+      ESP_LOGCONFIG(TAG, "  Channel %d:", i);
       LOG_PIN("    Pin: ", this->pins_[i]);
       ESP_LOGCONFIG(TAG, "    Pulse symbols: %d", this->channel_pulses_[i].size());
     }
@@ -110,30 +108,30 @@ void RmtSimpleComponent::set_pulses(uint8_t channel, const std::vector<rmt_symbo
   }
 }
 
-void RmtSimpleComponent::auto_start_() {
+void RmtSimpleComponent::auto_start() {
   // Build vector of pulse patterns for configured channels
   std::vector<std::vector<rmt_symbol_word_t>> patterns;
 
-  for (size_t i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; i++) {
     if (this->pins_[i] != nullptr) {
       if (!this->channel_pulses_[i].empty()) {
-        patterns.emplace_back(this->channel_pulses_[i]);
+        patterns.push_back(this->channel_pulses_[i]);
       } else {
         // Empty pattern for channel with no pulses configured
-        patterns.emplace_back();
+        patterns.push_back(std::vector<rmt_symbol_word_t>());
       }
     }
   }
 
   // Start generation
-  if (!this->begin_(patterns)) {
+  if (!this->begin(patterns)) {
     ESP_LOGE(TAG, "Failed to auto-start pulse generation");
   } else {
     ESP_LOGI(TAG, "Auto-started pulse generation on %d channel(s)", this->num_channels_);
   }
 }
 
-bool RmtSimpleComponent::begin_(const std::vector<std::vector<rmt_symbol_word_t>> &channel_sequences) {
+bool RmtSimpleComponent::begin(const std::vector<std::vector<rmt_symbol_word_t>> &channel_sequences) {
   if (this->generator_2ch_ == nullptr && this->generator_4ch_ == nullptr) {
     ESP_LOGE(TAG, "Component not initialized");
     return false;
@@ -163,7 +161,7 @@ bool RmtSimpleComponent::begin_(const std::vector<std::vector<rmt_symbol_word_t>
   return success;
 }
 
-void RmtSimpleComponent::stop_() {
+void RmtSimpleComponent::stop() {
   if (this->generator_2ch_ == nullptr && this->generator_4ch_ == nullptr) {
     ESP_LOGE(TAG, "Component not initialized");
     return;
@@ -190,5 +188,3 @@ bool RmtSimpleComponent::is_running() const {
 
 }  // namespace rmt_simple
 }  // namespace esphome
-
-#endif  // USE_ESP32

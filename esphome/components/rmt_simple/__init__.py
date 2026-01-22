@@ -1,10 +1,12 @@
 from esphome import pins
 import esphome.codegen as cg
 from esphome.components.esp32 import (
+    VARIANT_ESP32,
     VARIANT_ESP32C3,
     VARIANT_ESP32C6,
+    VARIANT_ESP32P4,
     VARIANT_ESP32S3,
-    only_on_variant,
+    get_esp32_variant,
 )
 import esphome.config_validation as cv
 from esphome.const import CONF_ID
@@ -18,11 +20,10 @@ CONF_PIN_0 = "pin_0"
 CONF_PIN_1 = "pin_1"
 CONF_PIN_2 = "pin_2"
 CONF_PIN_3 = "pin_3"
-CONF_PULSES_0 = "pulses_0"
-CONF_PULSES_1 = "pulses_1"
-CONF_PULSES_2 = "pulses_2"
-CONF_PULSES_3 = "pulses_3"
+CONF_GPIO_NUMBER = "gpio_number"
+CONF_PULSE_SEQUENCE = "pulse_sequence"
 CONF_RESOLUTION_HZ = "resolution_hz"
+CONF_ALIGN_PULSE_LENGTHS = "align_pulse_lengths"
 CONF_DURATION0 = "duration0"
 CONF_LEVEL0 = "level0"
 CONF_DURATION1 = "duration1"
@@ -44,15 +45,42 @@ RMT_SYMBOL_SCHEMA = cv.Schema(
 )
 
 
+def pin_channel_schema(value):
+    """
+    Schema for pin channel configuration. Supports two formats:
+    1. Shorthand: pin_0: GPIO17
+    2. Full: pin_0: {gpio_number: GPIO17, pulse_sequence: [...]}
+    """
+    if isinstance(value, dict) and CONF_GPIO_NUMBER in value:
+        # Full format with gpio_number and optional pulse_sequence
+        return cv.Schema(
+            {
+                cv.Required(CONF_GPIO_NUMBER): pins.internal_gpio_output_pin_schema,
+                cv.Optional(CONF_PULSE_SEQUENCE): cv.All(
+                    cv.ensure_list(RMT_SYMBOL_SCHEMA),
+                    cv.Length(max=64),
+                ),
+            }
+        )(value)
+    # Shorthand format - just a pin
+    return {CONF_GPIO_NUMBER: pins.internal_gpio_output_pin_schema(value)}
+
+
+def extract_pin_number(pin_config):
+    """Extract the GPIO number from a pin configuration."""
+    gpio = pin_config[CONF_GPIO_NUMBER]
+    # Extract pin number if it's a dict (GPIO object)
+    if isinstance(gpio, dict) and "number" in gpio:
+        return gpio["number"]
+    return gpio
+
+
 def validate_unique_pins(config):
     """Ensure all configured pins are unique."""
     pins_list = []
     for pin_key in [CONF_PIN_0, CONF_PIN_1, CONF_PIN_2, CONF_PIN_3]:
         if pin_key in config:
-            pin_num = config[pin_key]
-            # Extract pin number if it's a dict (GPIO object)
-            if isinstance(pin_num, dict) and "number" in pin_num:
-                pin_num = pin_num["number"]
+            pin_num = extract_pin_number(config[pin_key])
             if pin_num in pins_list:
                 raise cv.Invalid(
                     f"GPIO{pin_num} is assigned to multiple channels. "
@@ -75,42 +103,38 @@ def validate_at_least_one_pin(config):
     return config
 
 
+def validate_align_pulse_lengths(config):
+    """Validate that align_pulse_lengths=false is only used on ESP32 (original)."""
+    if not config.get(CONF_ALIGN_PULSE_LENGTHS, True):
+        # align_pulse_lengths disabled - only ESP32 (original) supports this
+        variant = get_esp32_variant()
+        if variant != VARIANT_ESP32:
+            raise cv.Invalid(
+                f"align_pulse_lengths=false is only supported on ESP32 (original). "
+                f"Current variant: {variant}. "
+                f"All other variants (C3, C6, S3, P4) must align pulse lengths."
+            )
+    return config
+
+
 # Main component schema
 CONFIG_SCHEMA = cv.All(
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(RmtSimpleComponent),
-            cv.Optional(CONF_PIN_0): pins.internal_gpio_output_pin_schema,
-            cv.Optional(CONF_PIN_1): pins.internal_gpio_output_pin_schema,
-            cv.Optional(CONF_PIN_2): pins.internal_gpio_output_pin_schema,
-            cv.Optional(CONF_PIN_3): pins.internal_gpio_output_pin_schema,
-            cv.Optional(CONF_PULSES_0): cv.All(
-                cv.ensure_list(RMT_SYMBOL_SCHEMA),
-                cv.Length(max=64),
-            ),
-            cv.Optional(CONF_PULSES_1): cv.All(
-                cv.ensure_list(RMT_SYMBOL_SCHEMA),
-                cv.Length(max=64),
-            ),
-            cv.Optional(CONF_PULSES_2): cv.All(
-                cv.ensure_list(RMT_SYMBOL_SCHEMA),
-                cv.Length(max=64),
-            ),
-            cv.Optional(CONF_PULSES_3): cv.All(
-                cv.ensure_list(RMT_SYMBOL_SCHEMA),
-                cv.Length(max=64),
-            ),
+            cv.Optional(CONF_PIN_0): pin_channel_schema,
+            cv.Optional(CONF_PIN_1): pin_channel_schema,
+            cv.Optional(CONF_PIN_2): pin_channel_schema,
+            cv.Optional(CONF_PIN_3): pin_channel_schema,
             cv.Optional(CONF_RESOLUTION_HZ, default=1000000): cv.int_range(
                 min=1, max=80000000
             ),
+            cv.Optional(CONF_ALIGN_PULSE_LENGTHS, default=True): cv.boolean,
         }
     ).extend(cv.COMPONENT_SCHEMA),
-    only_on_variant(
-        supported=[VARIANT_ESP32C3, VARIANT_ESP32C6, VARIANT_ESP32S3],
-        msg_prefix="rmt_simple component",
-    ),
     validate_unique_pins,
     validate_at_least_one_pin,
+    validate_align_pulse_lengths,
 )
 
 
@@ -131,21 +155,35 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
-    # Set resolution
+    # Set resolution and align_pulse_lengths
     cg.add(var.set_resolution(config[CONF_RESOLUTION_HZ]))
+    cg.add(var.set_align_pulse_lengths(config[CONF_ALIGN_PULSE_LENGTHS]))
+
+    # Determine if we should use sync manager (C3, C6, S3, P4 have sync hardware)
+    variant = get_esp32_variant()
+    use_sync_manager = variant in [
+        VARIANT_ESP32C3,
+        VARIANT_ESP32C6,
+        VARIANT_ESP32P4,
+        VARIANT_ESP32S3,
+    ]
+    cg.add(var.set_use_sync_manager(use_sync_manager))
 
     # Configure each channel
     for i in range(4):
         pin_key = f"pin_{i}"
-        pulses_key = f"pulses_{i}"
 
         if pin_key in config:
-            pin = await cg.gpio_pin_expression(config[pin_key])
+            pin_config = config[pin_key]
+
+            # Extract and configure the GPIO pin
+            pin = await cg.gpio_pin_expression(pin_config[CONF_GPIO_NUMBER])
             cg.add(var.set_pin(i, pin))
 
-            if pulses_key in config:
+            # Configure pulse sequence if provided
+            if CONF_PULSE_SEQUENCE in pin_config:
                 # Convert RMT symbols
-                symbols = convert_symbols(config[pulses_key])
+                symbols = convert_symbols(pin_config[CONF_PULSE_SEQUENCE])
 
                 # Generate C++ std::vector constructor
                 if symbols:

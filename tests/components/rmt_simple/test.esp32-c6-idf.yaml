@@ -1,20 +1,10 @@
-rmt_simple:
-  resolution_hz: 80000000
+substitutions:
+  pin_0: GPIO17
+  pin_1: GPIO19
 
-  pin_0: GPIO10
-  pulses_0:
-    - duration0: 800
-      level0: 1
-      duration1: 800
-      level1: 0
-    - duration0: 400
-      level0: 1
-      duration1: 400
-      level1: 0
+esp32:
+  board: esp32-c6-devkitc-1
+  framework:
+    type: esp-idf
 
-  pin_1: GPIO11
-  pulses_1:
-    - duration0: 1600
-      level0: 1
-      duration1: 1600
-      level1: 0
+<<: !include common.yaml
