@@ -26,9 +26,9 @@ class RmtSimpleComponent : public Component {
   bool is_running() const;
 
  protected:
-  void auto_start();
-  bool begin(const std::vector<std::vector<rmt_symbol_word_t>> &channel_sequences);
-  void stop();
+  void auto_start_();
+  bool begin_(const std::vector<std::vector<rmt_symbol_word_t>> &channel_sequences);
+  void stop_();
 
  private:
   InternalGPIOPin *pins_[4]{nullptr};
