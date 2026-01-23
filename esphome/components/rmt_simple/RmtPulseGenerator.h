@@ -4,6 +4,9 @@
 #include <vector>
 #include <utility>  // for std::pair
 
+namespace esphome {
+namespace rmt_simple {
+
 // Utility to count total ticks in a pulse pattern
 inline uint32_t total_ticks(const rmt_symbol_word_t *pattern, size_t len) {
   uint32_t total = 0;
@@ -340,3 +343,6 @@ template<> class RmtPulseGenerator<4> {
   bool running_;
   std::vector<rmt_symbol_word_t> current_patterns_[4];
 };
+
+}  // namespace rmt_simple
+}  // namespace esphome
