@@ -37,10 +37,14 @@ void RmtSimpleComponent::setup() {
       }
     }
 
+    // Disable sync manager when only 1 channel is configured
+    // (no point synchronizing a single output, and avoids GPIO conflicts)
+    bool use_sync = this->use_sync_manager_ && (this->num_channels_ > 1);
+
     this->generator_2ch_ = std::make_unique<RmtPulseGenerator<2>>(
         gpios[0],
         gpio_index > 1 ? gpios[1] : gpios[0],  // Use first pin twice if only one configured
-        this->resolution_hz_, this->align_pulse_lengths_, this->use_sync_manager_);
+        this->resolution_hz_, this->align_pulse_lengths_, use_sync);
 
     if (!this->generator_2ch_->init()) {
       ESP_LOGE(TAG, "Failed to initialize 2-channel RMT peripheral");
@@ -48,7 +52,11 @@ void RmtSimpleComponent::setup() {
       return;
     }
 
-    ESP_LOGCONFIG(TAG, "  Initialized 2-channel RMT generator");
+    if (this->num_channels_ == 1) {
+      ESP_LOGCONFIG(TAG, "  Initialized 2-channel RMT generator (single-channel mode, sync disabled)");
+    } else {
+      ESP_LOGCONFIG(TAG, "  Initialized 2-channel RMT generator");
+    }
 
   } else {
     // 4-channel mode - find the first four configured pins
@@ -124,9 +132,12 @@ void RmtSimpleComponent::auto_start_() {
   }
 
   // The 2-channel generator always expects exactly 2 patterns
-  // If only 1 channel is configured, add a dummy empty pattern for the second channel
+  // If only 1 channel is configured, add a minimal dummy pattern for the second channel
   if (this->generator_2ch_ != nullptr && patterns.size() == 1) {
-    patterns.emplace_back();  // Add empty pattern for the duplicated GPIO
+    // Create a minimal dummy pulse (1 tick low) to satisfy the RMT peripheral
+    std::vector<rmt_symbol_word_t> dummy_pattern;
+    dummy_pattern.push_back({.duration0 = 1, .level0 = 0, .duration1 = 0, .level1 = 0});
+    patterns.push_back(dummy_pattern);
     ESP_LOGD(TAG, "Added dummy pattern for single-channel 2-channel generator");
   }
 
@@ -145,8 +156,14 @@ bool RmtSimpleComponent::begin_(const std::vector<std::vector<rmt_symbol_word_t>
   }
 
   // Validate channel count
-  if (channel_sequences.size() != this->num_channels_) {
-    ESP_LOGE(TAG, "Expected %d channel sequences, got %d", this->num_channels_, channel_sequences.size());
+  // Special case: 2-channel generator with 1 configured channel needs 2 patterns (real + dummy)
+  size_t expected_sequences = this->num_channels_;
+  if (this->generator_2ch_ != nullptr && this->num_channels_ == 1) {
+    expected_sequences = 2;  // 2-channel generator always needs 2 patterns
+  }
+
+  if (channel_sequences.size() != expected_sequences) {
+    ESP_LOGE(TAG, "Expected %d channel sequences, got %d", expected_sequences, channel_sequences.size());
     return false;
   }
 
