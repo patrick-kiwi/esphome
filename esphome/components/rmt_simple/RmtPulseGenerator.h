@@ -69,8 +69,11 @@ template<int NumChannels> class RmtPulseGenerator {
 template<> class RmtPulseGenerator<2> {
  public:
   RmtPulseGenerator(gpio_num_t gpio_a, gpio_num_t gpio_b, uint32_t resolution_hz = 1000000,
-                    bool align_pulse_lengths = true, bool use_sync_manager = true)
-      : resolution_hz_(resolution_hz), align_pulse_lengths_(align_pulse_lengths), use_sync_manager_(use_sync_manager) {
+                    bool align_pulse_lengths = true, bool use_sync_manager = true, uint8_t num_active_channels = 2)
+      : resolution_hz_(resolution_hz),
+        align_pulse_lengths_(align_pulse_lengths),
+        use_sync_manager_(use_sync_manager),
+        num_active_channels_(num_active_channels) {
     tx_gpio_number_[0] = gpio_a;
     tx_gpio_number_[1] = gpio_b;
     tx_channels_[0] = nullptr;
@@ -90,60 +93,67 @@ template<> class RmtPulseGenerator<2> {
     uint16_t mem_block_symbols = use_sync_manager_ ? 48 : 64;
     uint8_t trans_queue_depth = use_sync_manager_ ? 8 : 1;
 
-    for (int i = 0; i < 2; ++i) {
+    // Only create the number of channels that are actually active
+    for (int i = 0; i < num_active_channels_; ++i) {
       rmt_tx_channel_config_t config = {.gpio_num = tx_gpio_number_[i],
                                         .clk_src = RMT_CLK_SRC_DEFAULT,
                                         .resolution_hz = resolution_hz_,
                                         .mem_block_symbols = mem_block_symbols,
                                         .trans_queue_depth = trans_queue_depth,
                                         .flags = {}};
-      if (rmt_new_tx_channel(&config, &tx_channels_[i]) != ESP_OK) {
+      esp_err_t err = rmt_new_tx_channel(&config, &tx_channels_[i]);
+      if (err != ESP_OK) {
         return false;
       }
-      if (rmt_enable(tx_channels_[i]) != ESP_OK) {
+      err = rmt_enable(tx_channels_[i]);
+      if (err != ESP_OK) {
         return false;
       }
     }
 
     // Create sync manager for boards that support it (C3, C6, P4, S3)
-    if (use_sync_manager_) {
+    // Only use sync manager if we have 2 active channels
+    if (use_sync_manager_ && num_active_channels_ == 2) {
       rmt_sync_manager_config_t sync_config = {.tx_channel_array = tx_channels_, .array_size = 2};
-      if (rmt_new_sync_manager(&sync_config, &sync_mgr_) != ESP_OK) {
+      esp_err_t err = rmt_new_sync_manager(&sync_config, &sync_mgr_);
+      if (err != ESP_OK) {
         return false;
       }
     }
 
     rmt_copy_encoder_config_t enc_config = {};
-    return rmt_new_copy_encoder(&enc_config, &copy_encoder_) == ESP_OK;
+    esp_err_t err = rmt_new_copy_encoder(&enc_config, &copy_encoder_);
+    if (err != ESP_OK) {
+      return false;
+    }
+    return true;
   }
 
   bool begin(const std::vector<std::vector<rmt_symbol_word_t>> &patterns) {
-    if (patterns.size() != 2) {
+    // Validate pattern count matches active channels
+    if (patterns.size() != num_active_channels_) {
       return false;
     }
 
     // Conditionally align pulse lengths based on configuration
     std::vector<std::vector<rmt_symbol_word_t>> aligned_patterns;
-    if (align_pulse_lengths_) {
+    if (align_pulse_lengths_ && num_active_channels_ > 1) {
       aligned_patterns = align_pulse_lengths(patterns);
     } else {
       // Use patterns as-is without length alignment
       aligned_patterns = patterns;
     }
 
-    // Store aligned patterns
-    current_patterns_[0] = aligned_patterns[0];
-    current_patterns_[1] = aligned_patterns[1];
-
+    // Store aligned patterns and start transmission
     rmt_transmit_config_t tx_config = {.loop_count = -1};
 
-    if (rmt_transmit(tx_channels_[0], copy_encoder_, current_patterns_[0].data(),
-                     current_patterns_[0].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
-      return false;
-    }
-    if (rmt_transmit(tx_channels_[1], copy_encoder_, current_patterns_[1].data(),
-                     current_patterns_[1].size() * sizeof(rmt_symbol_word_t), &tx_config) != ESP_OK) {
-      return false;
+    for (int i = 0; i < num_active_channels_; ++i) {
+      current_patterns_[i] = aligned_patterns[i];
+      esp_err_t err = rmt_transmit(tx_channels_[i], copy_encoder_, current_patterns_[i].data(),
+                                   current_patterns_[i].size() * sizeof(rmt_symbol_word_t), &tx_config);
+      if (err != ESP_OK) {
+        return false;
+      }
     }
 
     running_ = true;
@@ -201,6 +211,7 @@ template<> class RmtPulseGenerator<2> {
   uint32_t resolution_hz_;
   bool align_pulse_lengths_;
   bool use_sync_manager_;
+  uint8_t num_active_channels_;
   bool running_;
   std::vector<rmt_symbol_word_t> current_patterns_[2];
 };
