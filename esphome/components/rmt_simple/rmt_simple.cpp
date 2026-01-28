@@ -123,6 +123,13 @@ void RmtSimpleComponent::auto_start_() {
     }
   }
 
+  // The 2-channel generator always expects exactly 2 patterns
+  // If only 1 channel is configured, add a dummy empty pattern for the second channel
+  if (this->generator_2ch_ != nullptr && patterns.size() == 1) {
+    patterns.emplace_back();  // Add empty pattern for the duplicated GPIO
+    ESP_LOGD(TAG, "Added dummy pattern for single-channel 2-channel generator");
+  }
+
   // Start generation
   if (!this->begin_(patterns)) {
     ESP_LOGE(TAG, "Failed to auto-start pulse generation");
