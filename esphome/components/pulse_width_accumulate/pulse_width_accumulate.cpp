@@ -90,8 +90,8 @@ void IRAM_ATTR PulseWidthAccumulateSensorStore::gpio_intr(PulseWidthAccumulateSe
 }
 
 void PulseWidthAccumulateSensor::dump_config() {
-  LOG_SENSOR("", "Pulse Width", this)
-  LOG_UPDATE_INTERVAL(this)
+  LOG_SENSOR("", "Pulse Width", this);
+  LOG_UPDATE_INTERVAL(this);
   LOG_PIN("  Pin: ", this->pin_);
 }
 
