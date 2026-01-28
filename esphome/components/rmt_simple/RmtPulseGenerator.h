@@ -122,11 +122,7 @@ template<> class RmtPulseGenerator<2> {
     }
 
     rmt_copy_encoder_config_t enc_config = {};
-    esp_err_t err = rmt_new_copy_encoder(&enc_config, &copy_encoder_);
-    if (err != ESP_OK) {
-      return false;
-    }
-    return true;
+    return rmt_new_copy_encoder(&enc_config, &copy_encoder_) == ESP_OK;
   }
 
   bool begin(const std::vector<std::vector<rmt_symbol_word_t>> &patterns) {
